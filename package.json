@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test:rng": "node --experimental-strip-types app/test/rng.test.ts",
     "test:trace": "node --experimental-strip-types app/test/trace.test.ts",
-    "test": "npm run test:rng && npm run test:trace"
+    "test:loop": "node --experimental-strip-types app/test/loop.test.ts",
+    "test": "npm run test:rng && npm run test:trace && npm run test:loop"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

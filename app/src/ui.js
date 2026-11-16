@@ -1,12 +1,10 @@
-// 《聚场》界面：只负责把 server 给的 step 画出来，不自己算任何数。
+// 《聚场》界面：只负责把引擎给的 step 画出来，不自己算任何数。
+// 原来这里打 /api/*，现在是本地 TS 引擎（见 app/src/boot.ts），接口形状一样。
+import { call } from "./boot.ts";
+
 const $ = (id) => document.getElementById(id);
 const api = async (path, body) => {
-  const r = await fetch(path, {
-    method: body === undefined ? "GET" : "POST",
-    headers: { "Content-Type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  const d = await r.json();
+  const d = await call(path, body);
   if (d && d.error) toast("出了点问题：" + d.error);
   return d;
 };
@@ -126,7 +124,7 @@ function renderIdol(s) {
   const style = IDOL_STYLES.includes(s.name_style) ? s.name_style : "sweet";
   const sprite = $("idol-sprite");
   if (style !== idolStyle) {
-    sprite.style.backgroundImage = `url(sprites/idol_${style}.png)`;
+    sprite.style.backgroundImage = `url(idol_${style}.png)`;
     idolStyle = style;
   }
   const frame = pickFrame(s);

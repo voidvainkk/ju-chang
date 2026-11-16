@@ -1,28 +1,57 @@
 # 《聚场》交接文件（HANDOFF）
 
 > 地下偶像模拟器·网页游戏。这份文件是**给下一个对话的入口**：读完它 + `DESIGN.md`，就能直接接着干，不用重新摸一遍。
-> 最后更新：**2026-11-16**（§6.17 完成 11-15 被叫停的直播改造收尾；§6.18 删「交易孤立」、修两个判定 bug，落地结局平衡第二轮 A（炎上倍率 2.5 / 残局炎上≥80 / 台上加舞台≥55），§6.18.2 落地真话系统（4 张真话卡、truth_rate、拆 recall_ok）+ 私联抽线修正 + 如影/空心/守住接线，§6.18.3 失控演出重制（认领文案 / 灯灭 / 纯黑收尾），§6.18.4 版聊改成真聊天记录（7 张聊卡、引用条、右上角 tag）+ 回考 tag；§6.18.5 结局回响 + 跨周目图鉴（16 条内核/玩法/模糊提示）；§6.18.6 移动端适配（640/380 断点、手机首屏收起数值面板、48px 触控、底栏 safe-area、图鉴整屏）；§6.18.7 二周目姿态 + 跨周目记忆（图鉴有结局才开、上一季回响、5 姿态、周 1 片段说明）；§6.18.8 记事本（每周底账 + 影响结局的事 + 两段式快速重开）；§6.18.9 结局「游戏之外」（作者话 + 博客链接，支持 URL 待填）；结局口径 **16 = 季末 10 + 提前 6**；§6.19 项目改名《聚场》+ 修复「控制不了」深色主题残留；§6.19.1 版聊 7 张卡全删待重写（卡库 128→121）；§6.19.2 版聊卡按「观众发消息→偶像回」重写 12 张，卡库 133；§6.19.3 按微博私信口语重写为 15 张（补嗓子/头发/妆花了），卡库 136；§6.19.4 恋爱线改成主线后每周必推进、确认拍补真吻、被撞破当场结季；§6.19.5 重线「我只是太爱你了」选完当场结季 + 私联越线后每周强推一拍；§6.19.6 收场拷问补线索（说过不足三条就让她重数一遍，保证每题都有出处）+ 新增《简介与攻略.md》；§6.19.7 周 1 导读「它们不是全部，是态度」从第 1 周开场挪到建完角色后的第一屏，避免占掉第 1 周的事件位；§6.19.8 UI 改成 C+A：日常行动 2×3 网格、像素小人、上台/结局深色追光；**§6.20 TS 移植：`engine.ts` + `loop.ts` 与 Python 逐屏对账全部通过（85115 项），剩前端接入 + 上 Cloudflare Pages**）
+> 最后更新：**2026-11-16**（…；**§6.20 TS 移植：`engine.ts` + `loop.ts` 与 Python 逐屏对账全部通过（85115 项）**；**§6.21 前端接 TS 引擎完成——`vite build` 出 486KB 纯静态 `dist/`，浏览器实测从开局跑到结局「后来」，存档/图鉴/记事本/重开全部正常，只差上 Cloudflare Pages**）
 
 ---
 
 ## 0. 一句话现状
 
-**已经能从头到尾玩完一季八周并判出结局**，不是设计稿，是能点能存档的真东西：`game/server.py`（纯 Python，无第三方库）起一个本地服务，`web/` 是原生 JS 前端，两者用 `/api/*` 通信。
+**已经能从头到尾玩完一季八周并判出结局，而且现在有两套跑法。**
+
+- **新（推荐、要上云的那套）**：纯静态网页。`game/*.py` 的引擎与流程已翻成 TypeScript（`app/src/core/`），`vite build` 出 486KB 的 `dist/`，扔任何静态托管都能玩，**不需要服务端**。存档在图鉴在 localStorage。见 §6.20 / §6.21。
+- **旧（留着当参照和标准答案）**：`game/server.py`（纯 Python，无第三方库）起本地服务 + `web/index.html` + `web/style.css`，两者用 `/api/*` 通信。`web/app.js` 已删，前端逻辑现在的家是 `app/src/ui.js`。Python 侧的真正价值是 `tools/trace_dump.py` / `tools/loop_trace.py` 那套**对账标准答案**——改 TS 引擎后必须复跑，别让两侧悄悄分叉。
 
 - 数据层已封版：**136 张事件卡**（含 §6.19.3 重写的 15 张版聊卡「观众发消息 → 偶像回」）、3 条在用剧情线、5 个种子 OTA、21 条记忆线索 + 42 张两拍回考卡、序章、**16 结局**判决表。
 - **结局现在真的都能打到**（现 16 个；§6.10 把私联终局「收场」接进运行时后，`truly_seen` / `used_as_tool` 会真的被写入；§6.13 加了「控制不了」，§6.18 删了结构不可达的「交易孤立」）。
 - **私联收场是三条路**（§6.13）：答错 → 「用完」；答对 → 沉沦「唯一」/ 断联「控制不了」。后者是整段自动演出：按钮全消失、屏幕自己翻、炎上与板子一路涨到 999。演出写的是「原来我不止她一个」——机制还是一个人，浮出来的是她一个人的账本。
 - **一季只走一条剧情线**（§6.11）：私联 / 队友恋爱 / 重线不再抢同一个每周推线口，第一条被玩家主动推进的线锁定为这一季主线，另外两条不再出现。
 - **私联线现在是「一个人」而不是「一阵风」**（§6.12）：她的名字、原型、猫叫什么、常点哪杯、老家在哪都整局固定；拒绝不再算推进；选「以后别来了」真的会断线。
-- **规则只读 `game/` 代码为准**。`DESIGN.md` 是设计意图，部分数值（周数、每周槽位、券价公式、孵化规则）已被后续改动覆盖，读它时别当成当前实现，见 §4 / §5。
-- 校验：`tools/validate_all.py` 八组全 0；`tools/_check_order.py` 6 seed 「有问题: 0」。
-- 服务地址 **http://127.0.0.1:8765** ，`/api/state` 应返回 200。
+- **规则只读代码为准**：新跑法看 `app/src/core/*.ts`，旧跑法看 `game/*.py`（两套必须一致，靠三个对账测试守住）。`DESIGN.md` 是设计意图，部分数值已被后续改动覆盖，见 §4 / §5。
+- 校验：`tools/validate_all.py` 八组全 0；三个对账测试全绿（rng 84 / trace 9369 / loop 85115）。
+- 旧服务地址 **http://127.0.0.1:8765**；新构建本地预览 **http://127.0.0.1:8780**（`python -m http.server 8780 --directory dist`）。
 
 ---
 
 ## 1. 快速上手（下一个对话先照这个跑）
 
-**启动服务**（PowerShell，`聚场\` 目录下）：
+**两条路，先想清楚要哪条。**
+
+### 1a. 纯静态版（现在的主线，要上云的就是它）
+
+```powershell
+$node="C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe"
+$pnpm="C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\pnpm\bin\pnpm.mjs"
+$py="C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\python.exe"
+cd 聚场
+
+& $node $pnpm exec vite build                             # 出 dist/（486KB，gzip 158KB）
+& $py -m http.server 8780 --directory dist                # 后台跑请传 run_in_background
+```
+然后开 `http://127.0.0.1:8780/`。`vite dev` 也行（`& $node $pnpm dev`），改 `.ts` 会热更。
+
+**存档在 `localStorage`**（键 `ju-chang.save.v1` / `ju-chang.gallery.v1`）——换浏览器/清缓存就没了。调试时看到开局状态不对，先在 DevTools 里 `localStorage.clear()`。
+
+**三个对账测试必须全绿再往下走**（改任何 `app/src/core/*.ts` 都要复跑）：
+```powershell
+& $node --experimental-strip-types app\test\rng.test.ts    # ✓ 84 项
+& $node --experimental-strip-types app\test\trace.test.ts  # ✓ 9369 项
+& $node --experimental-strip-types app\test\loop.test.ts   # ✓ 85115 项
+& $node "$PWD\node_modules\typescript\bin\tsc" --noEmit     # exit 0
+```
+
+### 1b. 旧的 Python 服务版（改引擎逻辑时当标准答案）
+
 ```powershell
 $env:PYTHONIOENCODING="utf-8"
 & "C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\python.exe" -X utf8 game\server.py
@@ -32,14 +61,11 @@ $env:PYTHONIOENCODING="utf-8"
 Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'server\.py' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
 ```
 
-**接口**：`GET /api/state`（拉当前屏+面板）、`POST /api/advance`（按「继续」）、`POST /api/choose {id}`（选一项/取名）、`POST /api/new {seed?}`（重开一局）。`GET /` 及静态资源由 `web/` 提供。
+**接口**：`GET /api/state`（拉当前屏+面板）、`POST /api/advance`（按「继续」）、`POST /api/choose {id}`（选一项/取名）、`POST /api/new {seed?}`（重开一局）。`web/index.html` + `web/style.css` 还能被它提供——但**旧的 `web/app.js` 已删**，前端逻辑现在只在 `app/src/ui.js`，那一层已经不是「浏览器直连 HTTP」了。**所以 1b 现在只用来跑标准答案**（`tools/trace_dump.py` / `tools/loop_trace.py`），已经不是玩家路径。
 
-**存档**：`game/_save.json`，单进程单局。`Session.new/advance/choose` 每次都落盘，`__init__` 优先读档。所以——
-- **服务重启不会丢进度**（修的就是「莫名其妙重开」）。
-- **只有点界面「重开」按钮才会真重开**（`web/app.js` 里做成「点一次变『再点一次』」防误触）。
-- **要一个干净的全新周目，直接删掉 `game/_save.json`**。这是最容易踩的一条：调试时看到开局状态不对，先怀疑有存档。
+**存档（旧路径）**：`game/_save.json`，单进程单局。**要干净周目就删掉它**。
 
-**验证服务**：这台机器上 `dsh_browser_open` 连不上本地端口，只能用 `Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8765/api/state` 看状态码。
+**验证**：`dsh_browser_open` 现在**能连本地端口**（§1 旧文里说不能是错的）——`http://127.0.0.1:8765/` 与 `http://127.0.0.1:8780/` 都实测可开。
 
 ---
 
@@ -47,11 +73,23 @@ Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'server\.py
 
 - 你是一个地下偶像团体成员，**8 周一季**（2026-11-14 从 6 周拉长），靠练舞 / 练唱 / 练话术 / 拍内容 / 打工 / 躺、版聊、周末 Live + 特典会活下来。每个「为了钱、为了被爱」的选择在收场时回来找你。主题不是「谁活得久」，是「体验当偶像到底什么感觉」。
 - 三拍节奏：平日行动 → 版聊 → 周末两场 Live + 特典会；约 40 分钟打完一个结局。
-- **目标技术栈**：Vite + React + TypeScript，部署 Cloudflare Pages（用户有 CF 域名 + GitHub 建仓能力）。**但当前能玩的这版不是它**——`web/` 是原生 HTML/CSS/JS + `game/` 纯 Python HTTP 服务，是「竖切片」。前端重写/上 CF 都还没开工。
+- **技术栈已经是 Vite + TypeScript 了**（§6.20/§6.21）：引擎和流程全在 `app/src/core/*.ts`，`vite build` 出纯静态 `dist/`，**能直接上 Cloudflare Pages**。没上 React——界面还是原生 DOM，靠 `app/src/ui.js` 那 800 行（从旧的 `web/app.js` 原样搬过来，只换了数据来源）。**故意不引 React**：这套界面就是一屏一屏换 DOM，重写成 React 只会多一层状态同步的坑，不如把工时花在卡面和结局上。
+- `web/` 现在只剩 `index.html`（vite 的模板）、`style.css`（790 行样式）和 `sprites/`（四张立绘）。**`web/app.js` 已删**。
 
 ---
 
 ## 3. 文件地图（都在 `C:\Users\kk\Documents\deepseek-harness\default-workspace\聚场\`）
+
+### 前端工程 `app/`（§6.21 起是主线，改任何东西都看这里）
+- `app/src/core/rng.ts`（278 行）——CPython `random.Random` 的 MT19937 精确移植。**别改逻辑**，改了就过不了 `rng.test.ts` 的 84 项。
+- `app/src/core/engine.ts`（约 2170 行）——`game/engine.py` 全量移植，函数 camelCase。数据层是 `loadFiles(files)` / `loadWorld(files?)`，`RawFiles` = `相对路径 -> JSON`。
+- `app/src/core/loop.ts`（约 2320 行）——`game/loop.py` 的 `Game` 类全量移植（70 个方法、4600 字文案）。**改这里的任何一屏文案，都必须让 `loop.test.ts` 继续绿**（它有 85115 项逐屏对账）。
+- `app/src/core/bill.ts`（78 行）/ `types.ts`（176 行）。
+- `app/src/boot.ts`（317 行）——替代 `game/server.py`。`loadDataFiles()` 用 `import.meta.glob` 把 `data/**` 和 `结局.md` 打进 bundle；导出唯一的 `call(path, body)`。
+- `app/src/ui.js`（约 810 行）——界面层，从旧 `web/app.js` 原样搬来，只改了 `api()` 的实现。**要改 UI 就改这个文件**，不是 `web/app.js`（已删）。
+- `app/src/main.ts`——一行 `import "./ui.js";`。
+- `app/test/`——三个对账测试 + 三份 Python 侧生成的标准答案（`rng_expected.json` / `trace_expected.json` / `loop_expected.json`，最后一份 1.2MB，**别手改，重生成**）。
+- `vite.config.ts` / `tsconfig.json` / `package.json` / `pnpm-workspace.yaml`。
 
 ### 文档
 - `DESIGN.md`（~316 行）——设计封版，先读。§6.5 剧情线系统、§7 结局系统、§9 数值表是核心。**注意 §2/§6/§9 里部分数值已被代码覆盖**（见 §4）。
@@ -619,7 +657,7 @@ if got & {"cut_early", "deleted_ta"}:
 2. ~~**周日券经济副作用**（§6.4）：收入多五成，是否压周日券价或分成，待用户定。~~ —— **2026-11-15 用户拍板：不用管，「钱多点挺好的」**，保持不变，以后不再提。
 3. **结局平衡**（§7.3，2026-11-16 做了三轮，**整体仍未收口**）：见 §6.18——删不可达「交易孤立」、修 `check_cond` bool 短路、劣加 `money_kept`；第二轮 A 把炎上倍率降到 2.5、残局门槛抬到炎上≥80、台上加舞台≥55；第三轮（§6.18.2）做真话卡+真话率、拆 `true_talk/recall_ok`、压重线抽线、如影（开盒≥80 且私联≥第2拍）/空心（真话率<40%）/守住（真话率≥50% 且门槛放宽）接线。改后随机 20 种子：残局 55 / 劣 40 / 散场 36 / 如影 26 / 执念 24，空心上到 7、守住在档案里出现。**待定**：① 台上/彗星触发率是否继续追（用户已说不追）；② 如影随机 13% 是否偏多 —— **用户 m02807 拍板：不抬门槛，保持开盒≥80 且私联≥第2拍（2026-11-16 收口）**；③ enjou 每周 8% 衰减没动；④ 营业线专属结局位空着，用户已明确不补。教训：**先收口、别硬压触发率，等玩家真玩一轮再定**。
 4. **回考两拍在界面上的展示**（§6.10 已把「说/问」打通、选项会重排）：现在一季能锁到 3~5 条线索、收场能出满 3 题。**仍未做**的是让玩家在界面上看得出来「这是回考」——目前靠 `compact` 与「（她问的是哪一样。）」这句提示。**2026-11-16（§6.18.4）已加**：`rq_stage == "ask"` 的卡在 step 带 `recall: true`，右上角挂红色「回考」tag；`say` 卡（第一次听说）不挂。
-5. **长期**：~~版聊点对点引用回复模板~~（§6.18.4 已做成真聊天记录 + 引用条）、~~回响结算~~（§6.18.5 已有结局屏「这一季的回响」+ 跨周目图鉴，尚未做跨周目「姿态/记忆」）、二周目「姿态」、欠租/打工冲突的界面提示文案、**~~引擎翻成 TS~~（§6.20 已完成 engine.ts + loop.ts，85115 项逐屏对账全对）**、**剩下：前端接 TS 引擎 → 上 Cloudflare Pages**。
+5. **长期**：~~版聊点对点引用回复模板~~（§6.18.4 已做成真聊天记录 + 引用条）、~~回响结算~~（§6.18.5 已有结局屏「这一季的回响」+ 跨周目图鉴，尚未做跨周目「姿态/记忆」）、二周目「姿态」、欠租/打工冲突的界面提示文案、~~引擎翻成 TS~~（§6.20 已完成 engine.ts + loop.ts，85115 项逐屏对账全对）、~~前端接 TS 引擎~~（**§6.21 已完成，`vite build` 出纯静态 `dist/`，浏览器实测跑完一整季**）、**剩下：上 Cloudflare Pages**。
 6. **已明确不做**：OTA 个人线（功能与记忆回考重复）、OTA 原型卡（用户「算了吧，不写了，以后再想到新卡叫你」）——**别主动写新卡，等他点名**。
 7. ~~**⚠️ 私联线终局拷问疑似没接进运行时**~~ —— **已于 §6.10 修完**（`_line_tick` 跨周误判 + `finale` 接入 loop + 复用回考系统）。剩余小尾巴：`storyline_shiren.json` 里 `finale.gate` 的文本仍写「周 = 6」，实际走的是 `engine.FINALE_WEEK(s) = weeks_total`，文本是说明性的、不影响运行，但要改文案时记得同步。
 
@@ -643,7 +681,10 @@ if got & {"cut_early", "deleted_ta"}:
 - 用字符串切片删方法时容易把相邻 def 粘成一行、连删类常量（曾报 `AttributeError: 'Game' object has no attribute 'LINE_CHANCE'/'SCENE'`）；同名方法会被后者覆盖（曾丢 `_maybe_story`）。
 - **双参数函数被位置参数吞掉**：`opt()` 没有 `rq=None` 形参时 `rq(...)` 会被当成 `delayed` 传进去。改 helper 签名后立刻 dump 一个 json 看键名。
 - **访问 GitHub / 外网前必须先告诉用户、等他说「开了」**；代理 `socks5h://127.0.0.1:7897`（博客推送用 `http.proxy/https.proxy=http://127.0.0.1:7897`）。已知可达 `api.github.com`/`codeload.github.com`/`raw.githubusercontent.com`；`github.com` 直连不可达。
-- **改完源码必重启服务**（见 §1 的杀进程命令）；`dsh_browser_open` 连不上 8765，用 `Invoke-WebRequest` 验证。
+- **改完源码必重启服务**（见 §1 的杀进程命令）。**`dsh_browser_open` 现在能连本地端口**（旧文说不能，已过期）——`http://127.0.0.1:8765/` 与静态站 `http://127.0.0.1:8780/` 都实测可开。
+- **pnpm/node 都不能直接用 PATH**：node=`C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe`、pnpm=`...\dependencies\pnpm\bin\pnpm.mjs`（`& $node $pnpm <cmd>`）。npm.ps1 会被 ExecutionPolicy 拦。
+- **pnpm 11 的 build script 审批**：`[ERR_PNPM_IGNORED_BUILDS]` 让 `pnpm install` exit 1，必须在 `聚场\` 下跑一次 `& $node $pnpm approve-builds esbuild`（它写 `allowBuilds:` 进 `pnpm-workspace.yaml`）。只写 `onlyBuiltDependencies` 压不住。
+- **PowerShell 的 `>` 重定向写出来是 UTF-16LE**，Node `JSON.parse` 报 `Unexpected token '�'`。让 Python 自己 `open(path,'w',encoding='utf-8',newline='\n')` 写，或 PowerShell 加 `-Encoding utf8`。
 
 **改完数据的固定流程**：
 ```powershell
@@ -779,9 +820,49 @@ cd 聚场
 3. **Python 的空 dict 是 falsy，JS 的 `{}` 是真值**。`E.cast()` 在卡没声明 `casting` 时返回 `{}`，`if (!slots)` 就漏掉了「把卡声明的每个槽都指给今天留下来的人」那段 fallback，特典回执的 `face` 会从人名掉成场所名（`第零排` → `散场以后`）。`loop.ts` 里专门加了 `emptySlots()`。
 4. **`round(x, n)` 不能用「乘 10^n 再 Math.round」**。`0.1949999999999999 * 100 = 19.49999999999999` 看着像正好 `.5`，用容差判 `.5` 会误判成中点、按银行家舍入推成 `0.20`，Python 给 `0.19` —— 整个 `template` 曲线就差 0.01。`engine.ts` 的 `pyRound()` 改成把 double 拆成「尾数 × 2^指数」的精确有理数、用 BigInt 做整数除法舍入，`loop.ts` 直接复用它（别两边各写一份）。
 
-**前端那层还全是旧的**：`web/app.js`（806 行）/ `style.css`（790 行）/ `index.html`（89 行）现在仍然打 `/api/*` 跟 Python 服务说话。下一步是让它改吃 `loop.ts` 的 `Game`，把 `/api/state|advance|choose|new` 四个调用换成本地方法；`web/sprites/idol_*.png`（四套 × 六表情，384×80）已经就位，直接能复用。
+**前端那层**：见 §6.21——已经改吃 `loop.ts` 的 `Game` 了，旧的 `web/app.js` 已删。
 
-**还没做的**：① 前端接 TS 引擎；② `vite build` + Cloudflare Pages 部署；③ 存档从 `game/_save.json` 改成 localStorage；④ `game/policy.py` 不移植（只 `auto_play` 用，且那段是死代码）。
+**还没做的**：`game/policy.py` 不移植（只 `auto_play` 用，且那段是死代码）。
 
-**还没进 git 的**（下次先 commit）：`app/src/core/loop.ts`、`app/test/loop.test.ts`、`app/test/loop_expected.json`、`tools/loop_trace.py`，以及 `app/src/core/engine.ts` 里 `pyRound` 的改动。
+---
+
+## 6.21 前端接 TS 引擎：变纯静态站，浏览器实测跑完一整季（2026-11-16）
+
+**做完的标志**：`vite build` 出 486KB 的 `dist/`，用 `python -m http.server` 起静态服务就能从开局玩到结局，**不起 Python 后端**。
+
+**核心取舍：只换 `api()`，不动界面。** `web/app.js` 有八个 `/api/*` 调用点（`:398 gallery` / `:482 journal` / `:500,777 new` / `:668,752 advance` / `:732 state` / `:741 choose`），全塞在一个 `api()` 函数里。所以把 `app.js` 复制成 `app/src/ui.js`、只改 `api()` 的函数体调本地 `call()`，那 806 行界面逻辑一行没动。**这条能省掉八处改动、也省掉一整轮回归**，以后改界面就改 `app/src/ui.js`。
+
+**新增的文件**：
+- `app/src/boot.ts`（317 行）——替代 `game/server.py` 那一层。`loadDataFiles()` 用 `import.meta.glob("../../data/*.json", {eager:true})` 打三组（顶层 / `cards/` / `storylines/`），`结局.md` 走 `query:"?raw"`；导出唯一的 `call(path, body)`，内部按路径分派到 `payload/advance/choose/new/gallery/journal`，形状与 HTTP 版一致（失败返回 `{error}`）。
+- `app/src/ui.js`——`web/app.js` 的原样副本，只改两处：开头 `import { call } from "./boot.ts"`；`url(sprites/idol_${style}.png)` 改成 `url(idol_${style}.png)`（`publicDir` 直接指向 `web/sprites`，产物铺在站点根）。**故意留 .js**，不为过 strict typecheck 去动 800 行。
+- `app/src/main.ts`——一行 `import "./ui.js";`。
+- `vite.config.ts`——`root: web`、`publicDir: web/sprites`、`base: "./"`、`outDir: ../dist`。
+- `web/index.html` 只改一行：`<script src="app.js">` → `<script type="module" src="../app/src/main.ts">`。
+
+**存档与图鉴搬进 localStorage**：键 `ju-chang.save.v1` / `ju-chang.gallery.v1`。`dumpDoc/restoreDoc` 用 `JSON.stringify` 的 replacer/reviver 处理 `state.flags` 那个 `Set`（存成 `{__set:[...]}`），并把 `g.rng.getstate()` 一起存——**不存 rng 状态读档后就分叉了**。`restoreDoc` 先 `new Game(FILES, seed)`（构造函数会重铺序章）再用存档字段覆盖，最后 `g.rng.setstate()`。
+
+**踩过的三个坑**：
+1. **`PyRandom` 不收 null**：`freshGame(null)` 会炸。第一版 `newGame()` 先 `freshGame(null)` 再重掷 seed，导致两局状态错位（存档里的 seed 和实际在跑的那局不是一个）——改成先定 `SEED` 再 `freshGame(SEED)`。
+2. **`seed === ""` 的比较过不了 tsc**（TS2367，number 与 string 无重叠）。`boot.ts:252` 改成 `seed == null ? rollSeed() : Number(seed)`。
+3. **pnpm 11 的构建脚本审批**：只写 `pnpm-workspace.yaml` 的 `onlyBuiltDependencies` 压不住 `[ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild`，`pnpm install` 直接 exit 1。要跑 `pnpm approve-builds esbuild`，它会在 yaml 里写 `allowBuilds:\n  esbuild: true`。顺带加了 `verifyDepsBeforeRun: false` 和 `packages: ["."]`。
+
+**浏览器实测（`localhost:8780`，`http://127.0.0.1:8780/`，`python -m http.server 8780 --directory dist`）**：
+- 开局 → 取名（王道系 → 星奈）→ 立绘 `idol_sweet.png` 生效 → 版聊 → 事件卡 → act 六选一循环 → 第 1 周结算「卖出 16 张券，进账 1280 块；场租和分成 160 块」全对，控制台零报错。
+- 连点 130+ 屏跑完一整季，落到结局「后来」（恋爱线被撞破的提前结局，第 6 周），回响面板、`结局.md` 正文（1199 字）都正常。
+- 存档落盘验证：`ju-chang.save.v1` 13871 字节、`over:true`；刷新后**照样停在结局屏**（读档正确）。图鉴 `{"endings":{"后来":{"count":1,...}}}`。
+- 重开验证：点记事本里的「重开这一季」（`#quick-restart`，两段式）→ 回到第 1 周，**图鉴里的「后来」保留**。
+- 记事本验证：整季每周一行（`恋爱 · 第1拍` … `第5拍`），「影响结局的事」六条。
+
+**两个假问题，别再查**：
+1. `dsh_browser_state` 的文本预览会吃掉长文本开头的 `s`，看起来像 `{{ta}}` 没替换成 `staff`。**实际 DOM 是对的**（`dsh_browser_execute` 读 `#body p` 的 `textContent` 确认过）。
+2. `dsh_browser_do` 的 `#next` 常常报「target is not reachable: …not button 继续」，但**前一步其实已经生效**（`#next` 在选项屏是隐藏的）。判断方法：`dsh_browser_execute` 读 `#title`/`#options`，变了就是成功，别重试。
+
+**构建命令**（pnpm 的 exec 前会自动 install，所以别用 npm）：
+```powershell
+$node="C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe"
+$pnpm="C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\pnpm\bin\pnpm.mjs"
+cd 聚场; & $node $pnpm exec vite build     # 486KB / gzip 158KB
+```
+
+**下一步就是部署**：`dist/` 是纯静态，可以直接 `wrangler pages deploy dist` 或把 GitHub 仓库接进 Cloudflare Pages（构建命令 `pnpm build`、输出目录 `dist`）。仓库 `voidvainkk/ju-chang` 已推到 GitHub。
 
