@@ -1,5 +1,11 @@
 packages:
   - "."
+
+# esbuild 的 postinstall 要放行。pnpm 10 认 onlyBuiltDependencies，pnpm 11 改成了
+# allowBuilds；两个都写上，CI 上不管装到哪一版都不会因为它 exit 1。
+onlyBuiltDependencies:
+  - esbuild
 allowBuilds:
   esbuild: true
+
 verifyDepsBeforeRun: false
