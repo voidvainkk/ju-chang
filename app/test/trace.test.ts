@@ -133,12 +133,12 @@ function diff(path: string, a: any, b: any): string | null {
 // ---------------------------------------------------------------- 主流程
 
 const expectedPath = join(HERE, "trace_expected.json");
-let raw: string;
+let raw = "";
 try {
   raw = readFileSync(expectedPath, "utf8");
 } catch {
   console.error(`缺标准答案：${expectedPath}`);
-  console.error("先跑：python tools/trace_dump.py > app/test/trace_expected.json");
+  console.error("先跑：python tools/trace_dump.py app/test/trace_expected.json");
   process.exit(1);
 }
 const expected = JSON.parse(raw);

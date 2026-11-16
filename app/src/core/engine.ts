@@ -25,8 +25,6 @@ import { PyRandom } from "./rng.ts";
 import { weeklyBill } from "./bill.ts";
 import type {
   Card,
-  CastSpec,
-  ClueInfo,
   Delayed,
   LineStage,
   MemClue,
@@ -213,7 +211,7 @@ export function newState(
   world: World,
   _choice_id: string | null = null,
   name_style: string | null = null,
-  rng?: PyRandom,
+  _rng?: PyRandom,
 ): State {
   const intro = world.intro;
   const b = intro.base_state;
@@ -462,7 +460,7 @@ export function protagonist(s: State, world: World, rng: PyRandom): Ota | null {
   const pool = world.pool ?? {};
   const archs = pool.archetypes ?? [];
   if (!archs.length) return null;
-  const arch = rng.choice(archs);
+  const arch: any = rng.choice(archs);
   const gender = _genderFor(arch, rng);
   const used = new Set((s.ota ?? []).map((o) => o.name));
   let names: string[] = ((pool.name_pools ?? {})[gender] ?? []).filter((n: string) => !used.has(n));
@@ -597,8 +595,12 @@ export function cast(
 
 // ------------------------------------------------------------------ 效果应用
 
-/** 「这件事会不会被外人看见」：卡面上没写，但它是整个游戏的重量所在。 */
-const BOLD_AXES = ["开盒", "板子", "炎上"];
+/**
+ * 「这件事会不会被外人看见」：卡面上没写，但它是整个游戏的重量所在。
+ * Python 侧同样只定义未直接引用（判定走 `_seethe_cost` 里的显式分支），
+ * 这里是按原样搬的，导出以免 lint 误报。
+ */
+export const BOLD_AXES = ["开盒", "板子", "炎上"];
 
 /** 结局层要认的「这次是不是站到了台上」 */
 const STAGE_TYPES = [
@@ -2069,7 +2071,8 @@ export function baoshou(s: State, _true_talk: number): boolean {
   );
 }
 
-function _numOf(cond: Record<string, any>): number {
+/** 取条件字典里的第一个数值（Python 侧同样只定义未引用，按原样保留）。 */
+export function _numOf(cond: Record<string, any>): number {
   for (const v of Object.values(cond)) return Number(v);
   return 0.0;
 }
