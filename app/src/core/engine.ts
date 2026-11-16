@@ -56,17 +56,53 @@ const pyInt = (v: any): number => {
   return Number.isFinite(n) ? Math.trunc(n) : 0;
 };
 
-/** Python `round(x, nd)`（银行家舍入，够用的近似）。 */
-function pyRound(x: number, nd = 0): number {
-  const f = Math.pow(10, nd);
-  const scaled = x * f;
-  const t = Math.trunc(scaled);
-  const frac = scaled - t;
-  if (Math.abs(Math.abs(frac) - 0.5) < 1e-12) {
-    const even = t % 2 === 0 ? t : t + (scaled >= 0 ? 1 : -1);
-    return even / f;
+/**
+ * Python `round(x, nd)`。
+ *
+ * Python 的 round 对 float 是「按这个 double 的精确十进制值」做舍入、.5 向偶。
+ * 不能写成「先乘 10^nd 再用 Math.round」——`0.1949999999999999` 乘 100 会得到
+ * `19.49999999999999`，看似正好在 .5 上，其实真实值低于 .5，Python 给 0.19、
+ * 天真实现会给 0.20（这条错了整个 template 曲线差 0.01）。
+ * 也不能用容差判 .5：容差会把「差 1e-14 的不等」误判成「相等」。
+ * 这里把 double 拆成 尾数 × 2^指数 的精确有理数，再按 BigInt 做整数除法舍入。
+ */
+export function pyRound(x: number, nd = 0): number {
+  if (!Number.isFinite(x)) return x;
+  if (x === 0) return 0;
+  const sign = x < 0 ? -1 : 1;
+  const ax = Math.abs(x);
+
+  // IEEE754 double → m * 2^e（精确）
+  const buf = new DataView(new ArrayBuffer(8));
+  buf.setFloat64(0, ax);
+  const hi = buf.getUint32(0);
+  const lo = buf.getUint32(4);
+  const expBits = (hi >>> 20) & 0x7ff;
+  let m = (BigInt(hi & 0xfffff) << 32n) | BigInt(lo);
+  let e: number;
+  if (expBits === 0) {
+    e = -1074; // 次正规数
+  } else {
+    m |= 1n << 52n;
+    e = expBits - 1075;
   }
-  return Math.round(scaled) / f;
+
+  // 目标：round(m * 2^e * 10^nd)，.5 向偶
+  const ten = 10n ** BigInt(Math.max(0, nd));
+  let num = m * ten;
+  let den = 1n;
+  if (e >= 0) num <<= BigInt(e);
+  else den <<= BigInt(-e);
+  if (nd < 0) den *= 10n ** BigInt(-nd);
+
+  let q = num / den;
+  const r = num % den;
+  const twice = r * 2n;
+  if (twice > den) q += 1n;
+  else if (twice === den && q % 2n === 1n) q += 1n; // 真正的中点才向偶
+
+  // 除法本身是正确舍入的，所以这一步给出的就是离十进制值最近的那个 double
+  return sign * (Number(q) / Math.pow(10, nd));
 }
 
 /** 按码点排序（对应 Python `sorted()` 对文件名）。 */
@@ -1371,8 +1407,12 @@ function _gateOk(s: State, line: StoryLine, st: LineStage): boolean {
   return _enterValue(s, line, st) >= need;
 }
 
-/** 记住「她」是谁：重线每一拍都跟着同一个人走。 */
-function _rememberChaser(s: State, line: StoryLine, v?: any): void {
+/**
+ * 记住「她」是谁：重线每一拍都跟着同一个人走。
+ * 导出是因为 `loop.py` 直接调 `E._remember_chaser()`（L1745）——
+ * 谁在场由流程决定，不是引擎自己算的，所以这条得让外面能叫。
+ */
+export function _rememberChaser(s: State, line: StoryLine, v?: any): void {
   if (!(line._meta?.chaser_schema || v?.select_chaser)) return;
   if (!s._chaser && s.ota?.length) {
     let best = s.ota[0];

@@ -1,7 +1,7 @@
 # 《聚场》交接文件（HANDOFF）
 
 > 地下偶像模拟器·网页游戏。这份文件是**给下一个对话的入口**：读完它 + `DESIGN.md`，就能直接接着干，不用重新摸一遍。
-> 最后更新：**2026-11-16**（§6.17 完成 11-15 被叫停的直播改造收尾；§6.18 删「交易孤立」、修两个判定 bug，落地结局平衡第二轮 A（炎上倍率 2.5 / 残局炎上≥80 / 台上加舞台≥55），§6.18.2 落地真话系统（4 张真话卡、truth_rate、拆 recall_ok）+ 私联抽线修正 + 如影/空心/守住接线，§6.18.3 失控演出重制（认领文案 / 灯灭 / 纯黑收尾），§6.18.4 版聊改成真聊天记录（7 张聊卡、引用条、右上角 tag）+ 回考 tag；§6.18.5 结局回响 + 跨周目图鉴（16 条内核/玩法/模糊提示）；§6.18.6 移动端适配（640/380 断点、手机首屏收起数值面板、48px 触控、底栏 safe-area、图鉴整屏）；§6.18.7 二周目姿态 + 跨周目记忆（图鉴有结局才开、上一季回响、5 姿态、周 1 片段说明）；§6.18.8 记事本（每周底账 + 影响结局的事 + 两段式快速重开）；§6.18.9 结局「游戏之外」（作者话 + 博客链接，支持 URL 待填）；结局口径 **16 = 季末 10 + 提前 6**；§6.19 项目改名《聚场》+ 修复「控制不了」深色主题残留；§6.19.1 版聊 7 张卡全删待重写（卡库 128→121）；§6.19.2 版聊卡按「观众发消息→偶像回」重写 12 张，卡库 133；§6.19.3 按微博私信口语重写为 15 张（补嗓子/头发/妆花了），卡库 136；§6.19.4 恋爱线改成主线后每周必推进、确认拍补真吻、被撞破当场结季；§6.19.5 重线「我只是太爱你了」选完当场结季 + 私联越线后每周强推一拍；§6.19.6 收场拷问补线索（说过不足三条就让她重数一遍，保证每题都有出处）+ 新增《简介与攻略.md》；§6.19.7 周 1 导读「它们不是全部，是态度」从第 1 周开场挪到建完角色后的第一屏，避免占掉第 1 周的事件位；§6.19.8 UI 改成 C+A：日常行动 2×3 网格、像素小人、上台/结局深色追光）
+> 最后更新：**2026-11-16**（§6.17 完成 11-15 被叫停的直播改造收尾；§6.18 删「交易孤立」、修两个判定 bug，落地结局平衡第二轮 A（炎上倍率 2.5 / 残局炎上≥80 / 台上加舞台≥55），§6.18.2 落地真话系统（4 张真话卡、truth_rate、拆 recall_ok）+ 私联抽线修正 + 如影/空心/守住接线，§6.18.3 失控演出重制（认领文案 / 灯灭 / 纯黑收尾），§6.18.4 版聊改成真聊天记录（7 张聊卡、引用条、右上角 tag）+ 回考 tag；§6.18.5 结局回响 + 跨周目图鉴（16 条内核/玩法/模糊提示）；§6.18.6 移动端适配（640/380 断点、手机首屏收起数值面板、48px 触控、底栏 safe-area、图鉴整屏）；§6.18.7 二周目姿态 + 跨周目记忆（图鉴有结局才开、上一季回响、5 姿态、周 1 片段说明）；§6.18.8 记事本（每周底账 + 影响结局的事 + 两段式快速重开）；§6.18.9 结局「游戏之外」（作者话 + 博客链接，支持 URL 待填）；结局口径 **16 = 季末 10 + 提前 6**；§6.19 项目改名《聚场》+ 修复「控制不了」深色主题残留；§6.19.1 版聊 7 张卡全删待重写（卡库 128→121）；§6.19.2 版聊卡按「观众发消息→偶像回」重写 12 张，卡库 133；§6.19.3 按微博私信口语重写为 15 张（补嗓子/头发/妆花了），卡库 136；§6.19.4 恋爱线改成主线后每周必推进、确认拍补真吻、被撞破当场结季；§6.19.5 重线「我只是太爱你了」选完当场结季 + 私联越线后每周强推一拍；§6.19.6 收场拷问补线索（说过不足三条就让她重数一遍，保证每题都有出处）+ 新增《简介与攻略.md》；§6.19.7 周 1 导读「它们不是全部，是态度」从第 1 周开场挪到建完角色后的第一屏，避免占掉第 1 周的事件位；§6.19.8 UI 改成 C+A：日常行动 2×3 网格、像素小人、上台/结局深色追光；**§6.20 TS 移植：`engine.ts` + `loop.ts` 与 Python 逐屏对账全部通过（85115 项），剩前端接入 + 上 Cloudflare Pages**）
 
 ---
 
@@ -95,7 +95,8 @@ Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'server\.py
 - `game/loop.py`——**界面流程引擎（核心，见 §4）**。`Game` 类持有 `state/queue/pending/wk/...`，`current()` 取队首，`advance()` 弹屏，`after_step()` 唯一推进器，`step_week()` 唯一排序器。
 - `game/policy.py`——测试打法：Random/Greedy/Reckless/Flirty/Hollow。**别写「钱不够就打工」这类保底动作**（券账制下基本不缺钱，写了稀释打法）。
 - `game/server.py`——HTTP 服务 + **自动存档**（见 §1、§6.1）。
-- `web/index.html` / `app.js` / `style.css`——原生前端。
+- `web/index.html` / `app.js` / `style.css`——原生前端（**仍是旧版，打 `/api/*` 跟 Python 服务说话**；TS 版引擎在 `app/src/core/`，前端还没接上，见 §6.20）。
+- `app/src/core/`——**TS 版引擎**（`engine.ts` / `loop.ts` / `bill.ts` / `rng.ts` / `types.ts`），与 Python 侧逐屏对账全对，准备上 Cloudflare Pages。`app/test/` 是三个对账测试，`tools/trace_dump.py` / `tools/loop_trace.py` 是 Python 侧录标准答案的脚本。
 
 ### 工具 `tools/`（内容构建/校验/诊断脚本，非游戏代码，全部保留以便复现）
 - **`validate_all.py`——改完任何数据必跑**。八组全 0：JSON 合法 / 第一人称 POV 无「你」（剥离 `『』「」""''“”` 后查 narrative + 变体标题 + 选项 label/desc）/ 纯赚（带 `rq_pick` 的正确项豁免）/ 写死种子名 / literal key / `learns` key 必须在任一剧情线 `memory_key` 池 / ota_memory 线索池九项 / 回考卡组结构（`RECALL PROBLEMS`：`rq_stage` 合法、每张「她说」全选项带 `rq_lock` 且恰好一个 `rq_drop` 且有延迟惩罚、每张「她问」恰好 3 个 `rq_pick` 且只有一个 `choice=="true"`、`max_clues_per_run` 整数）。`KNOWN_MEM` 同时读顶层与 `_meta.memory_key`；`UNKNOWN_LEARN` 按所有剧情线 key 并集识别。
@@ -618,7 +619,7 @@ if got & {"cut_early", "deleted_ta"}:
 2. ~~**周日券经济副作用**（§6.4）：收入多五成，是否压周日券价或分成，待用户定。~~ —— **2026-11-15 用户拍板：不用管，「钱多点挺好的」**，保持不变，以后不再提。
 3. **结局平衡**（§7.3，2026-11-16 做了三轮，**整体仍未收口**）：见 §6.18——删不可达「交易孤立」、修 `check_cond` bool 短路、劣加 `money_kept`；第二轮 A 把炎上倍率降到 2.5、残局门槛抬到炎上≥80、台上加舞台≥55；第三轮（§6.18.2）做真话卡+真话率、拆 `true_talk/recall_ok`、压重线抽线、如影（开盒≥80 且私联≥第2拍）/空心（真话率<40%）/守住（真话率≥50% 且门槛放宽）接线。改后随机 20 种子：残局 55 / 劣 40 / 散场 36 / 如影 26 / 执念 24，空心上到 7、守住在档案里出现。**待定**：① 台上/彗星触发率是否继续追（用户已说不追）；② 如影随机 13% 是否偏多 —— **用户 m02807 拍板：不抬门槛，保持开盒≥80 且私联≥第2拍（2026-11-16 收口）**；③ enjou 每周 8% 衰减没动；④ 营业线专属结局位空着，用户已明确不补。教训：**先收口、别硬压触发率，等玩家真玩一轮再定**。
 4. **回考两拍在界面上的展示**（§6.10 已把「说/问」打通、选项会重排）：现在一季能锁到 3~5 条线索、收场能出满 3 题。**仍未做**的是让玩家在界面上看得出来「这是回考」——目前靠 `compact` 与「（她问的是哪一样。）」这句提示。**2026-11-16（§6.18.4）已加**：`rq_stage == "ask"` 的卡在 step 带 `recall: true`，右上角挂红色「回考」tag；`say` 卡（第一次听说）不挂。
-5. **长期**：~~版聊点对点引用回复模板~~（§6.18.4 已做成真聊天记录 + 引用条）、~~回响结算~~（§6.18.5 已有结局屏「这一季的回响」+ 跨周目图鉴，尚未做跨周目「姿态/记忆」）、二周目「姿态」、欠租/打工冲突的界面提示文案、前端重写为 Vite+React+TS 并上 Cloudflare Pages。
+5. **长期**：~~版聊点对点引用回复模板~~（§6.18.4 已做成真聊天记录 + 引用条）、~~回响结算~~（§6.18.5 已有结局屏「这一季的回响」+ 跨周目图鉴，尚未做跨周目「姿态/记忆」）、二周目「姿态」、欠租/打工冲突的界面提示文案、**~~引擎翻成 TS~~（§6.20 已完成 engine.ts + loop.ts，85115 项逐屏对账全对）**、**剩下：前端接 TS 引擎 → 上 Cloudflare Pages**。
 6. **已明确不做**：OTA 个人线（功能与记忆回考重复）、OTA 原型卡（用户「算了吧，不写了，以后再想到新卡叫你」）——**别主动写新卡，等他点名**。
 7. ~~**⚠️ 私联线终局拷问疑似没接进运行时**~~ —— **已于 §6.10 修完**（`_line_tick` 跨周误判 + `finale` 接入 loop + 复用回考系统）。剩余小尾巴：`storyline_shiren.json` 里 `finale.gate` 的文本仍写「周 = 6」，实际走的是 `engine.FINALE_WEEK(s) = weeks_total`，文本是说明性的、不影响运行，但要改文案时记得同步。
 
@@ -748,3 +749,39 @@ $env:PYTHONIOENCODING="utf-8"
 - 顺手修：`game/server.py:_load_game()` 读档时原来只恢复 `state`，没把 `state["name"]/name_style` 补回 `Game.name`，导致每次重启后快照 `name=null`（像素小人被误判为没取名而隐藏，部分文案也可能拿不到名字）。现在读档后补回；重启后 `/api/state` 里 `name` 是小糖，小人正常显示。
 - 验证：`node --check web/app.js` 过；浏览器实测日常屏 `display:grid`、两列各 333.5px（720 宽）、按钮 88px、六个短标签正确；模拟 live 屏 body 变 `live-stage`（背景 rgb(5,13,16)、文字 rgb(232,255,249)、按钮 rgb(8,24,26)/边框 rgb(38,86,79)），模拟普通结局变 `ending-stage` 深色，模拟「控制不了」变 `collapse-end` 且 `#idol` 隐藏；`py_compile` 过、`validate_all` 八组 0（136 卡）、`_smoke_loop` 3/3（252/178/268）。
 - 现状：服务 `pwsh-d0996756c1a441df` 在 8765 运行，读回玩家第 1 周存档（名字小糖），头像正常；旧存档队列里仍是旧标签，靠前端映射显示短名，新生成步骤走引擎里的新 label。
+
+## 6.20 TS 移植（上云前置）：engine + loop 全部对账通过（2026-11-16）
+
+**为什么做**：A 方案拍板（用户 m01202「A吧」/ m01488 问我选哪条 / m01491「那你搬吧 随时写handoff」）——把 `game/*.py` 翻成 TypeScript，让整个游戏变成纯静态站，直接上 Cloudflare Pages，零服务端成本。Pyodide 实测能原样跑 Python（加载 2946ms / 13MB WASM / Python 3.12.7），但主游玩场景是手机、jsdelivr 从国内不稳，所以 Python 侧只留下当**对账标准答案**，不进玩家浏览器。
+
+**现在的状态：引擎与流程两层都对通了，还剩前端接入 + 部署。**
+
+三个对账测试，都要用捆绑 node（`C:\Users\kk\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe`）：
+
+```powershell
+cd 聚场
+& $node --experimental-strip-types app\test\rng.test.ts    # ✓ 84 项（6 个种子）
+& $node --experimental-strip-types app\test\trace.test.ts  # ✓ 9369 项（4 种子 × 8 周）
+& $node --experimental-strip-types app\test\loop.test.ts   # ✓ 85115 项（4 种子、938 屏）
+& $node $pnpm exec tsc --noEmit                            # exit 0
+```
+
+**已落地的文件**：
+- `app/src/core/rng.ts`（278 行）——CPython `random.Random` 的 MT19937 精确移植（`getrandbits` 按 CPython 位拼法、`sample` 的 `setsize=21` 双路径、`choices` 无权重走 `floor(random()*n)`）。`app/test/rng_expected.json` 是 Python 侧生成的 6 种子参考值。
+- `app/src/core/engine.ts`（约 2170 行）——`game/engine.py` 全量移植，函数改 camelCase。数据层从「读盘」改成 `loadFiles(files)` / `loadWorld(files?)`，`RawFiles` 是 `相对路径 -> JSON`，浏览器 fetch 与测试 readFileSync 都能喂。
+- `app/src/core/bill.ts`（78 行）/ `types.ts`（176 行）。
+- `app/src/core/loop.ts`（约 2320 行）——`game/loop.py` 的 `Game` 类全量移植（70 个方法、4600 字文案）。
+- `tools/trace_dump.py`（每周状态）/ `tools/loop_trace.py`（**逐屏**）——两个 Python 侧录标准答案的脚本，产出 `app/test/trace_expected.json`（145070 bytes）/ `loop_expected.json`（1229314 bytes）。
+
+**这轮踩过、以后别再踩的四个坑**：
+1. **PowerShell 的 `>` 重定向写出来是 UTF-16LE**，Node `JSON.parse` 直接报 `Unexpected token '�'`。两个 dump 脚本都改成收 `sys.argv[1]` 路径参数、`open(..., encoding="utf-8", newline="\n")` 自己写文件。所有「Python 生成 JSON 给 TS 读」的场合都照这个来。
+2. **`for` 循环与手写 `i += 1` 叠加**：对账脚本的按钮下标是「屏幕序号 + 1」（`_choose(g, cur, n)` 前先 `n += 1`），测试侧写成 `i += 1; choose(g, cur, i)` 会被 `for` 的 `i++` 再叠一次、隔屏跳过。
+3. **Python 的空 dict 是 falsy，JS 的 `{}` 是真值**。`E.cast()` 在卡没声明 `casting` 时返回 `{}`，`if (!slots)` 就漏掉了「把卡声明的每个槽都指给今天留下来的人」那段 fallback，特典回执的 `face` 会从人名掉成场所名（`第零排` → `散场以后`）。`loop.ts` 里专门加了 `emptySlots()`。
+4. **`round(x, n)` 不能用「乘 10^n 再 Math.round」**。`0.1949999999999999 * 100 = 19.49999999999999` 看着像正好 `.5`，用容差判 `.5` 会误判成中点、按银行家舍入推成 `0.20`，Python 给 `0.19` —— 整个 `template` 曲线就差 0.01。`engine.ts` 的 `pyRound()` 改成把 double 拆成「尾数 × 2^指数」的精确有理数、用 BigInt 做整数除法舍入，`loop.ts` 直接复用它（别两边各写一份）。
+
+**前端那层还全是旧的**：`web/app.js`（806 行）/ `style.css`（790 行）/ `index.html`（89 行）现在仍然打 `/api/*` 跟 Python 服务说话。下一步是让它改吃 `loop.ts` 的 `Game`，把 `/api/state|advance|choose|new` 四个调用换成本地方法；`web/sprites/idol_*.png`（四套 × 六表情，384×80）已经就位，直接能复用。
+
+**还没做的**：① 前端接 TS 引擎；② `vite build` + Cloudflare Pages 部署；③ 存档从 `game/_save.json` 改成 localStorage；④ `game/policy.py` 不移植（只 `auto_play` 用，且那段是死代码）。
+
+**还没进 git 的**（下次先 commit）：`app/src/core/loop.ts`、`app/test/loop.test.ts`、`app/test/loop_expected.json`、`tools/loop_trace.py`，以及 `app/src/core/engine.ts` 里 `pyRound` 的改动。
+
