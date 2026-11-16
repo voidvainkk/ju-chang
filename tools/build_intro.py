@@ -1,0 +1,79 @@
+# -*- coding: utf-8 -*-
+"""生成序章数据 data/intro.json，并把开场三选一的初值写进 economy_sandbox 的验证。
+序章是本项目的开场背景故事：团名二十二点三十分、我进团半年补上 C 位、原先的团散了。
+三个开场选项几乎不动总资源，只是「我这季打算怎么活」的第一次表态。
+唯一出口：init_for(choice) 返回该选择对应的初值覆盖，供沙盒/引擎共用。
+"""
+import json, os
+
+BASE = r"C:\Users\kk\Documents\deepseek-harness\default-workspace\聚场\data"
+OUT = os.path.join(BASE, "intro.json")
+
+# 三选一：key -> (label, desc, 数值覆盖, note)
+CHOICES = [
+    ("intro_dance", "跳好一点。",
+     "把这几周的空档换成排练，上台的时候不能让人看出我是补上来的",
+     {"dance": 45, "psyche": 66, "fame": 5},
+     "我在台下站了一会儿才上台。那时候我想的是，至少今晚别跳错。"),
+    ("intro_people", "有人来。",
+     "给几个老常连发消息问来不来，哪怕只看一场",
+     {"dance": 42, "fame": 12, "money": -100},
+     "发完那三条消息，我盯着屏幕看了一会儿，才把手机塞回包里。"),
+    ("intro_over", "早点结束。",
+     "今晚就当是交作业，跳完就回家，没人记得也没关系",
+     {"psyche": 73, "dance": 38, "stamina": 100},
+     "我把所有动作在脑子里过了一遍，过完就决定不想了。"),
+]
+
+BASE_STATE = {
+    "money": 1700, "stamina": 100, "psyche": 66, "fame": 12,
+    "dance": 45, "sing": 40, "mc": 35,
+    "relation": [50, 50, 50],
+    "ota": [50, 50, 50, 50, 50],
+}
+
+TEXT = [
+    "团名是运营起的。他说地下场地都在末班车以后才热闹，二十二点三十分好记，念起来像个航班号。后来粉丝把它缩成了「二十两点半」，再后来缩成「两点半」。超话的地址还是上一任建的，到现在没改，也没人提过要改。",
+    "上一任是 C 位，去年年底退了，没说原因，我们也不问。我原来那个团是今年三月散的，商量了两回，散得体面，就是没钱了。运营找到我的那天晚上，我刚把最后一件衣服从排练室的柜子里拿出来。他说第二天就要上台，缺一个人。",
+    "于是我第二天就站在了那个位置上。站位是地上用胶带贴的，踩得起了毛。我练了三遍走位就上去了，台上只记得灯，人一个也看不清。",
+    "到现在进团半年。早上六点半去便利店上早班，四点下班，五点半排练，周末跳一场。房租六百，排练两百，交通一百。零点以后上网，那是一天里唯一安静的时候。",
+    "这半年我最大的变化，是学会了一件事：怎么在一个我很累的晚上，说出让人听不出来的话。",
+    "可有些晚上我坐下来，看着那几条「姐今天辛苦了」，会觉得这半年真正跟我说话的人，好像没有几个。",
+]
+
+BEFORE_QUOTE = "化妆间的镜子上还有上一场留下的胶痕，外面有人在调音响，一遍一遍地试低音。我站在镜子前，看着镜子里那个人。今晚是第一场。"
+AFTER_QUOTE = [
+    "灯亮起来，前面几排是黑的。我数拍子，数到第四遍的时候发现不用数了。",
+    "副歌的间隙我往台下看了一眼，看不清谁的脸，只看见有几只手举着。",
+]
+
+doc = {
+    "_meta": {
+        "kind": "intro",
+        "id": "intro",
+        "name": "序章",
+        "design_note": "开场约一分钟：团名来历 / 补上 C 位 / 进团半年 / 第一场前的三选一。三选一几乎不改变总资源，只决定开局的心理、体力、人气、舞。base_state 已是『选完之后』的状态（按 intro_people 结算）；choice.effect 是相对通用初值(money1800/stamina100/psyche70/fame5/dance40)的增量，用来核对三条路线各自的收尾，不要在 base_state 上再叠一次。",
+        "schema": "choice.effect = 相对通用初值的 delta；base_state = 选完之后的实际开局值",
+    },
+    "group": {
+        "name": "二十二点三十分",
+        "nickname": ["二十两点半", "两点半"],
+        "c_position": True,
+        "history": "原 C 位去年年底退了没说原因；我今年三月原来的团散了，进这个团半年。",
+    },
+    "text": TEXT,
+    "before_quote": BEFORE_QUOTE,
+    "after_quote": AFTER_QUOTE,
+    "base_state": BASE_STATE,
+    "choices": [
+        {"id": cid, "label": lab, "desc": d, "effect": eff, "after": aft}
+        for cid, lab, d, eff, aft in CHOICES
+    ],
+}
+
+os.makedirs(BASE, exist_ok=True)
+with open(OUT, "w", encoding="utf-8") as f:
+    json.dump(doc, f, ensure_ascii=False, indent=2)
+    f.write("\n")
+print("WROTE", OUT)
+print("text paras:", len(TEXT), "choices:", [c[0] for c in CHOICES])

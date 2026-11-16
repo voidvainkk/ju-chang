@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+"""生成地偶艺名库 data/idol_names.json。
+用户 m02689 选「短艺名」：柚子、小七、Miu 这一路，不是网名。
+结构：styles[] = {id, name, desc, names:[...]}，每个风格 10 个名字，够玩家挑也够后续孵化复用。
+命名规则（写文案时照这个来）：
+  - 汉字两字最稳（柚子 / 小鹿 / 阿桃），三字要读得顺（麻薯饼 / 小满）；不要四字。
+  - 英文/罗马音只用短音（Miu / Yui / Nana / Chloe 这种），不写长单词。
+  - 不出现真实在役偶像的名字，也不要用「小明」「小红」这类太过日常的。
+  - 风格是「她给自己起的名字」，不是粉丝给的；所以带一点自我想象的成分是正常的。
+"""
+import json, os
+
+OUT = r"C:\Users\kk\Documents\deepseek-harness\default-workspace\聚场\data\idol_names.json"
+
+STYLES = [
+    {
+        "id": "sweet",
+        "name": "王道系",
+        "desc": "元气流行，kirakira 的彩虹感，台下看一眼心就化了。名字要亮、要好喊，喊出来全场能跟上。",
+        "names": ["花音", "柚子", "桃桃", "小葵", "日向", "泡泡", "可儿", "星奈", "闪闪", "小莓"],
+    },
+    {
+        "id": "cool",
+        "name": "摇滚系",
+        "desc": "电子摇滚、流行朋克，皮革和铆钉，动作是力量型。名字短、硬，不解释自己。",
+        "names": ["凛", "阿澈", "霜", "十一", "Neon", "黑仔", "铁", "豹", "裂", "阿噪"],
+    },
+    {
+        "id": "night",
+        "name": "和风系",
+        "desc": "日式和风或国风民乐，古典身韵，扇子一开全场安静。名字要有旧时的味道。",
+        "names": ["月见", "千鹤", "小雏", "阿枫", "白雪", "时雨", "宵", "阿菊", "绫", "青岚"],
+    },
+    {
+        "id": "odd",
+        "name": "地雷系",
+        "desc": "可爱和阴郁同时挂在她身上，黑粉配色、蕾丝、十字架。名字甜得让人心里发毛。",
+        "names": ["小夜", "黑桃", "糖衣", "阿眠", "Meme", "月食", "阿病", "莉莉丝", "碎", "苦艾"],
+    },
+]
+
+doc = {
+    "_meta": {
+        "kind": "idol_names",
+        "version": 2,
+        "design_note": "主角是偶像本人，名字是艺名（不是 OTA 的网名）。用户 2026-11-14 选「短艺名」：两个字的汉字或短音英文。取名流程：选风格 → 从该风格出 3 个候选 → 选一个，或自己输入（自己输入也算这个风格）。2026-11-16 v2：风格改成国内地偶实际分类（王道/摇滚/和风/地雷），删掉原「素淡系」；id 仍是 sweet/cool/night/odd 以免存档失效。",
+        "rules": [
+            "汉字两字最稳，三字要读得顺，不要四字",
+            "英文/罗马音只用短音，不写长单词",
+            "不出现真实在役偶像的名字",
+            "不用「小明」「小红」这类日常到不像艺名的",
+            "名字是她自己起的，可以带自我想象的成分",
+        ],
+        "flow": ["choose_style", "roll_3_candidates", "pick_or_type"],
+    },
+    "styles": STYLES,
+}
+
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+with open(OUT, "w", encoding="utf-8") as f:
+    json.dump(doc, f, ensure_ascii=False, indent=2)
+    f.write("\n")
+print("WROTE", OUT)
+print("styles:", [s["id"] for s in STYLES], "names each:", [len(s["names"]) for s in STYLES])

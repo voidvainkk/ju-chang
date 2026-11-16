@@ -1,0 +1,1068 @@
+{
+  "_meta": {
+    "kind": "storyline",
+    "id": "romance",
+    "name": "队友恋爱线",
+    "category": "线性剧情线",
+    "partner_default": "阿棠",
+    "design_note": "队友恋爱线是一条『主动线』：玩家不主动回应阿棠的靠近，这条线根本不会开。门槛 = 阿棠关系 ≥ 60 且 周 ≥ 3（她才会主动靠近）；进拍后怎么回应，才决定线开不开。五拍=心动→靠近→越界→确认→收场，每拍 3 个剧情变体随机上 1，由 heart（心动值）驱动推进，冷淡则卡住。对象 v1 固定为阿棠——团里唯一『知道我真面』的人，从『只有她看得见真的我』长成恋爱最自然。骨架通用：文案用 partner 占位（伙伴名字）、partner.ta 占位（他/她），二周目可复用同一套骨架给露露/小满（各自关系≥60）。整条线没有终局拷问、不交记忆点：每个选择只写 flag、推进数值，把结论交给结局系统判定。收场四分歧：秘密在一起(romance_secret) / 公开(romance_public) / 为团放手(romance_giveup) / 一起离开(romance_leaving)。其中『秘密在一起』额外写 romance_truly_loved，把真实认知拨到『真』——被爱的是真的我。",
+    "resource_keys": {
+      "money": "钱",
+      "stamina": "体力",
+      "psyche": "心理",
+      "fame": "人气",
+      "stage": "舞台稳定",
+      "ota_all": "全体OTA黏性",
+      "relation_A": "阿棠",
+      "relation_B": "露露",
+      "relation_C": "小满",
+      "relation_all": "团内关系整体",
+      "shiren": "私联人数",
+      "enjou": "炎上",
+      "kaibox": "开盒风险",
+      "shiroi": "私生跟踪",
+      "banzi": "板子关注度"
+    },
+    "partner_schema": "进入拍0时选定 partner：默认 relation_A 阿棠（当前版本唯一满足『知道我真面』的队友，关系≥60 且 周≥3）。骨架通用，二周目可换露露/小满（各自关系≥60）。沿用其既有名字，不新建。文案用 {{partner}} 显示名字、{{partner.ta}} 显示 他/她。",
+    "schema": "stages[i] = {stage:int, key, title, gate, enter_heart, variants[3]}；variant = {id, title, narrative, options[2-4]}；option = {id, label, desc, immediate:{res:delta}, advance:int(心动增量), flags:[...], delayed:[{when,condition?,effect,note}], note?}。无 learns 字段（恋爱线不交记忆点、无拷问）。"
+  },
+  "stages": [
+    {
+      "stage": 0,
+      "key": "flutter",
+      "title": "心动",
+      "gate": "阿棠关系 ≥ 60 且 周 ≥ 3（她会主动靠近；但线开不开，看这一拍怎么回应）",
+      "enter_heart": 0,
+      "partner_select": true,
+      "note": "这一拍玩家只是『被看见』——阿棠是团里唯一不吃我那套营业脸的人。所有选项都不会让线结束，但只有『接住』才会真正开线。",
+      "variants": [
+        {
+          "id": "flutter_late_practice",
+          "title": "只剩一盏灯还亮着",
+          "narrative": "排练室只剩一盏灯还亮着。我对着镜子抠同一个转身，第八遍还是差半拍。阿棠没走，靠在把杆上看我，看了很久，忽然出声：『你从进门就不对劲。别拿那副营业脸对着我。』镜子里的我愣了一下，那层笑自己塌了下去。",
+          "options": [
+            {
+              "id": "fa_open",
+              "label": "卸下来，承认今天确实撑不住",
+              "desc": "把真面目给她看",
+              "immediate": {
+                "psyche": 8,
+                "relation_A": 6,
+                "stamina": -4
+              },
+              "advance": 1,
+              "flags": [
+                "romance_started"
+              ],
+              "delayed": [],
+              "note": "我说完，她没安慰我，只把一瓶水塞过来：『早说啊。』"
+            },
+            {
+              "id": "fa_deflect",
+              "label": "笑着说没事，继续练",
+              "desc": "把笑重新挂回脸上",
+              "immediate": {
+                "psyche": -4,
+                "relation_A": 1
+              },
+              "advance": 0,
+              "flags": [
+                "kept_wall"
+              ],
+              "delayed": [],
+              "note": "她看了我一眼，没再问，可那眼神让我有点心虚"
+            },
+            {
+              "id": "fa_joke",
+              "label": "反问她怎么什么都看得出来",
+              "desc": "用玩笑把话绕回去",
+              "immediate": {
+                "relation_A": 3,
+                "psyche": 2,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_started",
+                "she_sees_me"
+              ],
+              "delayed": [],
+              "note": "她哼了一声：『因为你演给别人看的那套，对我没用。』"
+            }
+          ]
+        },
+        {
+          "id": "flutter_shield_scold",
+          "title": "她替我把话接过去",
+          "narrative": "运营把我叫到走廊，说我这场 interact 太冷、得罪了老粉，越说越难听。我低着头数地砖的缝。阿棠不知什么时候过来，往我旁边一站，把话接过：『她这场嗓子发炎还硬撑到结束，数据我盯的，问题在我没配合好。』运营嘟囔两句走了。走廊里只剩我们俩，她侧过脸小声说：『下次被这么说，别一个人扛。』",
+          "options": [
+            {
+              "id": "fb_lean",
+              "label": "靠过去，说一句谢谢",
+              "desc": "肩膀轻轻碰一下她的肩膀",
+              "immediate": {
+                "psyche": 7,
+                "relation_A": 5,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_started"
+              ],
+              "delayed": [],
+              "note": "两个人都没躲开，那一下很轻，却记了很久"
+            },
+            {
+              "id": "fb_proud",
+              "label": "嘴硬说我自己能应付",
+              "desc": "不想被当成需要护着的人",
+              "immediate": {
+                "relation_A": -2,
+                "psyche": -3
+              },
+              "advance": 0,
+              "flags": [
+                "pushed_away"
+              ],
+              "delayed": [],
+              "note": "她挑眉看了我一眼：『行，你行。』转身走了"
+            },
+            {
+              "id": "fb_ask",
+              "label": "问她为什么帮我",
+              "desc": "把心里的疑问问出来",
+              "immediate": {
+                "relation_A": 3,
+                "psyche": 3,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_started",
+                "she_sees_me"
+              ],
+              "delayed": [],
+              "note": "她想了想：『因为你撑的时候，只有我知道你其实快撑不住了。』"
+            }
+          ]
+        },
+        {
+          "id": "flutter_late_text",
+          "title": "凌晨的一条消息",
+          "narrative": "凌晨，手机屏亮了一下。阿棠发来一句：『你今天笑得很假。』我盯着那行字，删了又打，打了又删。过了会儿她又发：『不想说就不说。但你不用在我这儿也演。』房间很安静，我能听见自己心跳。",
+          "options": [
+            {
+              "id": "fc_reply_true",
+              "label": "回她：其实今天特别想找个地方哭",
+              "desc": "把最软的那面交出去",
+              "immediate": {
+                "psyche": 9,
+                "relation_A": 4,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_started"
+              ],
+              "delayed": [],
+              "note": "她秒回：『电话给我，我陪你待着。』"
+            },
+            {
+              "id": "fc_reply_joke",
+              "label": "回个表情包糊弄过去",
+              "desc": "不想在深夜示弱",
+              "immediate": {
+                "psyche": -2,
+                "relation_A": -1
+              },
+              "advance": 0,
+              "flags": [
+                "kept_wall"
+              ],
+              "delayed": [],
+              "note": "她回了个句号，之后再没说话"
+            },
+            {
+              "id": "fc_reply_voice",
+              "label": "直接打语音过去",
+              "desc": "不想打字，想听声音",
+              "immediate": {
+                "psyche": 6,
+                "relation_A": 5,
+                "stamina": -5
+              },
+              "advance": 1,
+              "flags": [
+                "romance_started"
+              ],
+              "delayed": [],
+              "note": "她接得很快，背景里有窗外的车声，我们谁都没先挂"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "key": "closer",
+      "title": "靠近",
+      "gate": "心动 ≥ 1",
+      "enter_heart": 1,
+      "variants": [
+        {
+          "id": "closer_store",
+          "title": "便利店的微波炉",
+          "narrative": "散场快十一点，我们拐进街角便利店。阿棠把两个饭团丢进微波炉，又顺手拿了盒我上次随口说好吃的布丁。『你怎么知道我爱吃这个。』『你上次盯着它看了三秒。』她背对着我说，语气平平的。微波炉嗡嗡转，我忽然觉得，被人记住这么小的事，比被一百个人追捧都实在。",
+          "options": [
+            {
+              "id": "ca_share",
+              "label": "把自己那份掰一半给她",
+              "desc": "用最笨的方式回应这份记得",
+              "immediate": {
+                "psyche": 6,
+                "relation_A": 4,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_closer"
+              ],
+              "delayed": [],
+              "note": "她愣了一下，还是接了，咬一口说『难吃』，嘴角却翘着"
+            },
+            {
+              "id": "ca_grab",
+              "label": "抢她的布丁闹着吃",
+              "desc": "把气氛闹得更近一点",
+              "immediate": {
+                "relation_A": 3,
+                "psyche": 4,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_closer"
+              ],
+              "delayed": [],
+              "note": "她追着我绕了两圈货架，店员瞪我们"
+            },
+            {
+              "id": "ca_quiet",
+              "label": "心里暖暖的，但什么都没说",
+              "desc": "把这份暖咽回去",
+              "immediate": {
+                "psyche": 3,
+                "relation_A": -1
+              },
+              "advance": 0,
+              "flags": [],
+              "delayed": [],
+              "note": "回去的路上我有点后悔，那句话到底没说出口"
+            }
+          ]
+        },
+        {
+          "id": "closer_bike",
+          "title": "电动车后座",
+          "narrative": "阿棠推出她那辆旧电动车，拍了拍后座。『上来，顺路。』我坐上去，风把她的头发吹到我脸上。过一个减速带时车子颠了一下，我下意识扶住她的腰，她僵了一瞬，又装作没事：『坐稳。』路灯一盏一盏往后退，我攥着她外套的下摆，没敢松开。",
+          "options": [
+            {
+              "id": "cb_hold",
+              "label": "就那样抱着，不解释",
+              "desc": "让这个瞬间再长一点",
+              "immediate": {
+                "psyche": 7,
+                "relation_A": 4,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_closer"
+              ],
+              "delayed": [],
+              "note": "到楼下她没回头，只说了句『明天见』，声音有点哑"
+            },
+            {
+              "id": "cb_letgo",
+              "label": "赶紧松开，说声抱歉",
+              "desc": "怕被误会，先退一步",
+              "immediate": {
+                "psyche": -2,
+                "relation_A": -1
+              },
+              "advance": 0,
+              "flags": [],
+              "delayed": [],
+              "note": "她『嗯』了一声，那之后一路都没说话"
+            },
+            {
+              "id": "cb_tease",
+              "label": "笑她车技，缓和气氛",
+              "desc": "用玩笑掩住心跳",
+              "immediate": {
+                "relation_A": 2,
+                "psyche": 3,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_closer"
+              ],
+              "delayed": [],
+              "note": "她嘴上骂我，耳朵却红了"
+            }
+          ]
+        },
+        {
+          "id": "closer_past",
+          "title": "天台上的过去",
+          "narrative": "排练完我们没急着走，坐在天台台阶上吹风。阿棠说她以前在另一个团，撑了两年，最后还是散了。『那时候没人告诉我，累可以说累。』她顿了顿，转头看我，『所以我不想你也这样。』风很大，我看不清她的表情，只听见自己的声音有点抖：『那你现在……累不累？』",
+          "options": [
+            {
+              "id": "cc_listen",
+              "label": "认真听她说，也说说自己",
+              "desc": "把各自的过去摊开一点",
+              "immediate": {
+                "psyche": 8,
+                "relation_A": 5,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_closer",
+                "shared_past"
+              ],
+              "delayed": [],
+              "note": "我们一直坐到楼下关灯，谁都没提回去"
+            },
+            {
+              "id": "cc_change",
+              "label": "把话题岔开，不擅长这些",
+              "desc": "不太敢碰这么重的东西",
+              "immediate": {
+                "psyche": -3,
+                "relation_A": -2
+              },
+              "advance": 0,
+              "flags": [],
+              "delayed": [],
+              "note": "她笑了笑，说『算了』，那笑里有点落空"
+            },
+            {
+              "id": "cc_promise",
+              "label": "说以后累了第一个告诉她",
+              "desc": "给她一个可以靠的承诺",
+              "immediate": {
+                "psyche": 4,
+                "relation_A": 4,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_closer"
+              ],
+              "delayed": [],
+              "note": "她盯着我看了很久，才轻轻『嗯』了一声"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "key": "cross",
+      "title": "越界",
+      "gate": "心动 ≥ 2",
+      "enter_heart": 2,
+      "note": "这一拍是『差一点被看见』——团里、粉丝眼皮底下，越界动作开始有代价。",
+      "variants": [
+        {
+          "id": "cross_almost_caught",
+          "title": "帘子后面的呼吸",
+          "narrative": "后台堆满纸箱的角落，只有一束从门缝漏进来的光。阿棠替我把演出服背后的拉链拉上，指尖在我后背停了一下。我转过身，离得近到能看清她睫毛。就在这时候，门外传来露露的声音：『阿棠？你在里面吗——』我们俩同时屏住呼吸。",
+          "options": [
+            {
+              "id": "xa_hide",
+              "label": "一把拉她躲进帘子后面",
+              "desc": "赌一把，别被发现",
+              "immediate": {
+                "psyche": 6,
+                "relation_A": 4,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_risk",
+                "close_call"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "relation_B": -6
+                  },
+                  "note": "露露虽然走了，但眼神里的怀疑没散，之后处处盯着我们",
+                  "condition": "露露起疑"
+                }
+              ],
+              "note": "帘子很窄，我能听见她心跳，和门外越来越近的脚步声"
+            },
+            {
+              "id": "xa_stepout",
+              "label": "主动开门，若无其事应一声",
+              "desc": "先把场面圆过去",
+              "immediate": {
+                "relation_A": -2,
+                "psyche": -3,
+                "relation_B": 2
+              },
+              "advance": 0,
+              "flags": [
+                "played_safe"
+              ],
+              "delayed": [],
+              "note": "露露狐疑地扫了一眼，走了。阿棠在原地，脸色不太好看"
+            },
+            {
+              "id": "xa_silent",
+              "label": "不动，等脚步声远去",
+              "desc": "一起把呼吸放轻",
+              "immediate": {
+                "psyche": 4,
+                "relation_A": 2,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "close_call"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "relation_B": -4
+                  },
+                  "note": "露露嘴上没说什么，但那之后对阿棠明显冷淡了",
+                  "condition": "露露起疑"
+                }
+              ],
+              "note": "脚步声远了，我们对视一眼，都笑出了声，又赶紧捂住嘴"
+            }
+          ]
+        },
+        {
+          "id": "cross_hand",
+          "title": "斑马线边上的手",
+          "narrative": "过马路的时候，一辆外卖车突然窜出来，阿棠一把抓住我的手把我往回拽。车过去了，她没松。绿灯亮了又灭，我们就那样站在斑马线边上，手心全是汗。她先开的口，声音很轻：『……我是不是不该这样。』",
+          "options": [
+            {
+              "id": "xh_keep",
+              "label": "反手把她握紧",
+              "desc": "用行动回答她",
+              "immediate": {
+                "psyche": 7,
+                "relation_A": 5,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_risk",
+                "held_hands"
+              ],
+              "delayed": [],
+              "note": "她抬眼看我，眼睛里是那种豁出去的光"
+            },
+            {
+              "id": "xh_release",
+              "label": "慢慢松开，说人太多了",
+              "desc": "把越界的手收回来",
+              "immediate": {
+                "psyche": -3,
+                "relation_A": -3
+              },
+              "advance": 0,
+              "flags": [
+                "pulled_back"
+              ],
+              "delayed": [],
+              "note": "她『哦』了一声，把手插回兜里，那晚再没牵过"
+            },
+            {
+              "id": "xh_joke",
+              "label": "笑着说是救命之恩",
+              "desc": "用玩笑给自己留台阶",
+              "immediate": {
+                "relation_A": 2,
+                "psyche": 2,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "held_hands"
+              ],
+              "delayed": [],
+              "note": "她被我逗笑，却没把手完全松开"
+            }
+          ]
+        },
+        {
+          "id": "cross_what_are_we",
+          "title": "我们算什么",
+          "narrative": "散场后阿棠靠在墙边等我，等其他人走光了，忽然开口：『我得问清楚，我们现在算什么。』走廊的声控灯灭了一盏，我站在半明半暗里，听见自己心跳得很响。她没催，就那么看着我，平静又固执。",
+          "options": [
+            {
+              "id": "xw_honest",
+              "label": "承认：我不想只是队友",
+              "desc": "把话挑明",
+              "immediate": {
+                "psyche": 6,
+                "relation_A": 6,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_risk",
+                "said_it"
+              ],
+              "delayed": [],
+              "note": "她愣了两秒，然后笑了，眼睛红红的：『等这句话等好久。』"
+            },
+            {
+              "id": "xw_dodge",
+              "label": "说：先专心把这一季做完",
+              "desc": "把感情往后排",
+              "immediate": {
+                "psyche": -4,
+                "relation_A": -4
+              },
+              "advance": 0,
+              "flags": [
+                "chose_group"
+              ],
+              "delayed": [],
+              "note": "她点点头，说『好』，那声好轻得像叹气"
+            },
+            {
+              "id": "xw_define",
+              "label": "说：我们是彼此唯一能松口气的地方",
+              "desc": "不定义名分，只承认需要",
+              "immediate": {
+                "psyche": 5,
+                "relation_A": 3,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "said_it"
+              ],
+              "delayed": [],
+              "note": "她想了想，说：『行，那我认了。』"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "key": "confirm",
+      "title": "确认",
+      "gate": "心动 ≥ 3",
+      "enter_heart": 3,
+      "variants": [
+        {
+          "id": "confirm_almost_kiss",
+          "title": "卸妆棉停在半空",
+          "narrative": "那天妆卸到一半，阿棠进来关上门，帮我擦掉眼角没卸干净的亮片。她离得很近，棉片停在半空，灯光很暖，我能听见她的呼吸。她低头，我下意识闭了闭眼。嘴唇碰到一起，很轻，又谁都没退。门外突然有人喊：『谁在里面待这么久？』她退开，我们都没说话，镜子里两张脸都红透了。",
+          "options": [
+            {
+              "id": "ya_finish",
+              "label": "拉回她，把没做完的事做完",
+              "desc": "不再闪躲",
+              "immediate": {
+                "psyche": 8,
+                "relation_A": 6,
+                "stamina": -4,
+                "enjou": 3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_confirmed"
+              ],
+              "delayed": [],
+              "note": "亲上的时候她笑了一下，说『疯了』"
+            },
+            {
+              "id": "ya_pretend",
+              "label": "假装没事，说快卸完了",
+              "desc": "把这一刻按回去",
+              "immediate": {
+                "psyche": -3,
+                "relation_A": -2,
+                "stamina": -2
+              },
+              "advance": 0,
+              "flags": [
+                "pretended"
+              ],
+              "delayed": [],
+              "note": "她『哦』了一声，把棉片扔了，那之后我们都有点躲着对方"
+            },
+            {
+              "id": "ya_laugh",
+              "label": "笑着打岔，说我妆太花",
+              "desc": "用笑把暧昧盖过去",
+              "immediate": {
+                "psyche": 2,
+                "relation_A": 1,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [],
+              "delayed": [],
+              "note": "她也被逗笑，那个瞬间就那么滑过去了"
+            }
+          ]
+        },
+        {
+          "id": "confirm_she_decides",
+          "title": "她先把话说破",
+          "narrative": "我还在纠结怎么开口，阿棠先一步把话说破了。她把我堵在后台通道，双手抱胸：『别想了。我知道你也一样，你也别想糊弄我说没有。』我张嘴想反驳，一个字都没说出来。她看着我的样子，忽然就笑了：『看吧。』她低头在我嘴角碰了一下，等我反应过来，人已经转身走了。",
+          "options": [
+            {
+              "id": "yb_admit",
+              "label": "认了，说是",
+              "desc": "不再嘴硬",
+              "immediate": {
+                "psyche": 7,
+                "relation_A": 6,
+                "stamina": -3
+              },
+              "advance": 1,
+              "flags": [
+                "romance_confirmed"
+              ],
+              "delayed": [],
+              "note": "她伸手揉了揉我的头发：『那不就得了。』"
+            },
+            {
+              "id": "yb_deny",
+              "label": "硬说她想多了",
+              "desc": "习惯性地把软的地方藏起来",
+              "immediate": {
+                "psyche": -5,
+                "relation_A": -4
+              },
+              "advance": 0,
+              "flags": [
+                "denied_feelings"
+              ],
+              "delayed": [],
+              "note": "她脸上的笑淡下去，很慢很慢地说：『行吧。』"
+            },
+            {
+              "id": "yb_condition",
+              "label": "说：可以，但这一季结束前不能让人知道",
+              "desc": "把感情和团先捆在一起",
+              "immediate": {
+                "psyche": 4,
+                "relation_A": 3,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_confirmed",
+                "agreed_secret"
+              ],
+              "delayed": [],
+              "note": "她点头：『我陪你熬完这一季。』"
+            }
+          ]
+        },
+        {
+          "id": "confirm_interrupted",
+          "title": "被电话打断的那句话",
+          "narrative": "差一点点就说出口了。阿棠帮我整理领口的时候，我抓住她的手，鼓起了这辈子最大的勇气。话到嘴边——运营的电话响了，催我们上台，声音从走廊那头一路砸过来。她把手抽回去，理了理头发：『先上去。』可转身前，她很小声地补了一句：『下来继续说。』",
+          "options": [
+            {
+              "id": "yc_promise_after",
+              "label": "说：下来我一定说完",
+              "desc": "把这句话钉下来",
+              "immediate": {
+                "psyche": 5,
+                "relation_A": 4,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "romance_confirmed"
+              ],
+              "delayed": [],
+              "note": "台上那一场，我唱得格外用力，眼睛一直找台侧的她"
+            },
+            {
+              "id": "yc_let_slide",
+              "label": "把话咽回去，装作没发生",
+              "desc": "让那句话被风吹走",
+              "immediate": {
+                "psyche": -4,
+                "relation_A": -2
+              },
+              "advance": 0,
+              "flags": [
+                "pretended"
+              ],
+              "delayed": [],
+              "note": "下来以后，那句话我们再也没提过"
+            },
+            {
+              "id": "yc_text",
+              "label": "下台给她发消息把话说完",
+              "desc": "不敢当面，就用文字",
+              "immediate": {
+                "psyche": 6,
+                "relation_A": 2,
+                "stamina": -4
+              },
+              "advance": 1,
+              "flags": [
+                "romance_confirmed"
+              ],
+              "delayed": [],
+              "note": "她回：『我在后台门口等你。』"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "key": "finale",
+      "title": "收场",
+      "gate": "心动 ≥ 4（季末，这份感情必须有一个去向）",
+      "enter_heart": 4,
+      "note": "收场拍只写 flag、动数值，不裁定结局——最后是『连累/主动下车/平凡退场/幸存(真)』哪一类，交给结局系统看你这一季的整体状态。",
+      "variants": [
+        {
+          "id": "finale_night_before",
+          "title": "决赛前夜",
+          "narrative": "明天就是这一季最后一场。空荡的排练室里，我们并排坐在台边，脚悬在台下晃。阿棠忽然说：『打完这一场，我们就得给这件事一个说法了。』灯只开了工作灯，把两个人的影子拉得很长。她说完，侧过身来，很轻地吻了我一下，像在替这句话壮胆。我看着她，忽然很清楚：再拖下去，对谁都不公平。",
+          "options": [
+            {
+              "id": "rw_stay_secret",
+              "label": "秘密在一起，等这一季过去再说",
+              "desc": "把这份感情藏进更衣室和深夜的对话框",
+              "immediate": {
+                "psyche": 8,
+                "relation_A": 5,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [
+                "romance_secret",
+                "romance_truly_loved"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "enjou": 6
+                  },
+                  "note": "再小心，总有一点风声漏出去，有人开始盯着我们看",
+                  "condition": "炎上 ≥ 50"
+                }
+              ],
+              "note": "她说好，然后把我的手揣进她外套口袋：『藏起来的东西，才更金贵。』"
+            },
+            {
+              "id": "rw_declare_public",
+              "label": "公开，爱就爱了",
+              "desc": "在最后一场之前，牵着手走进所有人的镜头",
+              "immediate": {
+                "psyche": 6,
+                "relation_A": 6,
+                "enjou": 18,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [
+                "romance_public"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "fame": -8,
+                    "psyche": -6,
+                    "relation_all": -6
+                  },
+                  "note": "板子炸了，团被拖进漩涡，队友看我的眼神变了",
+                  "condition": "炎上 ≥ 55"
+                }
+              ],
+              "note": "灯光打下来的时候，我没松开她的手。台下先是安静，然后乱了。"
+            },
+            {
+              "id": "rw_give_up",
+              "label": "为了团，把这份感情收起来",
+              "desc": "在它毁掉所有人之前，先自己掐灭",
+              "immediate": {
+                "psyche": -10,
+                "relation_A": -6,
+                "fame": 3,
+                "stamina": -2
+              },
+              "advance": 0,
+              "flags": [
+                "romance_giveup"
+              ],
+              "delayed": [],
+              "note": "我说完，她点了点头，很平静，平静得让我心里更疼"
+            },
+            {
+              "id": "rw_leave_together",
+              "label": "等这一季结束，一起离开这个团",
+              "desc": "不玩了，去一个没人认识我们的地方",
+              "immediate": {
+                "psyche": 4,
+                "relation_A": 4,
+                "relation_all": -4,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [
+                "romance_leaving"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "fame": -3
+                  },
+                  "note": "我们开始悄悄清空更衣柜，像在为一个不知道能不能成行的远方做准备"
+                }
+              ],
+              "note": "她笑了一下，说：『那你得先撑完最后一场。』"
+            }
+          ]
+        },
+        {
+          "id": "finale_caught",
+          "title": "被撞破",
+          "narrative": "演出结束，休息室的门反锁着。阿棠坐在化妆台边，我站在她两腿之间，刚吻到一半，门外忽然有人拧门把手。『阿棠？你在里面吗？』是小满。她的手指还扣在我后颈上，没来得及松开。钥匙转动，门开了。小满红着眼睛站在门口，露露在她身后，脸色很难看。『你们……我早就觉得不对劲。』小满声音发抖，『现在整个团都要跟着一起完蛋吗？』阿棠挡在我前面，一句话没说，可我看见她的手在抖。所有人都在等我开口。",
+          "options": [
+            {
+              "id": "rc_own_it",
+              "label": "先开口：『是我的问题，跟她没关系。』",
+              "desc": "把火往自己身上引，让这个团还能剩一个人",
+              "immediate": {
+                "psyche": -8,
+                "relation_A": 6,
+                "relation_all": 4,
+                "enjou": 12,
+                "stamina": -2
+              },
+              "advance": 0,
+              "flags": [
+                "romance_caught"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "enjou": 8
+                  },
+                  "note": "小满替我说了一句话，露露没接；那天之后团里再没有开过会",
+                  "condition": "炎上 ≥ 40"
+                }
+              ],
+              "note": "小满看了我很久，最后只说了一句『你们俩真行』，然后让开了路。"
+            },
+            {
+              "id": "rc_take_her_hand",
+              "label": "什么也不解释，握住她的手",
+              "desc": "不辩解，也不推开，当着所有人的面站在一起",
+              "immediate": {
+                "psyche": 5,
+                "relation_A": 8,
+                "relation_all": -12,
+                "enjou": 20,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [
+                "romance_caught"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "relation_all": -6
+                  },
+                  "note": "露露把群里的公告翻出来看了一遍，问运营：那这季还算不算我们的"
+                },
+                {
+                  "when": "条件",
+                  "effect": {
+                    "fame": -6
+                  },
+                  "note": "有人把休息室门口那一幕说成了『团内谈恋爱』，票卖不出去",
+                  "condition": "炎上 ≥ 45"
+                }
+              ],
+              "note": "她的手心是湿的，可她没有回握，只是没松开。"
+            },
+            {
+              "id": "rc_hard_line",
+              "label": "说：『现在不是谈这个的时候，先把最后一场跳完。』",
+              "desc": "把这间屋子里的东西压到演出结束以后",
+              "immediate": {
+                "psyche": -6,
+                "relation_A": -8,
+                "relation_all": 5,
+                "fame": 2,
+                "stamina": -2
+              },
+              "advance": 0,
+              "flags": [
+                "romance_caught"
+              ],
+              "delayed": [],
+              "note": "阿棠抬头看了我一眼，那个眼神我后来想了很久，像在确认一件她已经猜到的事。"
+            },
+            {
+              "id": "rc_walk_out",
+              "label": "拉着阿棠走出去，一句话都没留",
+              "desc": "当场把这扇门带上，后面的事明天再说",
+              "immediate": {
+                "psyche": 3,
+                "relation_A": 5,
+                "relation_all": -8,
+                "enjou": 14,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [
+                "romance_caught",
+                "romance_leaving"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "fame": -4
+                  },
+                  "note": "那一晚的事在群里传了两轮，没人敢先问我"
+                }
+              ],
+              "note": "走廊的灯是声控的，我们走出去很远，身后那盏才灭。"
+            }
+          ]
+        },
+        {
+          "id": "finale_manager",
+          "title": "运营办公室",
+          "narrative": "运营把我和阿棠一起叫进办公室，桌上摊着一叠聊天记录截图。『我不问你们怎么回事。』他把眼镜摘下来，慢慢擦着，『我就问，这季最后一仗，你们还想不想打。』阿棠的手在桌下，悄悄碰了碰我的手指。",
+          "options": [
+            {
+              "id": "rm_promise",
+              "label": "答应：『最后一场跳好，我主动收。』",
+              "desc": "把感情当成可以换一次体面收场的筹码",
+              "immediate": {
+                "psyche": -7,
+                "relation_A": -5,
+                "relation_all": 6,
+                "fame": 4,
+                "stamina": -2
+              },
+              "advance": 0,
+              "flags": [
+                "romance_settled"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "enjou": 5
+                  },
+                  "note": "运营在群里发了一条『最后一场好好打』，像在提醒所有人",
+                  "condition": "炎上 ≥ 40"
+                }
+              ],
+              "note": "阿棠在桌下把手收回去了，收得很轻，我几乎没感觉到。"
+            },
+            {
+              "id": "rm_silent",
+              "label": "不说话，把那叠截图一张一张看完",
+              "desc": "让证据自己说话，也让自己看清到底被拍到了多少",
+              "immediate": {
+                "psyche": -4,
+                "relation_A": 2,
+                "relation_all": 2,
+                "stamina": -2
+              },
+              "advance": 0,
+              "flags": [
+                "romance_secret",
+                "romance_settled"
+              ],
+              "delayed": [],
+              "note": "运营等我说完最后一页才开口，说『行，你们心里有数就好』。"
+            },
+            {
+              "id": "rm_public",
+              "label": "当着运营的面说：『我们打算公开。』",
+              "desc": "不在背后做决定，当着两个人的面把话摊开",
+              "immediate": {
+                "psyche": 6,
+                "relation_A": 7,
+                "relation_all": -6,
+                "enjou": 16,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [
+                "romance_public"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "fame": -5,
+                    "relation_all": -5
+                  },
+                  "note": "公开的事传得比预想的快，团里那几个人在群里一句话都没说"
+                }
+              ],
+              "note": "运营把眼镜戴回去，说了一句『你们自己算过代价就好』。"
+            },
+            {
+              "id": "rm_quit_together",
+              "label": "说：『这季打完，我们两个都走。』",
+              "desc": "把辞职和恋情一起摆到桌上，不留退路",
+              "immediate": {
+                "psyche": 4,
+                "relation_A": 6,
+                "relation_all": -8,
+                "stamina": -3
+              },
+              "advance": 0,
+              "flags": [
+                "romance_leaving"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "fame": -4
+                  },
+                  "note": "运营没有拦，只是把排期表收了起来"
+                }
+              ],
+              "note": "阿棠愣了半秒，然后把手放回桌面上，很轻地点了一下头。"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

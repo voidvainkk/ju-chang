@@ -1,0 +1,84 @@
+{
+ "_meta": {
+  "category": "私下的人情",
+  "design_note": "私联主线已改为线性剧情（见 data/storylines/storyline_shiren.json），原来的随机私联卡内容（深夜聊天/面馆/礼物/借钱/算什么呢/撞见另一个/截图威胁）已吸收为该 storyline 的剧情变体，故此处移除，避免重复。这里只保留不涉及私联 OTA 的私下暖卡：把偶像当『普通同事』对待的那一点点人情。",
+  "resource_keys": {
+   "money": "钱",
+   "stamina": "体力",
+   "psyche": "心理",
+   "fame": "人气",
+   "stage": "舞台稳定",
+   "ota_all": "全体OTA黏性",
+   "relation_A": "队友A(真面·阿棠)",
+   "relation_B": "队友B(竞争·露露)",
+   "relation_C": "队友C(天真·小满)",
+   "relation_all": "团内关系整体",
+   "shiren": "私联人数",
+   "enjou": "炎上",
+   "kaibox": "开盒风险",
+   "shiroi": "私生跟踪",
+   "banzi": "板子关注度"
+  },
+  "casting_schema": "card.casting = [ {slot, select:{gender?/fan_type?/archetype?/min_stickiness?/private_contact?}, allow_hatch} ]；narrative/label/desc 用 {{slot}} 显示名字、{{slot.ta}} 显示他/她；effect 键 @<slot> = 投给该槽位选中 OTA 的黏性增减，ota_all 仍为全体；无符合条件者且 allow_hatch 时按原型孵化新人填入。"
+ },
+ "cards": [
+  {
+   "id": "priv_staff",
+   "type": "私联恋爱",
+   "title": "那个总在搬器材的人",
+   "gate": "心理 < 50",
+   "weight": 0.8,
+   "cooldown": 5,
+   "narrative": "每次营业结束，最后一个走的总是那个搬器材的男生。他话不多，会默默把水递到我手边，说'今天辛苦了'。他不在粉丝的队列里，说这话时也没什么企图的样子。今天他递水时，我鬼使神差多站了一会儿——我太久没被人当成一个'普通同事'那样对待了。",
+   "options": [
+    {
+     "id": "hang_on",
+     "label": "留一会儿，跟他有一搭没一搭地聊",
+     "desc": "就聊几句，不越界，也不算私联吧",
+     "immediate": {
+      "psyche": 7,
+      "stamina": -4
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 30",
+       "effect": {
+        "psyche": 6
+       },
+       "note": "后来每次营业，我都开始盼着散场——盼那杯水，和那句'辛苦了'"
+      }
+     ]
+    },
+    {
+     "id": "keep_distance",
+     "label": "道谢就好，保持距离",
+     "desc": "这点暖，我受不起，也不敢要",
+     "immediate": {
+      "psyche": -3
+     },
+     "delayed": []
+    },
+    {
+     "id": "report_hr",
+     "label": "跟运营提一句，把他调走",
+     "desc": "怕自己动心，索性把火苗掐了",
+     "immediate": {
+      "psyche": -6,
+      "enjou": 1,
+      "relation_all": -2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "psyche": -4
+       },
+       "note": "他被调走了，递水的人换了，你连句再见都没来得及说"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

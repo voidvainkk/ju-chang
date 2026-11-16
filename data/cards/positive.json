@@ -1,0 +1,371 @@
+{
+  "_meta": {
+    "category": "positive",
+    "desc": "好事卡（有选项）：舞台、人气、钱、关系往好里走的机会。仍然两难——两个选项各拿各的好，你只能挑一样：要钱还是要人、要曝光还是要稳。不会有'全拿'的选项。用来平衡卡池，让一季不只有坏消息。",
+    "resource_keys": {
+      "fame": "人气",
+      "money": "钱",
+      "stage": "舞台稳定",
+      "stamina": "体力",
+      "psyche": "心理",
+      "ota_all": "全体OTA黏性",
+      "relation_A": "阿棠",
+      "relation_B": "露露",
+      "relation_C": "小满",
+      "enjou": "炎上（越高越糟）",
+      "banzi": "板子关注度",
+      "kaibox": "开盒风险（越高越糟）",
+      "shiroi": "私生跟踪值（越高越糟）"
+    },
+    "casting_schema": "card.casting = [ {slot, select:{gender?/fan_type?/archetype?/min_stickiness?/private_contact?}, allow_hatch} ]；narrative/label/desc 用 {{slot}} 显示名字、{{slot.ta}} 显示他/她；effect 键 @<slot> = 投给该槽位选中 OTA 的黏性增减，ota_all 仍为全体；无符合条件者且 allow_hatch 时按原型孵化新人填入。"
+  },
+  "cards": [
+    {
+      "id": "pos_cheki_soldout",
+      "type": "positive",
+      "title": "特典券卖光了",
+      "gate": "人气 ≥ 12",
+      "weight": 3.0,
+      "cooldown": 3,
+      "narrative": "staff 过来低声说：今天的券，卖完了，一张不剩。后面还排着没买到的。她问我，加不加一桌。",
+      "options": [
+        {
+          "id": "add_table",
+          "label": "加一桌，趁热打铁",
+          "desc": "「加，能多卖一张是一张。」我笑着应，转身的时候腿已经有点软。",
+          "immediate": {
+            "money": 480,
+            "ota_all": 3,
+            "stamina": -16,
+            "psyche": -2
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "stamina": -4
+              },
+              "note": "连着几场加桌，人是真的乏，排练时有点跟不上"
+            }
+          ]
+        },
+        {
+          "id": "hold_line",
+          "label": "不加，让队伍散了吧",
+          "desc": "「今天到这吧，跟大家说声抱歉。」说出口时，我知道有几张脸会失望。",
+          "immediate": {
+            "psyche": 4,
+            "ota_all": 5
+          },
+          "delayed": [
+            {
+              "when": "条件",
+              "condition": "人气 ≥ 40",
+              "effect": {
+                "fame": -3
+              },
+              "note": "有人嘀咕'正红就端架子'，热度稍退"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pos_solo_part",
+      "type": "positive",
+      "title": "这首给我一个人唱",
+      "gate": "舞台稳定 ≥ 45",
+      "weight": 2.4,
+      "cooldown": 5,
+      "narrative": "阿棠把她写的那首歌推到我面前。「这段没人接得住，你来。」就一句话，说完就去调音了。谱子上还留着她改过的铅笔印。",
+      "options": [
+        {
+          "id": "take_it",
+          "label": "接。丢人也认了",
+          "desc": "整首歌最亮的那八句，从此是我的。台下会不会只记得我一个人？",
+          "immediate": {
+            "stage": 5,
+            "fame": 3,
+            "psyche": 5,
+            "relation_B": -5
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "relation_A": 3
+              },
+              "note": "阿棠彩排后点了下头，什么都没说，但我知道她满意"
+            }
+          ]
+        },
+        {
+          "id": "share_it",
+          "label": "和她分着唱",
+          "desc": "「这本来是你的歌，一人一半。」我把谱子往她那边推了推。",
+          "immediate": {
+            "stage": 2,
+            "relation_A": 8,
+            "relation_B": 3,
+            "fame": 1,
+            "stamina": -4
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "pos_ops_attention",
+      "type": "positive",
+      "title": "运营想多给我镜头",
+      "gate": "人气 ≥ 20",
+      "weight": 2.4,
+      "cooldown": 6,
+      "narrative": "运营把我叫到一边，说下季的资源想往我身上斜一点。「镜头多给你，宣传也带你。」我还没来得及应声，就看见露露从走廊那头过来，脚步停了一下。",
+      "options": [
+        {
+          "id": "accept_spotlight",
+          "label": "要。机会不等人",
+          "desc": "「谢谢，我接。」我知道这会让某些人怎么想。",
+          "immediate": {
+            "fame": 6,
+            "stage": 2,
+            "relation_B": -8
+          },
+          "delayed": [
+            {
+              "when": "条件",
+              "condition": "露露关系 < 40",
+              "effect": {
+                "enjou": 10
+              },
+              "note": "队内不和的风言风语，被人截了图传出去"
+            }
+          ]
+        },
+        {
+          "id": "ask_for_all",
+          "label": "能不能带着大家一起",
+          "desc": "「我一个人多镜头没用，团好了才有人来。」运营愣了一下。",
+          "immediate": {
+            "relation_all": 6,
+            "fame": 2,
+            "psyche": 3
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "fame": -2
+              },
+              "note": "资源没倾斜，热度涨得慢，运营那边脸色一般"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pos_letter",
+      "type": "positive",
+      "title": "一封很长的信",
+      "gate": "任一 OTA 黏性 ≥ 65",
+      "weight": 2.7,
+      "cooldown": 4,
+      "narrative": "散场时{{letterwriter}}塞给我一个对折的信封，说回去再看。拆开是密密麻麻三页字，写从第一次看我，到现在工作第一年。最后一句：「你别飘，也别塌，我们慢慢来。」",
+      "options": [
+        {
+          "id": "reply_long",
+          "label": "认认真真回一封",
+          "desc": "我趴在小桌上写到半夜，写到手指发酸。",
+          "immediate": {
+            "ota_all": 6,
+            "psyche": 8,
+            "stamina": -8
+          },
+          "delayed": []
+        },
+        {
+          "id": "keep_it_close",
+          "label": "收进抽屉，不说",
+          "desc": "有些话，回了反而变轻。我把它压在谱子底下。",
+          "immediate": {
+            "psyche": 5,
+            "stamina": 2
+          },
+          "delayed": [
+            {
+              "when": "条件",
+              "condition": "心理 < 30",
+              "effect": {
+                "ota_all": -2
+              },
+              "note": "{{letterwriter.ta}}等了好久没等到回音，后来来得少了"
+            }
+          ]
+        }
+      ],
+      "casting": [
+        {
+          "slot": "letterwriter",
+          "select": {
+            "min_stickiness": 65
+          },
+          "allow_hatch": true
+        }
+      ]
+    },
+    {
+      "id": "pos_collab",
+      "type": "positive",
+      "title": "隔壁团来请我帮忙演一场",
+      "gate": "人气 ≥ 24",
+      "weight": 2.1,
+      "cooldown": 7,
+      "narrative": "一个更大的团发来消息，说她们某场缺个人，问我愿不愿意顶一下，有出场费。「就是……帮个忙，顺便给你露个脸。」",
+      "options": [
+        {
+          "id": "go_collab",
+          "label": "去。多露一次脸是一次",
+          "desc": "我答应了。那天错过了自己团的排练。",
+          "immediate": {
+            "money": 600,
+            "fame": 5,
+            "stamina": -14
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "relation_all": -4
+              },
+              "note": "自己团的合练我没在，站位上出了点岔子，有人念叨"
+            }
+          ]
+        },
+        {
+          "id": "decline_stay",
+          "label": "算了，留下来练自己的",
+          "desc": "「谢谢想到我，但这周我们团有安排。」我回得很快，快得像在说服自己。",
+          "immediate": {
+            "stage": 3,
+            "relation_all": 4,
+            "psyche": -3
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "pos_good_night",
+      "type": "positive",
+      "title": "有人说今晚我最好看",
+      "gate": "人气 ≥ 18",
+      "weight": 2.4,
+      "cooldown": 4,
+      "narrative": "散场后人还没走散，一个平时不怎么说话的老粉绕过来，很轻地说了句：「今晚最亮的是你。」说完就走了，像怕被人听见。",
+      "options": [
+        {
+          "id": "let_it_land",
+          "label": "让他这句话落进心里",
+          "desc": "我没追上去问，就站在原地，把它收好。",
+          "immediate": {
+            "psyche": 6,
+            "ota_all": 3,
+            "stamina": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "turn_to_team",
+          "label": "把这句话说给全队听",
+          "desc": "「他说今晚最亮的是我们。」我加了个'们'。",
+          "immediate": {
+            "relation_all": 6,
+            "psyche": 4,
+            "stamina": -2
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "pos_raise",
+      "type": "positive",
+      "title": "演出费涨了",
+      "gate": "人气 ≥ 28",
+      "weight": 2.1,
+      "cooldown": 8,
+      "narrative": "结算的时候，staff 报的数比我心里算的高出一截。「这阵子上座好，团里商量过了，往上提一提。」我捏着那张单子，第一反应是：房租，这个月稳了。",
+      "options": [
+        {
+          "id": "save_it",
+          "label": "存着，别乱花",
+          "desc": "难得手头松一点，我把它压进下个月的房租里。",
+          "immediate": {
+            "money": 500,
+            "psyche": 5,
+            "relation_all": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "treat_team",
+          "label": "请大家吃一顿",
+          "desc": "「今晚我请。」我说这话时底气足得很。",
+          "immediate": {
+            "money": 200,
+            "relation_all": 8,
+            "psyche": 4,
+            "stamina": -3
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "pos_cold_stage_truth",
+      "type": "舞台事故",
+      "title": "台上冷场，我临场说了句真心话",
+      "gate": "周 ≥ 2",
+      "weight": 1.0,
+      "cooldown": 5,
+      "narrative": "这首歌的间奏本来要放段预录，设备突然哑了，台上台下一起僵住。我脑子一空，抓着话筒说了句没排练过的话：『其实我今天特别紧张，怕你们看出来。』台下静了一秒，然后有人笑了，有人喊『看不出来！』。那一秒过去，场子忽然就活了。",
+      "options": [
+        {
+          "id": "finish_truth",
+          "label": "顺着把真心话说完，把冷场讲成段子",
+          "desc": "把心掏出来给一屋子人，累，但真",
+          "immediate": {
+            "stage": 4,
+            "fame": 2,
+            "stamina": -4,
+            "psyche": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "cue_next",
+          "label": "赶紧 cue 下一首，把场子拉回流程",
+          "desc": "稳住了，可那个瞬间没接住",
+          "immediate": {
+            "stage": 1,
+            "psyche": 1,
+            "relation_all": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "crowd_sing",
+          "label": "cue 全场一起清唱副歌",
+          "desc": "让众人接住，代价是再来一遍体力",
+          "immediate": {
+            "stage": 2,
+            "ota_all": 5,
+            "stamina": -6
+          },
+          "delayed": []
+        }
+      ]
+    }
+  ]
+}

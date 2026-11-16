@@ -1,0 +1,831 @@
+{
+  "_meta": {
+    "category": "版聊",
+    "design_note": "2026-11-16 第二版：观众发消息 → 偶像（玩家）回。回复按微博私信口语重写：短句、语气词、可打岔，不解释、不把暧昧说破；每项都有真实负数，不纯赚。"
+  },
+  "cards": [
+    {
+      "id": "chat_store_seen",
+      "type": "版聊",
+      "title": "便利店",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "23:05",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "刚在便利店看到你了，没敢打扰",
+          "time": "23:05"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：啊？你认出来了",
+          "desc": "把话推回去",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：那怎么不过来",
+          "desc": "给他一个下次",
+          "immediate": {
+            "@speaker": 2,
+            "stamina": -1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：以后别在门口等",
+          "desc": "把界线画在门外",
+          "immediate": {
+            "@speaker": -2,
+            "psyche": 1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_banner_text",
+      "type": "版聊",
+      "title": "手幅",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "15:30",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "下次手幅写什么",
+          "time": "15:30"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：写短点，举着累",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：别写太肉麻的",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1,
+            "stamina": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：随便，你高兴就行",
+          "desc": "纵容",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_live_wait",
+      "type": "版聊",
+      "title": "直播",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "21:40",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "今天还播吗，等半天了",
+          "time": "21:40"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：播，再等我十分钟",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：今天不播了，别等",
+          "desc": "推开",
+          "immediate": {
+            "@speaker": -1,
+            "psyche": 1,
+            "stamina": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：你一直守着？",
+          "desc": "反问",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_song_share",
+      "type": "版聊",
+      "title": "歌单",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "01:15",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "分享首歌给你，睡不着的时候听",
+          "time": "01:15"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：什么歌",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：这么晚还不睡",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：我睡了，明天听",
+          "desc": "推开",
+          "immediate": {
+            "@speaker": -1,
+            "psyche": 1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_group_praise",
+      "type": "版聊",
+      "title": "群里夸",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "20:10",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "群里都在夸你今天的安可",
+          "time": "20:10"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：真的假的",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：替我谢谢他们",
+          "desc": "客气",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：你也这么觉得？",
+          "desc": "反问",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_cold_wait",
+      "type": "版聊",
+      "title": "冷",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "22:50",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "外面好冷，你还没走？",
+          "time": "22:50"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：在等车",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：你怎么也没走",
+          "desc": "反问",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1,
+            "stamina": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：早点回去，别冻着",
+          "desc": "催他走",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_overtime",
+      "type": "版聊",
+      "title": "加班",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "22:40",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "今天加班到十点，刚出公司",
+          "time": "22:40"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：吃饭没",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：辛苦了，早点回",
+          "desc": "客气",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：明天还上班吧",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_cook_burn",
+      "type": "版聊",
+      "title": "做饭",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "18:50",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "第一次自己做饭，糊了",
+          "time": "18:50"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：糊成什么样",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：能吃就行",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：下次少放点水",
+          "desc": "教他",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_cat_earphone",
+      "type": "版聊",
+      "title": "猫",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "21:30",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "我家猫把我耳机咬断了",
+          "time": "21:30"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：猫没事吧",
+          "desc": "先问猫",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：谁让你不收好",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：耳机多少钱",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_insomnia",
+      "type": "版聊",
+      "title": "失眠",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "02:10",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "两点多了还睡不着",
+          "time": "02:10"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：在想什么",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -2
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：闭眼躺着，别刷了",
+          "desc": "催睡",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：你明天不上班？",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_birthday",
+      "type": "版聊",
+      "title": "生日",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "12:00",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "今天我生日",
+          "time": "12:00"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：生日快乐",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：怎么现在才说",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：许愿了吗",
+          "desc": "多问一句",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_exam",
+      "type": "版聊",
+      "title": "考试",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "20:20",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "下周考试，书看不进去",
+          "time": "20:20"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：考完再看直播",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：那别看了，睡觉",
+          "desc": "催睡",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：你考什么",
+          "desc": "多问一句",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_voice_hoarse",
+      "type": "版聊",
+      "title": "嗓子",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "23:20",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "你嗓子是不是哑了，今天说话好轻",
+          "time": "23:20"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：有点，没事",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：你听出来了",
+          "desc": "反问",
+          "immediate": {
+            "@speaker": 3,
+            "psyche": -2
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：小点声，别让 stf 知道",
+          "desc": "共享秘密",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_hair_down",
+      "type": "版聊",
+      "title": "头发",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "17:00",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "今天头发放下来很好看",
+          "time": "17:00"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：谢谢",
+          "desc": "客气",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：只今天？",
+          "desc": "反问",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：你观察得挺细",
+          "desc": "打趣",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1,
+            "stamina": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chat_makeup_smudge",
+      "type": "版聊",
+      "title": "妆花了",
+      "weight": 1.0,
+      "cooldown": 2,
+      "gate": "",
+      "narrative": "",
+      "casting": [
+        {
+          "slot": "speaker",
+          "select": {
+            "min_stickiness": 40
+          }
+        }
+      ],
+      "time": "21:05",
+      "messages": [
+        {
+          "from": "speaker",
+          "text": "返图里你眼妆好像花了",
+          "time": "21:05"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "label": "回：看到了，别放大看",
+          "desc": "接住",
+          "immediate": {
+            "@speaker": 2,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "b",
+          "label": "回：下次补",
+          "desc": "若无其事",
+          "immediate": {
+            "@speaker": 1,
+            "psyche": -1
+          }
+        },
+        {
+          "id": "c",
+          "label": "回：那张删了吧",
+          "desc": "推开",
+          "immediate": {
+            "@speaker": -1,
+            "psyche": 1,
+            "stamina": -1
+          }
+        }
+      ]
+    }
+  ]
+}

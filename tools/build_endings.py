@@ -1,0 +1,305 @@
+# -*- coding: utf-8 -*-
+"""由结局条件图 §一 的判定顺序，生成机器可读的判决表 data/endings.json。
+单一事实来源：判定条件在文档里改完，跑这个脚本重新生成 JSON。
+提前结束 6 个结局走 flag 触发，不进瀑布。
+"""
+import json, os
+
+BASE = r"C:\Users\kk\Documents\deepseek-harness\default-workspace\聚场\data"
+OUT = os.path.join(BASE, "endings.json")
+
+FIELDS = {
+    "kaibox": "开盒（真实信息被公开的程度，0-100）",
+    "enjou": "炎上",
+    "banzi": "板子（被挂到板子上的次数/程度）",
+    "money_drop": "本季特典收入在掉（季末明显低于本季峰值，或至少两周低于最低线）",
+    "money_kept": "钱没掉（season 2「恶劣」用：季末收入未明显下滑）",
+    "psyche": "心理",
+    "stage": "舞台（季末值）",
+    "gorshou": "神场次数（单场 ≥64）",
+    "shiren": "私联次数",
+    "max_share": "单个 OTA 占全部特典收入的比例",
+    "beibao": "是否有过包养式收入",
+    "true_cog": "真实认知（真/假温度开关）",
+    "template": "模板化程度（用同一套话回答不同人的比例）",
+    "relavg": "队友关系均值",
+    "chose_leave": "最后一周是否选了离开",
+    "stamina": "体力",
+    "rent_missed": "是否有过欠租",
+    "ota_ge40_count": "黏性 ≥40 的 OTA 人数",
+    "true_talk": "版聊里说真话的次数（不含回考答对）",
+    "truth_rate": "真话率（带语气标记的选项里，说真话所占比例）",
+    "truth_pick": "说真话的次数（带 tone=truth 的卡面/空场选项）",
+    "tone_choices": "做过真话/场面话选择的总次数",
+    "shiren_stage": "私联线走到第几拍（-1 = 这一季没见过她）",
+    "max_single": "本季最高单场舞台分",
+    "last_live": "最后一周是否选了再跳一场",
+    "played_while_collapsing": "这一季是否在要垮掉的状态下还上过台",
+    "empty_choice": "被问「你是不是有点累」的时候我怎么回的",
+    "offer_refused": "运营那条会火的路，我是不是当面拒了",
+    "offer_choice": "运营递来那条会火的路时我怎么回的"
+}
+
+
+FLOW = [
+    {
+        "n": 1,
+        "name": "如影随形",
+        "tags": [
+            "被动"
+        ],
+        "cond": {
+            "all": [
+                {
+                    "kaibox": {
+                        ">=": 80
+                    }
+                },
+                {
+                    "shiren_stage": {
+                        ">=": 2
+                    }
+                }
+            ]
+        },
+        "why": "名字/老家/地址被摊到所有人面前——是那个真的来找过你的人干的，之后出门会一直往后看"
+    },
+    {
+        "n": 2,
+        "name": "你第一天知道我的恶劣吗",
+        "tags": [
+            "炎上"
+        ],
+        "cond": {
+            "enjou": {
+                ">=": 70
+            },
+            "banzi": {
+                ">=": 60
+            },
+            "money_kept": True
+        },
+        "why": "被骂出来的热度真的有用：钱没掉，人还多了。我知道不好，我打算继续"
+    },
+    {
+        "n": 3,
+        "name": "执念成魔",
+        "tags": [
+            "舞台"
+        ],
+        "cond": {
+            "psyche": {
+                "<": 20
+            },
+            "stage": {
+                ">=": 62
+            }
+        },
+        "why": "把「我」换成了舞台分，而且它看起来像成功"
+    },
+    {
+        "n": 4,
+        "name": "空心",
+        "tags": [],
+        "cond": {
+            "empty_choice": "reply",
+            "truth_rate": {
+                "<=": 0.4
+            }
+        },
+        "why": "被当面问「你是不是有点累」时，还是用了那套现成的话"
+    },
+    {
+        "n": 5,
+        "name": "残局",
+        "tags": [],
+        "cond": {
+            "relavg": {
+                "<": 30
+            },
+            "enjou": {
+                ">=": 80
+            }
+        },
+        "why": "我什么都没干，团跟着我一起完了，最后桌上没人接话"
+    },
+    {
+        "n": 6,
+        "name": "现生快乐",
+        "tags": [
+            "主动"
+        ],
+        "cond": {
+            "chose_leave": True,
+            "psyche": {
+                ">=": 50
+            }
+        },
+        "why": "一场告别演出，然后回去过普通人的日子，爱的东西一件没丢"
+    },
+    {
+        "n": 7,
+        "name": "彗星来临的那一夜",
+        "tags": [],
+        "cond": {
+            "max_single": {
+                ">=": 64
+            },
+            "not_baoshou": True,
+            "last_live": True
+        },
+        "why": "有一晚舞台莫名其妙对了，而且是我自己接住的"
+    },
+    {
+        "n": 8,
+        "name": "守住本心",
+        "tags": [
+            "保本"
+        ],
+        "cond": {
+            "no_rent_missed": True,
+            "psyche": {
+                ">=": 45
+            },
+            "relavg": {
+                ">=": 30
+            },
+            "ota_ge40_count": {
+                ">=": 2
+            },
+            "offer_refused": True,
+            "truth_rate": {
+                ">=": 0.5
+            }
+        },
+        "why": "行业脏，我也泡在里头，可我还是我。穷，但乐"
+    },
+    {
+        "n": 9,
+        "name": "台上那十分钟",
+        "tags": [
+            "被动",
+            "板子"
+        ],
+        "cond": {
+            "all": [
+                {
+                    "stage": {
+                        ">=": 55
+                    }
+                },
+                {
+                    "stage": {
+                        "<=": 61
+                    }
+                },
+                {
+                    "psyche": {
+                        "<": 20
+                    }
+                },
+                {
+                    "played_while_collapsing": True
+                }
+            ]
+        },
+        "why": "靠药才站得上去，台下有人举起了手机"
+    },
+    {
+        "n": 10,
+        "name": "散场",
+        "tags": [
+            "保底"
+        ],
+        "cond": {},
+        "why": "这一季就这样过去了，没留下什么"
+    }
+]
+
+
+EARLY = [
+    {
+        "n": 11,
+        "name": "我只是太爱你了",
+        "trigger": {
+            "flag": "final_intimate",
+            "from": "重线 拍3 推进项"
+        },
+        "why": "她把我这层皮扒下来，证明我是真的"
+    },
+    {
+        "n": 12,
+        "name": "用完",
+        "trigger": {
+            "flag": "used_as_tool",
+            "from": "私联线终局拷问答错"
+        },
+        "why": "我把她当圈钱工具，被投板子，悲伤退圈"
+    },
+    {
+        "n": 13,
+        "name": "唯一",
+        "trigger": {
+            "flag": "truly_seen",
+            "from": "私联线终局拷问答对"
+        },
+        "why": "她被认出来以后，这段关系反而更说不清"
+    },
+    {
+        "n": 14,
+        "name": "毕业日",
+        "trigger": {
+            "flag": "romance_public",
+            "from": "恋爱线前夜选公开"
+        },
+        "why": "我们两个都知道，所以一起走了"
+    },
+    {
+        "n": 15,
+        "name": "后来",
+        "trigger": {
+            "flag": "romance_caught",
+            "from": "恋爱线被撞破当场选握住她的手"
+        },
+        "why": "一起被开除、赔钱、散了"
+    },
+    {
+        "n": 16,
+        "name": "控制不了",
+        "trigger": {
+            "flag": "final_collapse",
+            "from": "私联线终局答对后选断联，事情却没有停"
+        },
+        "why": "我以为说了别来就结束了，可它已经不需要我同意"
+    }
+]
+
+
+
+doc = {
+    "_meta": {
+        "kind": "endings",
+        "version": 3,
+        "design_note": "判定顺序自上而下，第一条命中的即为结局。散场是保底，永远命中。提前结束不进瀑布，由 flag 直接触发，触发后不再判定季末结局。",
+        "source": "结局条件图.md §一（2026-11-14）",
+        "counts": {"season": len(FLOW), "early": len(EARLY), "total": len(FLOW) + len(EARLY)},
+    },
+    "fields": FIELDS,
+    "flow": FLOW,
+    "early": EARLY,
+    "panel_counts": [
+        {"key": "nights_stamina_low", "label": "你有 N 个晚上结束的时候体力不到 25"},
+        {"key": "gorshou", "label": "你有 N 场跳到了 64 分以上"},
+        {"key": "same_ota_talks", "label": "你和同一个人见过 N 次"},
+        {"key": "same_seat", "label": "你有 N 次把票留给了同一个位置"},
+        {"key": "weibo_posts", "label": "你在微博上发过 M 条说了算数的东西"},
+        {"key": "total_lives", "label": "这一季你一共跳了 N 场"},
+    ],
+}
+
+os.makedirs(BASE, exist_ok=True)
+with open(OUT, "w", encoding="utf-8") as f:
+    json.dump(doc, f, ensure_ascii=False, indent=1)
+    f.write("\n")
+print("WROTE", OUT)
+print("season:", len(FLOW), "early:", len(EARLY))

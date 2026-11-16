@@ -1,0 +1,545 @@
+{
+ "_meta": {
+  "category": "私生跟踪",
+  "design_note": "私生＝越过了'舞台'和'网络'、直接侵入现实生活的那部分。shiroi(私生跟踪) 涨到 80 会走向'被吞噬'结局。选项在'摆脱他 / 惊动他'之间反复掂量：赶走可能招报复，忍耐则越陷越深。数值是选后回执。",
+  "resource_keys": {
+   "money": "钱",
+   "stamina": "体力",
+   "psyche": "心理",
+   "fame": "人气",
+   "stage": "舞台稳定",
+   "ota_all": "全体OTA黏性",
+   "relation_A": "队友A(真面·阿棠)",
+   "relation_B": "队友B(竞争·露露)",
+   "relation_C": "队友C(天真·小满)",
+   "relation_all": "团内关系整体",
+   "shiren": "私联人数",
+   "enjou": "炎上",
+   "kaibox": "开盒风险",
+   "shiroi": "私生跟踪",
+   "banzi": "板子关注度"
+  }
+ },
+ "cards": [
+  {
+   "id": "shiroi_tail_home",
+   "type": "私生",
+   "title": "散场后那个脚步声",
+   "gate": "重线进度 ≥ 1 且 周 ≥ 3",
+   "weight": 1.2,
+   "cooldown": 3,
+   "narrative": "散场后往地铁站走，身后的脚步声跟了我两条街。我停，它也停；我拐弯，它也拐弯。夜里路上没什么人，路灯把影子拉得很长。我不敢回头，怕一回头就确认了那是真的——不确认，好像还能骗自己只是巧合。手心全是汗。",
+   "options": [
+    {
+     "id": "walk_fast",
+     "label": "加快脚步，钻进人多的地方",
+     "desc": "不回头，装作什么都不知道",
+     "immediate": {
+      "stamina": -6,
+      "psyche": -5
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "shiroi": 8
+       },
+       "note": "他发现你会躲，反而开始研究你的路线——哪天你会走哪条巷子"
+      }
+     ]
+    },
+    {
+     "id": "confront",
+     "label": "猛地回头，正面拦住他",
+     "desc": "别躲了，看清楚是谁",
+     "immediate": {
+      "psyche": 6,
+      "shiroi": -4,
+      "enjou": 5
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "私生跟踪 ≥ 40",
+       "effect": {
+        "shiroi": 12,
+        "enjou": 6
+       },
+       "note": "他被你当场戳穿，恼羞成怒，转天就在板子上说你'耍大牌'"
+      }
+     ]
+    },
+    {
+     "id": "taxi",
+     "label": "拦辆车，花钱把自己送回去",
+     "desc": "今晚先离开这条街再说",
+     "immediate": {
+      "money": -80,
+      "psyche": -2,
+      "shiroi": -2
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "shiroi_door_gift",
+   "type": "私生",
+   "title": "门口的东西",
+   "gate": "重线进度 ≥ 2 且 周 ≥ 3",
+   "weight": 1.1,
+   "cooldown": 4,
+   "narrative": "回到楼下，家门口的地垫上放着个袋子。里面是我昨天演出戴的那款发夹——一模一样的，还有一张纸条，写着『今天的你很好看』。我昨天没在任何地方说过自己住这栋楼。我提着那个袋子站在门口，钥匙半天插不进锁孔，手在抖。",
+   "options": [
+    {
+     "id": "report_police",
+     "label": "报警，把东西留作证据",
+     "desc": "这件事，不能再自己扛了",
+     "immediate": {
+      "psyche": -3,
+      "shiroi": -6,
+      "money": -100
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "私生跟踪 ≥ 50",
+       "effect": {
+        "enjou": 10
+       },
+       "note": "警察来了解过情况，消息不知怎么就漏了，有人说你'作秀博同情'"
+      }
+     ]
+    },
+    {
+     "id": "ignore_stuff",
+     "label": "把东西扔了，装作没发生",
+     "desc": "不回应，也许他就没劲了",
+     "immediate": {
+      "psyche": -8
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "shiroi": 10
+       },
+       "note": "你没反应，他当成了默许。下一次，门口放的是别的东西"
+      }
+     ]
+    },
+    {
+     "id": "move",
+     "label": "跟人合租，换个住址",
+     "desc": "惹不起，先躲开这个地址",
+     "immediate": {
+      "money": -800,
+      "psyche": 4,
+      "shiroi": -8
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "stamina": -6
+       },
+       "note": "搬完家那阵，每天通勤多花一小时，排练总是踩着点冲进来"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shiroi_unknown_call",
+   "type": "私生",
+   "title": "凌晨的陌生来电",
+   "gate": "重线进度 ≥ 2 且 周 ≥ 4",
+   "weight": 1.1,
+   "cooldown": 4,
+   "narrative": "凌晨一点，一个陌生号码打进来。第三次了。前几天是短信，问我睡了没；今天是电话。我没接，它就一直响，响到自动挂断，隔一分钟又响。我盯着屏幕上那串数字，忽然意识到——他知道我这个点还醒着。我最近几乎没睡好过。",
+   "options": [
+    {
+     "id": "answer",
+     "label": "接起来，听他要说什么",
+     "desc": "与其被未知熬着，不如弄清楚",
+     "immediate": {
+      "psyche": -10,
+      "shiroi": 4
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "私生跟踪 ≥ 55",
+       "effect": {
+        "shiroi": 8,
+        "psyche": -6
+       },
+       "note": "他说只是想听听你的声音——这比威胁更让人睡不安稳"
+      }
+     ]
+    },
+    {
+     "id": "block_number",
+     "label": "拉黑，关机，塞进枕头底下",
+     "desc": "一个一个拉黑，总会清净",
+     "immediate": {
+      "psyche": 2,
+      "shiroi": -2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "shiroi": 8
+       },
+       "note": "号码拉黑一个，换一个又来一个，像在跟你玩猫鼠游戏"
+      }
+     ]
+    },
+    {
+     "id": "change_number",
+     "label": "换号码，把所有能留联系方式的地方改掉",
+     "desc": "一次断干净，代价是粉丝也找不到你了",
+     "immediate": {
+      "money": -50,
+      "psyche": 3,
+      "shiroi": -10,
+      "ota_all": -6
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "shiroi_photo",
+   "type": "私生",
+   "title": "被拍到的日常",
+   "gate": "重线进度 ≥ 3",
+   "weight": 1.1,
+   "cooldown": 5,
+   "narrative": "有粉丝发来一张图，说是在板子上看到的。照片里是我，穿着最普通的卫衣，在便利店买泡面，头发乱糟糟的，一看就是没睡好。拍照的角度是从街对面拉近的。我看着那张照片，第一反应不是害怕，而是一种被剥光了放在路灯下的羞耻——连我最邋遢、最不想被看见的样子，都成了别人的谈资。",
+   "options": [
+    {
+     "id": "speak_out",
+     "label": "公开发声，请大家别再拍私下生活",
+     "desc": "温和但明确地划一条线",
+     "immediate": {
+      "psyche": 3,
+      "shiroi": -5,
+      "enjou": 2,
+      "ota_all": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": 6
+       },
+       "note": "大多数人理解，可板子上还是有人阴阳：『红了就端起架子了』"
+      }
+     ]
+    },
+    {
+     "id": "go_underground",
+     "label": "从此出门全副武装，能不露面就不露面",
+     "desc": "把自己藏起来，代价是活得像逃犯",
+     "immediate": {
+      "psyche": -8,
+      "shiroi": -4
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 30",
+       "effect": {
+        "psyche": -6
+       },
+       "note": "你开始怕出门，怕便利店，怕任何一个可能被拍到的街角"
+      }
+     ]
+    },
+    {
+     "id": "hunt_them",
+     "label": "顺着照片反查是谁拍的，找上门去",
+     "desc": "被逼到这份上，也想当一回猎人",
+     "immediate": {
+      "psyche": 6,
+      "stamina": -10,
+      "enjou": 5
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 45",
+       "effect": {
+        "enjou": 10,
+        "kaibox": 8
+       },
+       "note": "你查到了人，对峙的过程被对方录下来，剪成了'偶像上门威胁粉丝'"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shiroi_doxx",
+   "type": "私生",
+   "title": "他们扒到了我的老家",
+   "gate": "开盒风险 ≥ 55",
+   "weight": 1.3,
+   "cooldown": 6,
+   "narrative": "板子上有人发出了我的真名，还有我老家的县城、我读过的中学。底下有人起哄说要去'打卡'。我盯着那两个我用了二十年的字，一阵恍惚——那是我妈还在那儿住的地方。我立刻给我妈打电话，让她这几天别出门，她在那头问'怎么了呀'，我张了张嘴，什么也说不出来。",
+   "options": [
+    {
+     "id": "protect_family",
+     "label": "先护住家里，给妈打钱让她回舅舅家住几天",
+     "desc": "别的都往后放，家人最重要",
+     "immediate": {
+      "money": -600,
+      "psyche": -6,
+      "shiroi": -5
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "钱 < 800",
+       "effect": {
+        "psyche": -6
+       },
+       "note": "钱花出去了，房租却快交不上，那几天你两头都揪着心"
+      }
+     ]
+    },
+    {
+     "id": "legal",
+     "label": "找律师，走法律途径维权",
+     "desc": "把开盒的人揪出来，告他",
+     "immediate": {
+      "money": -1000,
+      "psyche": -3,
+      "enjou": 4,
+      "kaibox": -6
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "kaibox": -6,
+        "fame": 3
+       },
+       "note": "律师函一出，几个人删了帖。有人反倒说你有种，敢较真"
+      }
+     ]
+    },
+    {
+     "id": "endure",
+     "label": "什么都不做，一个人扛着熬过去",
+     "desc": "越回应越乱，忍到风头过去",
+     "immediate": {
+      "psyche": -12,
+      "kaibox": 4
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "开盒风险 ≥ 80",
+       "effect": {
+        "shiroi": 15
+       },
+       "note": "你的沉默让开盒的人更来劲，真名越传越广，连老家的小卖部都知道了"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shiroi_front_row",
+   "type": "私生",
+   "title": "第一排那双眼睛",
+   "gate": "重线进度 ≥ 2 且 人气 ≥ 12",
+   "weight": 1.0,
+   "cooldown": 5,
+   "narrative": "最近每一场，第一排正中都是同一个人。他不喊、不应援，就那么直勾勾地看着我，从开场看到散场。我唱歌的时候，目光没法不扫到他，一对上，他就轻轻地笑一下。散场我去后台，他就站在通道口等。我跟运营说，运营笑笑：「人家买票了，你总不能赶人吧。」",
+   "options": [
+    {
+     "id": "ask_ops_ban",
+     "label": "坚持让运营拉黑这个人，不许再进场",
+     "desc": "买票也不行，我在这台上待不下去了",
+     "immediate": {
+      "psyche": 4,
+      "shiroi": -6,
+      "enjou": 4,
+      "fame": -3
+     },
+     "delayed": []
+    },
+    {
+     "id": "perform_through",
+     "label": "照常演，当作没看见",
+     "desc": "这是我的舞台，我不能让给他",
+     "immediate": {
+      "psyche": -6,
+      "stage": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "shiroi": 8,
+        "psyche": -4
+       },
+       "note": "你越装没事，他越确信你们之间'有心照不宣的默契'"
+      }
+     ]
+    },
+    {
+     "id": "change_route",
+     "label": "演出结束从后门走，错开他",
+     "desc": "舞台归舞台，散场后我想保住自己",
+     "immediate": {
+      "psyche": -2,
+      "shiroi": -2,
+      "stamina": -4
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "shiroi_final",
+   "type": "私生",
+   "title": "他就在楼下站着",
+   "gate": "重线进度 ≥ 4",
+   "weight": 1.4,
+   "cooldown": 8,
+   "narrative": "窗帘没拉开，我知道他在楼下。路灯底下那个影子，站了快两个小时了。手机不停震，是他发来的：『我知道你在家。我们聊聊好不好，就一次。』我坐在地板上，背贴着门，把音乐开到最大也盖不住心跳。我忽然很清楚地意识到一件事：这不再是'粉丝'的问题了，这是有人在一点一点地，把我从我自己的生活里赶出去。",
+   "options": [
+    {
+     "id": "call_police_now",
+     "label": "这次真的报警，把一切说清楚",
+     "desc": "不再忍了，也不怕闹大了",
+     "immediate": {
+      "psyche": -4,
+      "shiroi": -11,
+      "enjou": 6,
+      "money": -200
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 50",
+       "effect": {
+        "fame": -5,
+        "kaibox": 6
+       },
+       "note": "人带走了，可事情上了本地新闻，你的名字第一次和'私生'两个字一起出现在大众面前"
+      }
+     ]
+    },
+    {
+     "id": "let_him_in",
+     "label": "开门，跟他把话一次说清楚",
+     "desc": "也许他想听的，就是一句当面的拒绝",
+     "immediate": {
+      "psyche": -16,
+      "shiroi": 7
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "私生跟踪 ≥ 80",
+       "effect": {
+        "enjou": 15,
+        "kaibox": 10
+       },
+       "note": "门开了那一次之后，他认定了自己'进得去'，从此再也赶不走"
+      }
+     ]
+    },
+    {
+     "id": "flee_city",
+     "label": "连夜收拾东西，去朋友家躲几天",
+     "desc": "先保住自己，别的都以后再说",
+     "immediate": {
+      "psyche": 2,
+      "stamina": -12,
+      "shiroi": -6,
+      "money": -150
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "stage": -4
+       },
+       "note": "躲出去的这几天错过了排练和一场营业，回来后队友看你的眼神有点复杂"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shir_downstairs",
+   "type": "私生跟踪",
+   "title": "私生跟到我家楼下",
+   "gate": "重线进度 ≥ 2 且 周 ≥ 4",
+   "weight": 1.0,
+   "cooldown": 5,
+   "narrative": "回家路上总觉得身后有脚步声。我拐进便利店，隔着玻璃看见一个人也停下来，站在路灯底下等着。等我再出门，TA 不远不近地跟着，一直跟到楼下。我站在单元门口掏钥匙，手抖得插不进锁孔——我第一次这么清楚地知道，有人在研究我每天几点回家。",
+   "options": [
+    {
+     "id": "call_police",
+     "label": "报警",
+     "desc": "事情公开了，安全了，也被挂出去",
+     "immediate": {
+      "shiroi": -5,
+      "enjou": 2,
+      "banzi": 3
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "私生跟踪 ≥ 40",
+       "effect": {
+        "shiroi": -6
+       },
+       "note": "对方收敛了一阵，但你的住址方向已经在某些群里传开了"
+      }
+     ]
+    },
+    {
+     "id": "move_house",
+     "label": "连夜找房子搬走",
+     "desc": "用钱和折腾换一夜安稳",
+     "immediate": {
+      "money": -800,
+      "shiroi": -7,
+      "psyche": -5,
+      "stamina": -6
+     },
+     "delayed": []
+    },
+    {
+     "id": "confront",
+     "label": "站住，转身当面跟 TA 摊牌",
+     "desc": "你以为的勇敢，也可能被当成『TA 记得我』",
+     "immediate": {
+      "psyche": -4,
+      "shiroi": 4,
+      "kaibox": 3
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 25",
+       "effect": {
+        "psyche": -8
+       },
+       "note": "TA 被你说哭了，第二天却发帖说『她跟我说话了』——你反而给了 TA 一个纪念日"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

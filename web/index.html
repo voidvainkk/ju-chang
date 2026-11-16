@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>聚场</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <div class="hud-main">
+      <span class="kv"><b id="v-money">—</b><i>钱</i></span>
+      <span class="kv"><b id="v-stamina">—</b><i>体力</i></span>
+      <span class="kv"><b id="v-psyche">—</b><i>心理</i></span>
+      <span class="kv"><b id="v-fame">—</b><i>人气</i></span>
+      <span class="kv co"><b id="v-enjou2">—</b><i>炎上</i></span>
+      <span class="kv co"><b id="v-banzi2">—</b><i>板子</i></span>
+    </div>
+    <button id="toggle" title="展开详细数值">⌄</button>
+  </header>
+
+  <section id="ota-panel">
+    <header><span>OTA</span><button id="ota-fold" title="收起">⌃</button></header>
+    <div id="ota-table"></div>
+  </section>
+
+  <section id="detail" class="hidden">
+    <div class="dgrid">
+      <div class="skill"><span>舞</span><b id="v-dance">—</b><i id="t-dance"></i></div>
+      <div class="skill"><span>唱</span><b id="v-sing">—</b><i id="t-sing"></i></div>
+      <div class="skill"><span>营业</span><b id="v-mc">—</b><i id="t-mc"></i></div>
+      <div><span>模板化</span><b id="v-template">—</b></div>
+      <div><span>炎上</span><b id="v-enjou">—</b></div>
+      <div><span>板子</span><b id="v-banzi">—</b></div>
+      <div><span>开盒</span><b id="v-kaibox">—</b></div>
+      <div><span>周</span><b id="v-week">—</b></div>
+    </div>
+    <div class="dbar" id="d-stats"></div>
+    <div class="dsec">
+      <h4>团里</h4>
+      <ul id="mate-list"></ul>
+    </div>
+  </section>
+
+  <main id="stage">
+    <div id="idol" class="idol hidden" aria-hidden="true">
+      <div id="idol-sprite" class="idol-sprite"></div>
+      <div class="idol-meta">
+        <b id="idol-name"></b>
+        <span id="idol-mood"></span>
+      </div>
+    </div>
+    <h2 id="title"></h2>
+    <div id="body"></div>
+    <div id="options"></div>
+    <div id="toast"></div>
+  </main>
+
+  <footer id="foot">
+    <button id="next" class="primary hidden">继续</button>
+    <button id="settings" class="ghost">记事本</button>
+    <button id="gallery" class="ghost">结局图鉴</button>
+    <button id="restart" class="ghost hidden">重开</button>
+  </footer>
+</div>
+<div id="pop" class="hidden"></div>
+<div id="overlay" class="hidden"></div>
+<div id="gallery-modal" class="hidden" aria-modal="true" role="dialog">
+  <div class="gal-panel">
+    <div class="gal-head">
+      <span id="gal-count"></span>
+      <button id="gal-close" class="ghost">关上</button>
+    </div>
+    <div id="gal-list" class="gal-list"></div>
+  </div>
+</div>
+<div id="settings-modal" class="hidden" aria-modal="true" role="dialog">
+  <div class="set-panel">
+    <div class="gal-head">
+      <span id="set-count">这一季的记事本</span>
+      <button id="set-close" class="ghost">关上</button>
+    </div>
+    <div id="set-body" class="set-body"></div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

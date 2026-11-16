@@ -1,0 +1,1041 @@
+{
+  "_meta": {
+    "kind": "storyline",
+    "id": "zhong",
+    "name": "重线",
+    "category": "线性剧情线",
+    "design_note": "重线是『她只是太爱我了』。与私生线的关键区别：私生线玩家第一眼就报警，重线的玩家从头到尾都不确定自己该不该觉得害怕——因为那个人没做错任何事，她只是把每一样好都给满，然后一样比一样更靠近。四拍=长联→每天一封长信→偷听与模仿→她在楼下留了东西；每拍 3 个剧情变体随机上 1。推进由『她攒下的』（内部量 zhongs）驱动，但这个数对玩家不可见（藏进信的字数里）——玩家唯一能读出的线索是：她好像知道得越来越多了。不开终局拷问，不交记忆点：只写 flag、推进数值，结论交给结局判定。第四拍收口写 final_intimate（她发了那条超话，结局=我只是太爱你了）或 final_cautioned（在发之前，有人先找到了她，结局交给季末判定）。",
+    "resource_keys": {
+      "money": "钱",
+      "stamina": "体力",
+      "psyche": "心理",
+      "fame": "人气",
+      "stage": "舞台稳定",
+      "ota_all": "全体OTA黏性",
+      "relation_A": "阿棠",
+      "relation_B": "露露",
+      "relation_C": "小满",
+      "relation_all": "团内关系整体",
+      "shiren": "私联人数",
+      "enjou": "炎上",
+      "kaibox": "开盒风险",
+      "zhongs": "她攒下的（对玩家不可见）",
+      "zhong": "重线进度",
+      "banzi": "板子关注度"
+    },
+    "chaser_schema": "进入拍0时选定 chaser：从当前 OTA 中选『黏性最高的一个』，不要求 risk≥0.3——重线的前提就是她是一个好粉丝，不是危险的粉丝。若池子里全空，则按 archetype=重力系 孵化一个并立刻进场。沿用其既有 name/gender，不新建。文案用 {{ta}} 显示名字、{{ta.ta}} 显示 他/她、{{ta.arche}} 显示原型标签。",
+    "schema": "stages[i] = {stage:int, key, title, gate, enter_zhong, variants[3]}；variant = {id, title, narrative, options[2-4]}；option = {id, label, desc, immediate:{res:delta}, advance:int(zhong增量), flags:[...], delayed:[{when,condition?,effect,note}], note?}。无 learns 字段（重线不交记忆点、无拷问）。",
+    "hidden_meter": "zhongs（她攒下的）对玩家完全不可见。它的唯一表现是信变长、以及她提起的事越来越具体。第三拍起，若 zhongs ≥ 阈值，她的台词会换成『模仿』版本（用我从没对她说过的话来关心我）。",
+    "soft_moments": "每一拍开头都有一段『好孩子时刻』：她做了件特别温柔的事，让玩家以为自己之前是想多了。这段不加任何数值，只给心理一点缓和。"
+  },
+  "stages": [
+    {
+      "stage": 0,
+      "key": "long_attend",
+      "title": "长联",
+      "gate": "任一 OTA 黏性 ≥ 62 且 认识周数 ≥ 2 且 重线进度 = 0",
+      "enter_zhong": 0,
+      "select_chaser": true,
+      "note": "这一拍没有任何『不对劲』的信号。她只是来得勤、记得清楚、说话软。玩家在这一拍做的每个选择，都会决定她后面攒得多快。",
+      "variants": [
+        {
+          "id": "zla_count",
+          "title": "她数了我们见过多少次",
+          "narrative": "散场后还剩最后三张券。{{ta}}走上前，把三张一起递过来，笑了笑说：『这是我们第 19 次见面。我数着呢。』我抬头看她，她脸一下子就红了，赶紧补一句：『……没有别的意思，就是觉得，能数得清，说明我每次都来了。』",
+          "options": [
+            {
+              "id": "zc_same",
+              "label": "说：那第 20 次由我请她，不算券",
+              "desc": "把她当成一个老朋友，而不是一个客人",
+              "immediate": {
+                "zhongs": 6,
+                "zhong": 1,
+                "psyche": 3,
+                "money": -40
+              },
+              "advance": 1,
+              "flags": [
+                "zhong_warm_open"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 4
+                  },
+                  "note": "她真的第 20 次来了，带着一个小蛋糕，插了一根蜡烛"
+                }
+              ],
+              "note": "她听见那句『我请她』的时候，眼睛亮了一下，然后很快低下去，说了声好"
+            },
+            {
+              "id": "zc_neutral",
+              "label": "笑着说，我会记住这一张脸",
+              "desc": "给一句得体的回应，不越界也不冷场",
+              "immediate": {
+                "zhongs": 3,
+                "zhong": 1,
+                "psyche": 1,
+                "ota_all": -1,
+                "stamina": -1
+              },
+              "advance": 1,
+              "flags": [],
+              "delayed": [],
+              "note": "她低下头，说『记住了就好』，声音很轻，像是说给自己听的"
+            },
+            {
+              "id": "zc_busy",
+              "label": "递回券，说后面还有人排队",
+              "desc": "把场面控制在工作范围内",
+              "immediate": {
+                "zhongs": -2,
+                "zhong": 1,
+                "ota_all": 1,
+                "stamina": -1
+              },
+              "advance": 1,
+              "flags": [
+                "zhong_boundary"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 5,
+                    "psyche": -3
+                  },
+                  "note": "她笑着让开了，可那一晚她的信写得比平时长",
+                  "condition": "zhongs ≥ 3"
+                }
+              ],
+              "note": "她接券的时候手指在抖，但笑得很好看"
+            }
+          ]
+        },
+        {
+          "id": "zlb_last_train",
+          "title": "她每次都坐末班车来",
+          "narrative": "散场时已经十一点半。我随口问{{ta}}：这么晚回去没事吗？她说没事，末班车刚好。我问她住哪儿，她说得笼统：『南边一点，坐过来要一个小时四十分钟。』我算了算——她为了这一场，来回三个半小时，只为了在列里站十分钟。",
+          "options": [
+            {
+              "id": "zl_thanks",
+              "label": "说：这么远还每次都来，是件很厉害的事",
+              "desc": "承认这份辛苦，让她知道被看见了",
+              "immediate": {
+                "zhongs": 7,
+                "zhong": 1,
+                "psyche": 2,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "zhong_seen_her"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 6
+                  },
+                  "note": "下一次她在信里写：『收到那句厉害的时候，我在回去的车上哭了一路。』",
+                  "condition": "zhongs ≥ 5"
+                }
+              ],
+              "note": "她摆摆手说没什么，可耳朵红透了"
+            },
+            {
+              "id": "zl_worry",
+              "label": "说：太晚了，下次别勉强",
+              "desc": "一句关心，但她听到的可能是别的",
+              "immediate": {
+                "zhongs": 4,
+                "zhong": 1,
+                "psyche": -2,
+                "stamina": -1
+              },
+              "advance": 1,
+              "flags": [
+                "zhong_care"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 3
+                  },
+                  "note": "她改成坐更早一班车走，但每次都提前三小时到场，站在门口排队"
+                }
+              ],
+              "note": "她说好，然后第二天，她四点就来了"
+            },
+            {
+              "id": "zl_joking",
+              "label": "打趣：这算不算在给我打工",
+              "desc": "用玩笑把距离撑开",
+              "immediate": {
+                "zhongs": 2,
+                "zhong": 1,
+                "psyche": 2,
+                "ota_all": -1
+              },
+              "advance": 1,
+              "flags": [],
+              "delayed": [],
+              "note": "她愣了一下，然后跟着笑：算，我乐意"
+            }
+          ]
+        },
+        {
+          "id": "zlc_teared_ticket",
+          "title": "她收着所有用过的券",
+          "narrative": "staff 在收桌子，{{ta}}还站在那儿，从包里掏出一个透明文件袋——里面整整齐齐码着一叠用过的特典券，每一张背面都有日期，按顺序订好。她说：『我全都留着。这个是我的账本。』",
+          "options": [
+            {
+              "id": "zt_look",
+              "label": "拿过来一张一张翻，问她都是哪场",
+              "desc": "认真对待她收藏的东西",
+              "immediate": {
+                "zhongs": 8,
+                "zhong": 1,
+                "psyche": 3,
+                "stamina": -2
+              },
+              "advance": 1,
+              "flags": [
+                "zhong_seen_her"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 8
+                  },
+                  "note": "她开始把每张券背面写上那天我说过的话，下一次拿来给我看",
+                  "condition": "zhongs ≥ 6"
+                }
+              ],
+              "note": "翻到第十张时，她说这里是我第一次笑的时候"
+            },
+            {
+              "id": "zt_gentle",
+              "label": "说：这样会不会太沉了",
+              "desc": "轻描淡写地劝一句",
+              "immediate": {
+                "zhongs": 3,
+                "zhong": 1,
+                "psyche": -1
+              },
+              "advance": 1,
+              "flags": [
+                "zhong_care"
+              ],
+              "delayed": [],
+              "note": "她把文件袋抱在怀里，说：不沉，这很轻"
+            },
+            {
+              "id": "zt_turn",
+              "label": "说：券是拿来用的，不用留",
+              "desc": "把她的仪式当成多余的东西",
+              "immediate": {
+                "zhongs": 1,
+                "zhong": 1,
+                "ota_all": -1
+              },
+              "advance": 1,
+              "flags": [],
+              "delayed": [],
+              "note": "她点点头，把文件袋塞回包里，塞得有点急"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "key": "long_letter",
+      "title": "每天一封",
+      "gate": "重线进度 ≥ 1 且 周 ≥ 2",
+      "enter_zhong": 1,
+      "note": "私信一天只能发一条，所以她每天都把一整天攒成一条。这一拍玩家读到的是『她好会写』，读不到的是『她在把生活整个搬过来』。",
+      "variants": [
+        {
+          "id": "zm_first_letter",
+          "title": "第一封很长的私信",
+          "narrative": "凌晨，微博私信亮了一下。点开，是一封长到要分屏的信。她从今天下了班开始写：坐的哪班车、车上有人外放视频、她在便利店买了什么、到场馆时天已经黑了。最后一行是：『其实我也不知道写这些有什么用。就是今天一整天，好像只有这十分钟是剩下的。』",
+          "options": [
+            {
+              "id": "zm_reply_all",
+              "label": "从头到尾回她，连便利店买什么都问",
+              "desc": "让她知道有人认真读完了",
+              "immediate": {
+                "zhongs": 9,
+                "zhong": 2,
+                "psyche": 2,
+                "stamina": -3
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_wrote_back"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 8
+                  },
+                  "note": "下一封信变成了两倍长——她发现，写得越多，回得越长"
+                }
+              ],
+              "note": "她回了一个很长的『好』，后面跟着三个省略号"
+            },
+            {
+              "id": "zm_reply_short",
+              "label": "回一句：早点睡，明天还得见",
+              "desc": "温和地收尾，不留话头",
+              "immediate": {
+                "zhongs": 4,
+                "zhong": 2,
+                "psyche": -2,
+                "stamina": -1
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_short_reply"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 5
+                  },
+                  "note": "她照常写，只是每一封的开头都变成『不知道这一封会不会被看见』"
+                }
+              ],
+              "note": "她秒回：晚安。然后一分钟后又发来一句：真的睡了"
+            },
+            {
+              "id": "zm_no_reply",
+              "label": "看完，不回",
+              "desc": "我已经有点累了，而且不知道该怎么回",
+              "immediate": {
+                "zhongs": 6,
+                "zhong": 2,
+                "psyche": -2,
+                "ota_all": -1
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_silent"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 10
+                  },
+                  "note": "她没问为什么没回，只是写得更长了——她开始替我找理由"
+                }
+              ],
+              "note": "第二天的信开头是：『昨天太晚了，一定累坏了。』"
+            }
+          ]
+        },
+        {
+          "id": "zm_two_weeks",
+          "title": "信里出现了我的名字",
+          "narrative": "连着两周，每天一封。我已经习惯在睡前点开。今天这封写到中间，突然出现一句：『我在想，如果有一天她不干了，我大概会记得最清楚的是她说话的时候，嘴会往一边歪。』我盯着那句话看了很久，因为那是我对着镜子练过的习惯，我自己都没意识到过。",
+          "options": [
+            {
+              "id": "zm_ask_back",
+              "label": "问她：这件事是从哪里看出来的",
+              "desc": "第一次主动去确认她到底看得多仔细",
+              "immediate": {
+                "zhongs": 11,
+                "zhong": 2,
+                "psyche": -2,
+                "stamina": -2
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_asked_how"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 6
+                  },
+                  "note": "她准确说出了三场里我每场歪的方向，还说：『因为只在那个人开心的时候才歪。』"
+                }
+              ],
+              "note": "她答得很快，像是等这个问题等了很久"
+            },
+            {
+              "id": "zm_soft",
+              "label": "回她一句：被看得这么仔细，有点不好意思",
+              "desc": "把这件事当成夸奖接住",
+              "immediate": {
+                "zhongs": 8,
+                "zhong": 2,
+                "psyche": 3,
+                "stamina": -2
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_took_it_well"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 5
+                  },
+                  "note": "下一封里出现了更多身体细节：手指、站姿、笑的时候先动哪边嘴角"
+                }
+              ],
+              "note": "她回：那我以后多写一点"
+            },
+            {
+              "id": "zm_cold",
+              "label": "说：别盯着我看这么细",
+              "desc": "划一道线",
+              "immediate": {
+                "zhongs": -3,
+                "zhong": 2,
+                "psyche": -3,
+                "ota_all": -2
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_boundary"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 4,
+                    "psyche": -2
+                  },
+                  "note": "她道歉，然后下一封信里改成『我不写了，也不用回』，可她还是每天都发"
+                }
+              ],
+              "note": "她回了一个『好』，然后隔了很久才补一句『对不起』"
+            }
+          ]
+        },
+        {
+          "id": "zm_six_pages",
+          "title": "六页",
+          "narrative": "这封信有六页。她写自己为什么开始来看我：不是因为好听，是因为有一次我在台上被话筒杂音盖住，重来了一遍，然后说『这次算我自己的』。她说她那天在台下哭了。信的末尾她写：『我知道我这样很麻烦。要是被取消了关注，我也不会怪谁。』",
+          "options": [
+            {
+              "id": "z6_reassure",
+              "label": "回她：不烦，也不会取消关注",
+              "desc": "给她一个明确的安全感",
+              "immediate": {
+                "zhongs": 12,
+                "zhong": 2,
+                "psyche": 3,
+                "enjou": 2
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_promised"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 10
+                  },
+                  "note": "她在下一封信里写了：『我记住了。不会取消我。那我就可以一直写下去。』",
+                  "condition": "zhongs ≥ 10"
+                }
+              ],
+              "note": "她回语音，只有两秒，什么也没说，就是呼吸声"
+            },
+            {
+              "id": "z6_gentle_no",
+              "label": "说：很感激，但别写这么多",
+              "desc": "温柔，但清楚地说过头了",
+              "immediate": {
+                "zhongs": 3,
+                "zhong": 2,
+                "psyche": -3,
+                "stamina": -1
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_care"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 6
+                  },
+                  "note": "她字数少了，但改成每天发两条——一条私信，一条超话@我"
+                }
+              ],
+              "note": "她说好，然后第二天还是六页，只是改成定时发送"
+            },
+            {
+              "id": "z6_leave_read",
+              "label": "已读，什么都没说",
+              "desc": "不想承诺，也不想拒绝",
+              "immediate": {
+                "zhongs": 9,
+                "zhong": 2,
+                "psyche": -2,
+                "ota_all": -1
+              },
+              "advance": 2,
+              "flags": [
+                "zhong_silent"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 9
+                  },
+                  "note": "她开始把信写成日记：『第 N 天，看了，没有回。』"
+                }
+              ],
+              "note": "那一条下面，她点了自己一个赞"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "key": "eavesdrop",
+      "title": "她站在列旁边",
+      "gate": "重线进度 ≥ 2 且 周 ≥ 3",
+      "enter_zhong": 2,
+      "note": "这一拍开始，她不再只是『来看我』，她开始『听我跟别人说话』。最狠的一层是后面的模仿：她把我给别人的关心学走了，再还给我。",
+      "variants": [
+        {
+          "id": "ze_standing",
+          "title": "她不排队了",
+          "narrative": "这几次她都不排了。就站在列尾后面，抱着包，安静地看着。等我抬头，她立刻笑一下，摆手表示不用管她。散场时 staff 说：那位客人今天买了券，但一张都没用。我把券退给她，她接过去说：『我就是想站一会儿，听听台上跟别人说话。』",
+          "options": [
+            {
+              "id": "ze_let_stand",
+              "label": "说：那就站着吧，反正也不赶人",
+              "desc": "默许了这件事",
+              "immediate": {
+                "zhongs": 12,
+                "zhong": 3,
+                "psyche": -2,
+                "stamina": -1
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_let_her_listen"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 12
+                  },
+                  "note": "她开始带小本子，记下每个客人排到时我说的话"
+                }
+              ],
+              "note": "她说谢谢的时候，眼里有一种被允许的亮"
+            },
+            {
+              "id": "ze_ask",
+              "label": "问她：听这些做什么",
+              "desc": "第一次直接问她动机",
+              "immediate": {
+                "zhongs": 8,
+                "zhong": 3,
+                "psyche": -3
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_asked_why"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 8
+                  },
+                  "note": "她说：『我想知道你对每个人都这么好，还是只对我。』",
+                  "condition": "zhongs ≥ 15"
+                }
+              ],
+              "note": "她想了很久，说：听听你说什么，我就知道哪句是真的"
+            },
+            {
+              "id": "ze_push",
+              "label": "请 staff 请她回去坐着",
+              "desc": "用规则处理这件事",
+              "immediate": {
+                "zhongs": -4,
+                "zhong": 3,
+                "psyche": -3,
+                "ota_all": -2
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_boundary"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 7,
+                    "psyche": -4
+                  },
+                  "note": "她没再来站着，改为每场都提前两个小时到，在门口看我们排练"
+                }
+              ],
+              "note": "她走得很安静，走到门口才回头看了一次"
+            }
+          ]
+        },
+        {
+          "id": "ze_imitate",
+          "title": "她说了一句我没对她说过的话",
+          "narrative": "排到我面前时，{{ta}}说：『最近是不是睡不好，眼下的青比以前深了。』我愣了一下——这句话我上周对另一个客人说过，当时她站在列尾。我问她怎么知道的，她说：『上周台上说的呀。』语气很自然，像在说一件所有人都该知道的事。",
+          "options": [
+            {
+              "id": "zi_scared",
+              "label": "心里一冷，问她是不是一直在听",
+              "desc": "第一次真的感觉到不对劲",
+              "immediate": {
+                "zhongs": 9,
+                "zhong": 3,
+                "psyche": -5,
+                "stamina": -2
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_realized"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 6
+                  },
+                  "note": "她说『我以为你喜欢我多知道一点』，然后信里开始用『我们』这个词"
+                }
+              ],
+              "note": "她的表情是我第一次在她脸上看见的：她没觉得自己错了"
+            },
+            {
+              "id": "zi_touched",
+              "label": "说：被记住的感觉挺好的",
+              "desc": "把不对劲翻译成了被爱",
+              "immediate": {
+                "zhongs": 14,
+                "zhong": 3,
+                "psyche": 4,
+                "stamina": -2
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_moved"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 14
+                  },
+                  "note": "下一场，她连我对别人说过的三个玩笑都学会了，用词一模一样"
+                }
+              ],
+              "note": "她低下头笑，说：那我记性很好"
+            },
+            {
+              "id": "zi_deflect",
+              "label": "笑着转开：说那只是正常的关心",
+              "desc": "用玩笑掩盖过去",
+              "immediate": {
+                "zhongs": 10,
+                "zhong": 3,
+                "psyche": -2,
+                "stamina": -1
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_deflect"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 10
+                  },
+                  "note": "她把这句『正经关心』写进了信的第一行，说那是她最开心的一天",
+                  "condition": "zhongs ≥ 18"
+                }
+              ],
+              "note": "她笑着重复了一遍：正经关心"
+            }
+          ]
+        },
+        {
+          "id": "ze_same_spot",
+          "title": "她坐在同一家店",
+          "narrative": "散场后我去吃夜宵，推门进去，看见{{ta}}坐在靠窗那桌——不是我们桌，就是斜对角，隔着一根柱子。她抬头看见我，很自然地说：『好巧。我常来这家。』我坐下来，全程能听见她在对面哼我们场上的歌，一段一段的，哼得很准。",
+          "options": [
+            {
+              "id": "zs_sit_together",
+              "label": "招呼她过来一起吃",
+              "desc": "把这份默契接住",
+              "immediate": {
+                "zhongs": 15,
+                "zhong": 3,
+                "psyche": 3,
+                "money": -60
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_shared_table"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 12
+                  },
+                  "note": "她记住了我点的那碗面，下次提前点好，等我去坐"
+                }
+              ],
+              "note": "她端着盘子过来，坐得很端正，话很少"
+            },
+            {
+              "id": "zs_finish_fast",
+              "label": "快点吃完，起身走人",
+              "desc": "不给她接话的机会",
+              "immediate": {
+                "zhongs": 4,
+                "zhong": 3,
+                "psyche": -3,
+                "stamina": -2
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_avoided"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 8
+                  },
+                  "note": "她还在那家店，只是改坐到最里面那桌，背对着门"
+                }
+              ],
+              "note": "我出门时回头，她还坐在那儿，没动筷子"
+            },
+            {
+              "id": "zs_call_out",
+              "label": "走过去，直接问她是不是跟着我来的",
+              "desc": "把所有的客套都撕开",
+              "immediate": {
+                "zhongs": 6,
+                "zhong": 3,
+                "psyche": -4,
+                "enjou": 2
+              },
+              "advance": 3,
+              "flags": [
+                "zhong_confronted_early"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 6,
+                    "psyche": -4
+                  },
+                  "note": "她说：『我没跟，我只是想知道你下班之后是什么样子。』",
+                  "condition": "zhongs ≥ 15"
+                }
+              ],
+              "note": "她一点也不慌，像是在等这个问题"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "key": "the_bag",
+      "title": "楼下那个塑料袋",
+      "gate": "重线进度 ≥ 3 且 周 ≥ 5",
+      "enter_zhong": 3,
+      "note": "收口拍。不写她出现，写她已经走了、东西留在原地——越过了墙，才叫开盒。玩家在这里第一次知道：那张照片，只有站在后台外面的人才拍得到。",
+      "variants": [
+        {
+          "id": "zz_bag",
+          "title": "没写名字的塑料袋",
+          "narrative": "下楼的时候，小区门口放着一个白色塑料袋，没写名字。里面是我的伞——上周丢的那把；一包没吃完的饼干，是我在后台吃的那款；还有一张拍立得。照片上是我在后台擦汗，灯还没全亮，四周是空的。这张照片的机位在后台外面，隔着一道没关严的门。",
+          "options": [
+            {
+              "id": "zb_take_all",
+              "label": "把东西全拿上楼",
+              "desc": "先收起来，不惊动任何人",
+              "immediate": {
+                "zhongs": 15,
+                "zhong": 4,
+                "psyche": -6,
+                "stamina": -2
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_kept_bag"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 15
+                  },
+                  "note": "下一次她什么都没留——因为她已经知道我会上楼把它们收好"
+                }
+              ],
+              "note": "我把照片翻过来，背面写着：『你在后台的样子，比台上还好看。』"
+            },
+            {
+              "id": "zb_report",
+              "label": "拿着照片去找运营",
+              "desc": "第一次正式上报",
+              "immediate": {
+                "zhongs": 4,
+                "zhong": 4,
+                "psyche": -4,
+                "banzi": 4,
+                "relation_all": -2
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_reported",
+                "final_cautioned"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 12,
+                    "enjou": 8
+                  },
+                  "note": "运营约谈了她，她全程笑着道歉。三天后，那条超话还是发出来了",
+                  "condition": "zhongs ≥ 25"
+                }
+              ],
+              "note": "运营问我：她买了多少券？我说，我是门票第一。他沉默了"
+            },
+            {
+              "id": "zb_wait",
+              "label": "坐在楼下，等她回来",
+              "desc": "把这件事变成一次正面相遇",
+              "immediate": {
+                "zhongs": 18,
+                "zhong": 4,
+                "psyche": 3,
+                "stamina": -5
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_waited_for_her"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 18
+                  },
+                  "note": "她来了。她说她每天都在这个时间。她说她只是想在我出门的时候看我一眼。"
+                }
+              ],
+              "note": "她看见我，第一反应是往后退了一步。然后她笑了，说：你终于下来了"
+            }
+          ]
+        },
+        {
+          "id": "zz_floor",
+          "title": "她把我家门牌号念了一遍",
+          "narrative": "隔壁阿姨在楼道里喊住我，笑着说：『你朋友昨天在楼下等了你很久，我问她找谁，她把门牌号念了一遍，念得可准了。』阿姨说得随意，还补了一句：『小姑娘挺好看的，就是穿得太单薄。』",
+          "options": [
+            {
+              "id": "zf_move_soon",
+              "label": "当天就开始找新的房子",
+              "desc": "用搬家解决问题",
+              "immediate": {
+                "zhongs": 5,
+                "zhong": 4,
+                "psyche": -5,
+                "money": -600,
+                "stamina": -8
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_moving",
+                "final_cautioned"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 10,
+                    "psyche": -6
+                  },
+                  "note": "搬进去的第二天，新地址的快递柜里，多了一个没写名字的袋子",
+                  "condition": "zhongs ≥ 30"
+                }
+              ],
+              "note": "搬家公司的车开出那条街时，我在后视镜里看见她站在公交站牌下面"
+            },
+            {
+              "id": "zf_neighbor",
+              "label": "跟阿姨说清楚，以后别告诉她",
+              "desc": "动用身边的人",
+              "immediate": {
+                "zhongs": 8,
+                "zhong": 4,
+                "psyche": -2,
+                "relation_all": 1
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_warned_neighbor"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 12
+                  },
+                  "note": "她不在楼下等了，开始在我上班那条路上出现"
+                }
+              ],
+              "note": "阿姨说好，然后小声问我：那孩子是不是有点问题"
+            },
+            {
+              "id": "zf_ignore",
+              "label": "装作没听见，回屋关门",
+              "desc": "不承认这件事发生过",
+              "immediate": {
+                "zhongs": 20,
+                "zhong": 4,
+                "psyche": -8
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_ignored"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 16
+                  },
+                  "note": "她没有再来。整整一周，一丝消息都没有。这比什么都吓人"
+                }
+              ],
+              "note": "关上门之后，我在玄关站了很久，听见自己心跳"
+            }
+          ]
+        },
+        {
+          "id": "zz_letter_final",
+          "title": "最后一封信里有一句话没有主语",
+          "narrative": "最后一封信有这么一段：『我很怕有一天，会被当成麻烦。可我又想，如果什么都不做，那连『我是麻烦』这件事都没人知道。所以我决定，我要让她知道她有多好。』这一段没有主语，也没有说明『让谁知道』。我往前翻，这一周她一共发了七个字，而这封信有九页。",
+          "options": [
+            {
+              "id": "zl_answer_soft",
+              "label": "回她一句：是我该谢谢她，别做傻事",
+              "desc": "最后一次用温柔换时间",
+              "immediate": {
+                "zhongs": 18,
+                "zhong": 4,
+                "psyche": -3,
+                "stamina": -3
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_soft_final"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 20,
+                    "enjou": 6
+                  },
+                  "note": "她没有再回。十二小时后，那条超话发了出来"
+                }
+              ],
+              "note": "她回了一个句号。整整一分钟，那个句号一直在输入框里闪着"
+            },
+            {
+              "id": "zl_answer_hard",
+              "label": "回她：她在做什么我都不知道，但这是最后一次回复",
+              "desc": "第一次真正的断联",
+              "immediate": {
+                "zhongs": 8,
+                "zhong": 4,
+                "psyche": -5,
+                "ota_all": -5
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_cut_off",
+                "final_cautioned"
+              ],
+              "delayed": [
+                {
+                  "when": "条件",
+                  "effect": {
+                    "zhongs": 25,
+                    "enjou": 8
+                  },
+                  "note": "断联三天后，我在超话里看见了自己的名字",
+                  "condition": "zhongs ≥ 40"
+                }
+              ],
+              "note": "我按下发送的手在抖。她回得很快：我知道了。谢谢你告诉我"
+            },
+            {
+              "id": "zl_answer_all",
+              "label": "把自己所有能说的都告诉她",
+              "desc": "想用坦白换一个结局",
+              "immediate": {
+                "zhongs": 26,
+                "zhong": 4,
+                "psyche": 5,
+                "stamina": -6
+              },
+              "advance": 4,
+              "flags": [
+                "zhong_gave_everything",
+                "final_intimate"
+              ],
+              "delayed": [
+                {
+                  "when": "下周",
+                  "effect": {
+                    "zhongs": 30
+                  },
+                  "note": "她第一次没有写信，而是发来一句：那我明天去你的场"
+                }
+              ],
+              "note": "我写到凌晨三点。写到后来，我自己也分不清，是不是在求救"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

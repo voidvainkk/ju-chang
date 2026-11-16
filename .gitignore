@@ -1,0 +1,35 @@
+# 运行时状态：存档和图鉴是玩家自己的进度，不进版本库
+game/_save.json
+game/_gallery.json
+
+# Python
+__pycache__/
+*.pyc
+
+# 前端
+node_modules/
+dist/
+.vite/
+
+# 临时产物
+_preview.png
+_gen*.png
+_shot.png
+_*.tmp
+
+# 生图原档（9.7MB，仅用于生成 web/sprites/，成品已入库）
+16×16像素双马尾角色图生成*.jpeg
+
+# 旧实验产物：32x48 的 avatar 图，游戏里不读
+avatar_all.png
+avatar_*.png
+
+# 已废弃、无人读取的剧情线与生成出来的审核文档
+data/storylines/_retired/
+data/卡库总览.md
+
+# Pyodide 可行性试验页（不是游戏代码）
+_pytest/
+
+# 手工导出的交付文档，源文件是 简介与攻略.md
+聚场-简介与攻略.docx

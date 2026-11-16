@@ -1,0 +1,799 @@
+/* ── 聚场 · 蓝白像素 ─────────────────────────────────────────
+   底色是纸白偏冰蓝，字是墨蓝，边线用两档蓝灰拉出「像素描边」的感觉。
+   所有直角都不圆：按钮用 clip-path 切角，条形用虚线填充，
+   正文保持宋体（这一屏一屏都是字，换成像素字会读不动）。
+   ──────────────────────────────────────────────────────────── */
+
+:root{
+  --bg:#e9f1fa;          /* 冰蓝白 */
+  --paper:#ffffff;
+  --ink:#16233a;         /* 墨蓝 */
+  --ink2:#2f4571;
+  --dim:#6d86a8;
+  --line:#c3d5e9;
+  --line2:#9cb8d8;
+  --accent:#1b6bd0;      /* 钴蓝 */
+  --accent-d:#0d4a97;
+  --warm:#1b6bd0;
+  --cold:#5a9bd8;
+  --bad:#cf3f37;
+  --good:#1f9b6c;
+
+  --px:"Ark Pixel 12px Monospaced","Zpix","Fusion Pixel 12px Monospaced","Silkscreen",
+       ui-monospace,"Cascadia Mono",Consolas,"Courier New",monospace;
+  --serif:"Songti SC","SimSun","Noto Serif CJK SC",serif;
+  --cut:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+img,canvas{image-rendering:pixelated}
+
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.9 var(--serif);
+  letter-spacing:.02em;
+  /* 8px 像素网格，弱到只当纸纹 */
+  background-image:
+    linear-gradient(90deg,rgba(27,107,208,.045) 1px,transparent 1px),
+    linear-gradient(rgba(27,107,208,.045) 1px,transparent 1px);
+  background-size:8px 8px;
+  -webkit-font-smoothing:antialiased;
+}
+#app{max-width:720px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:0 22px}
+
+/* ── HUD ───────────────────────────────────────────────── */
+#hud{
+  position:sticky;top:0;z-index:5;
+  background:var(--paper);
+  display:flex;align-items:center;justify-content:space-between;
+  margin:0 -22px;padding:12px 22px 10px;
+  border-bottom:2px solid var(--ink);
+  box-shadow:0 3px 0 -1px var(--line2);
+}
+.hud-main{display:flex;gap:16px;flex-wrap:wrap}
+.kv{display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums}
+.kv b{
+  font-family:var(--px);font-weight:400;font-size:14px;
+  color:var(--accent);min-width:2ch;text-align:right;letter-spacing:.02em;
+  text-shadow:1px 1px 0 rgba(27,107,208,.14);
+}
+.kv i{font-style:normal;font-size:10.5px;color:var(--dim);font-family:var(--px);letter-spacing:.06em}
+.kv.up b{animation:up .9s steps(4,end)}
+.kv.down b{animation:down .9s steps(4,end)}
+@keyframes up{0%{color:var(--good);transform:translateY(-3px)}100%{color:var(--accent);transform:none}}
+@keyframes down{0%{color:var(--bad);transform:translateY(3px)}100%{color:var(--accent);transform:none}}
+
+#toggle{
+  background:var(--paper);border:2px solid var(--ink);color:var(--ink2);
+  border-radius:0;width:30px;height:30px;cursor:pointer;
+  font-size:13px;line-height:1;font-family:var(--px);
+  clip-path:var(--cut);
+}
+#toggle:hover{background:var(--accent);color:#fff;border-color:var(--accent-d)}
+#toggle.on{color:#fff;background:var(--accent);border-color:var(--accent-d);transform:rotate(180deg)}
+
+/* ── 详细面板 ──────────────────────────────────────────── */
+#detail{
+  background:var(--paper);
+  border:2px solid var(--ink);
+  margin:12px 0 14px;padding:14px 16px 12px;
+  font-size:13px;color:var(--dim);
+  font-family:var(--px);letter-spacing:.02em;
+  animation:slide .18s steps(3,end);
+  clip-path:var(--cut);
+}
+@keyframes slide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+#detail.hidden{display:none}
+.dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 10px;margin-bottom:12px}
+.dgrid div{
+  display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;
+  border-bottom:2px dotted var(--line);padding-bottom:2px;
+}
+.dgrid b{color:var(--ink);font-weight:400;font-variant-numeric:tabular-nums;font-family:var(--px)}
+/* 档位说明自己占第二行，别把「舞 45」和「再练 5 点」挤在同一行 */
+.dgrid .skill i{display:block;flex:0 0 100%;margin-top:2px;font-size:10.5px;font-style:normal;color:var(--dim);letter-spacing:0}
+.dsec h4{
+  margin:10px 0 6px;font-weight:400;font-size:11px;color:var(--dim);
+  letter-spacing:.18em;font-family:var(--px);
+}
+.dsec ul{list-style:none;margin:0;padding:0}
+.dsec li{display:flex;gap:10px;align-items:baseline;padding:3px 0}
+.dsec li .nm{color:var(--ink);min-width:5.5em;font-family:var(--serif);font-size:13.5px}
+.dsec li .ar{color:var(--dim);font-size:11px}
+.dsec li .st{margin-left:auto;font-variant-numeric:tabular-nums}
+.dbar{margin-top:10px;font-size:11.5px;color:var(--dim);line-height:1.9;letter-spacing:.02em}
+
+/* 像素条：虚线段落的填充 */
+.bar{
+  height:8px;background:repeating-linear-gradient(90deg,var(--line) 0 3px,transparent 3px 6px);
+  flex:1;position:relative;max-width:120px;margin:0 8px;
+}
+.bar>i{
+  position:absolute;left:0;top:0;bottom:0;display:block;
+  background:repeating-linear-gradient(90deg,var(--accent) 0 3px,transparent 3px 6px);
+}
+
+/* ── 舞台 ──────────────────────────────────────────────── */
+#stage{flex:1;padding:26px 0 40px;position:relative}
+#stage.has-tag #title{padding-right:70px}
+.corner-tag{
+  position:absolute;top:24px;right:0;z-index:2;
+  padding:2px 8px;font-family:var(--px);font-size:10.5px;letter-spacing:.12em;
+  border:2px solid;line-height:1.5;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%);
+}
+.corner-tag.chat{color:var(--accent-d);border-color:var(--accent-d);background:var(--paper)}
+.corner-tag.recall{color:#fff;border-color:#8d2019;background:var(--bad)}
+
+/* ── 版聊：一条条聊天记录 ───────────────────────────────── */
+.chat-log{display:flex;flex-direction:column;gap:12px;margin:2px 0 4px}
+.chat-day{text-align:center;font-family:var(--px);font-size:10.5px;color:var(--dim);letter-spacing:.1em}
+.msg{display:flex}
+.msg.me{justify-content:flex-end}
+.msg .bubble{
+  max-width:84%;background:var(--paper);
+  border:2px solid var(--line2);padding:8px 12px 7px;
+  clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+}
+.msg.me .bubble{background:#dce9f7;border-color:var(--accent-d)}
+.msg .quote{
+  border-left:3px solid var(--line2);padding:1px 0 1px 9px;margin:0 0 6px;
+  color:var(--dim);font-size:12.5px;line-height:1.6;
+}
+.msg.me .quote{border-left-color:var(--accent-d);color:var(--ink2)}
+.msg .who{font-family:var(--px);font-size:10.5px;color:var(--dim);letter-spacing:.06em}
+.msg .who .tm{margin-left:8px;opacity:.8}
+.msg .txt{font-size:15px;line-height:1.7;margin-top:2px}
+#title{
+  font-size:19px;font-weight:400;letter-spacing:.2em;margin:0 0 16px;
+  color:var(--accent-d);
+  padding-bottom:7px;
+  border-bottom:2px dotted var(--line2);
+  text-shadow:1px 1px 0 rgba(27,107,208,.12);
+}
+#title:empty{display:none}
+#body p{margin:0 0 1.15em;text-indent:0}
+#body p.quote{color:var(--ink2);font-size:15px}
+.fade{animation:fade .28s steps(4,end)}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+p.grow{color:var(--accent-d);font-size:12px;margin-top:10px;font-family:var(--px);letter-spacing:.04em}
+
+/* 谁在跟我打交道：左上角一块像素牌子 */
+.face{
+  display:inline-block;margin:0 0 10px;padding:3px 9px;
+  background:var(--accent);color:#fff;
+  font-family:var(--px);font-size:11px;letter-spacing:.1em;
+  border:2px solid var(--accent-d);
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%);
+}
+
+/* ── 选项 ──────────────────────────────────────────────── */
+#options{display:flex;flex-direction:column;gap:11px;margin-top:26px}
+#options button{
+  text-align:left;background:var(--paper);
+  border:2px solid var(--ink);border-radius:0;
+  color:var(--ink);padding:13px 16px;cursor:pointer;font:inherit;
+  clip-path:var(--cut);
+  filter:drop-shadow(3px 3px 0 rgba(13,74,151,.16));
+  transition:background .1s,color .1s,border-color .1s,transform .06s steps(2,end);
+}
+#options button:hover{background:var(--accent);color:#fff;border-color:var(--accent-d)}
+#options button:hover small{color:rgba(255,255,255,.85)}
+#options button:active{transform:translate(2px,2px);filter:drop-shadow(1px 1px 0 rgba(13,74,151,.16))}
+#options button small{display:block;color:var(--dim);font-size:12.5px;margin-top:3px;font-family:var(--px);letter-spacing:.02em}
+#options button .warn{color:var(--bad);font-size:12.5px}
+#options button:hover .warn{color:#ffd9d4}
+
+/* ── 底栏 ──────────────────────────────────────────────── */
+#foot{
+  position:sticky;bottom:0;z-index:4;
+  background:linear-gradient(transparent,var(--bg) 42%);
+  padding:18px 0 22px;display:flex;gap:12px;justify-content:space-between;align-items:center;
+}
+button.primary{
+  background:var(--accent);color:#fff;border:2px solid var(--accent-d);border-radius:0;
+  padding:10px 28px;font-family:var(--px);font-size:13px;cursor:pointer;letter-spacing:.2em;
+  clip-path:var(--cut);
+  filter:drop-shadow(3px 3px 0 rgba(13,74,151,.32));
+  transition:background .1s,transform .06s steps(2,end);
+}
+button.primary:hover{background:#2a7fe4}
+button.primary:active{transform:translate(2px,2px);filter:drop-shadow(1px 1px 0 rgba(13,74,151,.32))}
+button.ghost{
+  background:var(--paper);border:2px solid var(--line2);color:var(--dim);
+  padding:7px 14px;border-radius:0;font:inherit;font-size:12.5px;cursor:pointer;
+  font-family:var(--px);letter-spacing:.06em;clip-path:var(--cut);
+}
+button.ghost:hover{color:var(--ink);border-color:var(--ink)}
+button.ghost.armed{color:#fff;background:var(--bad);border-color:#8e2823}
+.hidden{display:none !important}
+
+/* ── 数值弹窗：深蓝的 OSD 小牌 ────────────────────────── */
+#pop{
+  position:fixed;right:24px;bottom:96px;min-width:140px;padding:10px 13px;
+  background:#0f1d33;border:2px solid var(--accent);
+  color:#c8dcf5;font-size:12.5px;z-index:20;border-radius:0;
+  font-family:var(--px);letter-spacing:.02em;
+  box-shadow:4px 4px 0 rgba(13,74,151,.3);
+}
+#pop.hidden{display:none}
+#pop .prow{display:flex;align-items:baseline;gap:10px;padding:2px 0;font-variant-numeric:tabular-nums}
+#pop .prow span{min-width:2.4em}
+#pop .prow b{font-weight:400;margin-left:auto}
+#pop .prow em{font-style:normal;color:#5f7ba3;font-size:11px;min-width:3em;text-align:right}
+#pop .prow b.up{color:#6fd39a}
+#pop .prow b.dn{color:#ff8f84}
+#pop.in{animation:popin .14s steps(3,end)}
+@keyframes popin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+#pop .pota,#pop .pmate{
+  margin-top:6px;padding-top:6px;
+  border-top:2px dotted rgba(255,255,255,.14);
+}
+#pop .pota .prow span,#pop .pmate .prow span{color:#8fb0d6}
+@media (max-width:480px){ #pop{right:14px;bottom:86px} }
+
+/* ── 这一场的券 ────────────────────────────────────────── */
+.bill{margin-top:18px}
+.bill table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.bill th{
+  font-weight:400;color:var(--dim);font-size:11px;text-align:left;
+  padding:0 8px 6px;border-bottom:2px solid var(--ink);font-family:var(--px);letter-spacing:.08em;
+}
+.bill td{padding:7px 8px;border-bottom:2px dotted var(--line)}
+.bill .n{text-align:right;width:4.2em;font-family:var(--px)}
+.bill .m{text-align:right;width:5em;color:var(--accent-d);font-family:var(--px)}
+.bill .nm{color:var(--ink)}
+.bill .kd{color:var(--dim);font-size:11.5px}
+.bill th.n,.bill th.m{text-align:right}
+.bill tfoot td{padding-top:9px;border-bottom:none;color:var(--dim)}
+.bill tfoot .n,.bill tfoot .m{color:var(--accent-d)}
+.bill .absent{margin-top:10px;font-size:11.5px;color:var(--dim);font-family:var(--px)}
+.bill .empty{color:var(--dim)}
+
+/* 回执里的数值 */
+.dlt{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--dim);font-family:var(--px)}
+.dlt span.up{color:var(--good)}
+.dlt span.dn{color:var(--bad)}
+
+/* ── 取名 ──────────────────────────────────────────────── */
+.cands{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.cands button{
+  background:var(--paper);border:2px solid var(--ink);color:var(--ink);
+  padding:9px 20px;font:inherit;cursor:pointer;border-radius:0;
+  clip-path:var(--cut);filter:drop-shadow(2px 2px 0 rgba(13,74,151,.14));
+}
+.cands button:hover{background:var(--accent);color:#fff;border-color:var(--accent-d)}
+.namebox{display:flex;gap:10px;margin-top:16px}
+.namebox input{
+  flex:1;background:var(--paper);border:2px solid var(--ink);color:var(--ink);
+  padding:9px 12px;font:inherit;border-radius:0;
+}
+.namebox input:focus{outline:none;border-color:var(--accent);box-shadow:3px 3px 0 rgba(13,74,151,.18)}
+
+#toast{
+  position:fixed;left:50%;bottom:84px;transform:translateX(-50%);
+  background:#0f1d33;color:#dbe9f8;padding:7px 15px;border-radius:0;
+  border:2px solid var(--accent);
+  font-size:12px;font-family:var(--px);letter-spacing:.04em;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+#toast.show{opacity:1}
+
+@media (max-width:480px){
+  #app{padding:0 16px}
+  #hud{margin:0 -16px;padding:12px 16px 10px}
+  .hud-main{gap:11px}
+  .dgrid{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ── OTA：HUD 下面常驻的一张表 ────────────────────────── */
+#ota-panel{
+  margin:0 auto 10px;width:100%;max-width:720px;
+  background:var(--paper);
+  border:2px solid var(--ink);
+  padding:6px 10px 4px;
+  clip-path:var(--cut);
+  filter:drop-shadow(3px 3px 0 rgba(13,74,151,.12));
+}
+#ota-panel.fold #ota-table{display:none}
+#ota-panel header{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:.18em;color:var(--dim);font-family:var(--px);
+  padding:3px 0 5px;
+}
+#ota-panel header span:first-child{margin-right:auto}
+#ota-panel header button{
+  background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;padding:0 4px;
+  font-family:var(--px);
+}
+#ota-panel header button:hover{color:var(--accent)}
+#ota-table table{width:100%;border-collapse:collapse;font-size:12.5px}
+#ota-table th{
+  text-align:left;font-weight:400;color:var(--dim);
+  font-size:10.5px;padding:2px 6px;border-bottom:2px solid var(--line2);
+  font-family:var(--px);letter-spacing:.08em;
+}
+#ota-table td{padding:5px 6px;border-bottom:2px dotted var(--line);vertical-align:middle}
+#ota-table tr:last-child td{border-bottom:none}
+#ota-table .n{text-align:right;color:var(--dim);width:3em;font-family:var(--px)}
+#ota-table td.stick{width:40%;white-space:nowrap}
+#ota-table td.stick .bar{
+  display:inline-block;width:62%;height:7px;background:var(--line);
+  vertical-align:middle;margin-right:7px;
+  background:repeating-linear-gradient(90deg,var(--line) 0 3px,transparent 3px 6px);
+}
+#ota-table td.stick .bar i{
+  display:block;height:100%;
+  background:repeating-linear-gradient(90deg,var(--accent) 0 3px,transparent 3px 6px);
+}
+#ota-table td.stick b{font-weight:400;color:var(--dim);font-size:11px;font-family:var(--px)}
+#ota-table .sp{text-align:right;color:var(--dim);white-space:nowrap;font-size:11.5px}
+#ota-table .none{color:var(--dim);font-size:11.5px;margin:6px 2px;font-family:var(--px)}
+
+/* ── 小事：事件卡做小一点，别占满一屏 ──────────────────── */
+#stage.compact{padding-top:8px}
+#stage.compact #title{font-size:16px;margin:0 0 7px;letter-spacing:.1em;padding-bottom:5px}
+#stage.compact #body p{font-size:15px;line-height:1.75;margin:0 0 .7em;color:var(--ink2)}
+#stage.compact #options{gap:7px;margin-top:10px}
+#stage.compact #options button{padding:9px 13px;font-size:14.5px}
+#stage.compact #options button small{font-size:11.5px}
+#stage.compact .face{margin:0 0 6px;font-size:10.5px;padding:2px 8px}
+
+/* ── 失控：私联终局选「断联」之后，画面自己走 ────────────
+   这一段不需要玩家操作：按钮已隐藏，屏幕每两秒自己翻一屏，
+   炎上与板子在 HUD 里往 999 涨。整屏转成黑红，
+   连纸白和像素网格一起被吞掉。 */
+
+body.collapsing,
+body.collapse-end{
+  --bg:#0b0405;
+  --paper:#160709;
+  --ink:#f0dfda;
+  --ink2:#d8b8b2;
+  --dim:#8d6a66;
+  --line:#2a1013;
+  --line2:#3d171b;
+  --accent:#d92b3f;
+  --accent-d:#7d1420;
+  --warm:#ff5b4a;
+  transition:background .9s ease,color .9s ease;
+  background:#0b0405;
+  background-image:none;
+  animation:collapsePulse 3.4s steps(6,end) infinite;
+}
+
+@keyframes collapsePulse{
+  0%,100%{background:#0b0405}
+  50%{background:#15060a}
+}
+
+/* 灯一盏盏灭：钱 → 体力 → 心理 → 人气；炎上/板子不灭 */
+body.collapsing #hud .kv,
+body.collapse-end #hud .kv{transition:opacity .8s ease,filter .8s ease}
+body.collapsing #hud .kv.dying,
+body.collapse-end #hud .kv.dying{opacity:.14;filter:grayscale(1)}
+body.collapsing #hud .kv.co.dying,
+body.collapse-end #hud .kv.co.dying{opacity:1;filter:none}
+body.collapsing #hud .kv b,
+body.collapse-end #hud .kv b{color:#c0392b}
+
+/* 最后两屏正文被裁掉半句，只剩光标在闪 */
+#body.cut{
+  max-height:5.4em;overflow:hidden;
+  -webkit-mask-image:linear-gradient(#000 58%,transparent);
+  mask-image:linear-gradient(#000 58%,transparent);
+}
+#body.cut p:last-child::after{
+  content:"▍";margin-left:2px;color:#c0392b;
+  animation:cutBlink 1.05s steps(1,end) infinite;
+}
+@keyframes cutBlink{50%{opacity:0}}
+
+body.collapsing #app,
+body.collapse-end #app{position:relative;z-index:1}
+
+body.collapsing::after,
+body.collapse-end::after{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 34%,rgba(217,43,63,.22),transparent 62%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.016) 0 1px,transparent 1px 3px);
+  animation:collapseScan 5.2s linear infinite;
+  z-index:0;
+}
+
+@keyframes collapseScan{
+  from{background-position:0 0,0 0}
+  to{background-position:0 0,0 3px}
+}
+
+/* 演到最后直接退到纯黑：不加红雾、不加脉冲，只剩两个红数字。
+   必须写在上面那条 ::after 之后，否则同权重会被盖回去。 */
+body.collapse-end{
+  --bg:#000;--paper:#000;
+  background:#000;animation:none;
+}
+body.collapse-end::after{background:none;animation:none}
+
+body.collapsing #title,
+body.collapse-end #title{
+  color:var(--warm);letter-spacing:.2em;border-bottom-color:rgba(217,43,63,.4);
+  text-shadow:1px 1px 0 rgba(217,43,63,.35);
+}
+
+body.collapsing #body p,
+body.collapse-end #body p{
+  color:#e6cfc9;
+  animation:collapseLine .85s steps(4,end) both;
+}
+
+@keyframes collapseLine{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+
+body.collapsing #hud .kv b.flash{color:var(--warm)}
+
+body.collapsing #hud,
+body.collapsing #ota-panel,
+body.collapsing #detail,
+body.collapse-end #hud,
+body.collapse-end #ota-panel,
+body.collapse-end #detail{border-color:rgba(217,43,63,.45)}
+
+/* 弹窗：你似乎已经控制不了这一切了 */
+#overlay{
+  position:fixed;inset:0;z-index:80;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(6,2,3,.82);
+  opacity:0;transition:opacity .6s ease;
+}
+#overlay.in{opacity:1}
+#overlay .ovbox{
+  padding:26px 34px;
+  border:2px solid rgba(217,43,63,.6);
+  background:rgba(12,4,6,.92);
+  box-shadow:6px 6px 0 rgba(217,43,63,.16),0 0 40px rgba(217,43,63,.22);
+  max-width:78vw;
+}
+#overlay .ovline{
+  margin:0;font-size:18px;line-height:1.9;letter-spacing:.2em;
+  color:#f4e2dd;text-align:center;
+  animation:ovFlicker 2.6s steps(1,end) infinite;
+}
+@keyframes ovFlicker{
+  0%,92%,100%{opacity:1}
+  93%{opacity:.35}
+  95%{opacity:1}
+  96%{opacity:.55}
+}
+
+/* 失控时才出现在 HUD 里的两个数：炎上、板子 */
+#hud .kv.co{display:none}
+body.collapsing #hud .kv.co,
+body.collapse-end #hud .kv.co{display:inline-flex}
+#hud .kv.co b.flash{color:#ff5b4a;text-shadow:0 0 12px rgba(255,91,74,.6)}
+
+body.collapsing #next,
+body.collapsing #restart{display:none !important}
+
+/* ---------- 结局屏：这一季的回响 ---------- */
+.echo-card{margin:26px 0 6px;border:1px solid var(--line);background:rgba(255,255,255,.6);
+  padding:14px 16px 11px;clip-path:var(--cut)}
+.echo-card h4{margin:0 0 10px;font-family:var(--px);font-size:11px;font-weight:400;
+  letter-spacing:.22em;color:var(--dim)}
+.echo-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 22px}
+.ekv{display:flex;align-items:baseline;gap:10px;min-width:0}
+.ekv span{flex:none;width:5.2em;font-family:var(--px);font-size:10.5px;
+  letter-spacing:.1em;color:var(--dim)}
+.ekv b{font-size:13px;font-weight:400;color:var(--ink2);line-height:1.5}
+.echo-note{margin:11px 0 0;font-size:10.5px;font-family:var(--px);
+  letter-spacing:.06em;color:var(--dim);opacity:.8}
+@media (max-width:620px){.echo-grid{grid-template-columns:1fr}}
+
+/* ---------- 结局屏：游戏之外 ---------- */
+.outside{margin:30px 0 8px;border-top:1px solid var(--line);padding-top:20px}
+.outside h4{margin:0 0 12px;font-family:var(--px);font-size:11px;font-weight:400;
+  letter-spacing:.22em;color:var(--dim)}
+.outside p{margin:0 0 11px;font-size:14.5px;line-height:1.95;color:var(--ink2)}
+.outside p:last-child{margin-bottom:0}
+.outside a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(192,57,43,.3)}
+.outside a:hover{border-bottom-color:var(--accent)}
+.outside b{font-weight:400;color:var(--ink2)}
+@media (max-width:640px){
+  .outside{margin-top:24px;padding-top:17px}
+  .outside p{font-size:14px;line-height:1.9}
+}
+/* 控制不了：结局屏最后是纯黑，作者话也要能读 */
+body.collapse-end .outside{border-top-color:rgba(217,43,63,.3)}
+body.collapse-end .outside h4{color:#a08b87}
+body.collapse-end .outside p{color:#e6cfc9}
+body.collapse-end .outside b{color:#e6cfc9}
+body.collapse-end .outside a{color:#e06a5f;border-bottom-color:rgba(224,106,95,.4)}
+
+/* ---------- 结局图鉴 ---------- */
+#gallery-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;
+  justify-content:center;padding:24px;background:rgba(12,22,38,.42);
+  backdrop-filter:blur(2px)}
+#gallery-modal.hidden{display:none}
+.gal-panel{width:min(780px,94vw);max-height:84vh;display:flex;flex-direction:column;
+  background:var(--paper);border:1px solid var(--line2);clip-path:var(--cut);
+  box-shadow:0 18px 60px rgba(15,35,60,.18)}
+.gal-head{flex:none;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid var(--line);
+  font-family:var(--px);font-size:11.5px;letter-spacing:.12em;color:var(--dim)}
+.gal-head #gal-close{padding:5px 10px;font-size:11.5px}
+.gal-list{overflow:auto;padding:4px 16px 18px}
+.gal-row{padding:13px 2px 12px;border-bottom:1px dashed var(--line)}
+.gal-row:last-child{border-bottom:none}
+.gal-line{display:flex;align-items:baseline;gap:10px}
+.gal-n{flex:none;font-family:var(--px);font-size:10.5px;color:var(--dim);
+  letter-spacing:.08em}
+.gal-name{font-size:16px;font-weight:600;color:var(--ink)}
+.gal-lock{margin-left:auto;font-family:var(--px);font-size:10px;
+  letter-spacing:.1em;color:var(--dim)}
+.gal-row.unlocked .gal-lock{color:var(--good)}
+.gal-row.locked .gal-name{color:var(--dim);letter-spacing:.2em}
+.gal-hint{margin:5px 0 0;font-size:12.5px;color:var(--dim);font-style:italic}
+.gal-core{margin:7px 0 3px;font-size:13.5px;color:var(--ink)}
+.gal-style{margin:0 0 5px;font-size:12.5px;line-height:1.65;color:var(--ink2)}
+.gal-meta{margin:0;font-family:var(--px);font-size:10.5px;letter-spacing:.04em;
+  color:var(--dim)}
+body.collapsing #gallery{display:none !important}
+
+/* ---------- 记事本 ---------- */
+#settings-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;
+  justify-content:center;padding:24px;background:rgba(12,22,38,.42);
+  backdrop-filter:blur(2px)}
+#settings-modal.hidden{display:none}
+.set-panel{width:min(680px,94vw);max-height:84vh;display:flex;flex-direction:column;
+  background:var(--paper);border:1px solid var(--line2);clip-path:var(--cut);
+  box-shadow:0 18px 60px rgba(15,35,60,.18)}
+.set-body{overflow:auto;padding:6px 16px 18px}
+.set-sec{margin:14px 0 4px}
+.set-h{font-family:var(--px);font-size:10.5px;letter-spacing:.12em;
+  color:var(--dim);margin-bottom:8px}
+.set-ev{margin:0;padding-left:16px;font-size:13.5px;line-height:1.85;color:var(--ink2)}
+.set-log{list-style:none;margin:0;padding:0}
+.set-row{display:flex;flex-wrap:wrap;gap:4px 10px;padding:8px 2px;
+  border-bottom:1px dashed var(--line);font-size:12px;color:var(--ink2)}
+.set-row b{font-family:var(--px);font-size:10.5px;color:var(--ink);min-width:58px}
+.set-row span{white-space:nowrap}
+.set-note{margin-top:8px;font-size:11.5px;color:var(--dim)}
+.set-danger{color:#b23a2e;border-color:#d8b6b0}
+.set-danger.armed{background:#b23a2e;color:#fff;border-color:#b23a2e}
+.muted{color:var(--dim)}
+
+/* ══ 移动端（主要游玩场景）══════════════════════════════════
+   390–430px 宽的手机是主场：HUD 只留四项、正文略放大、
+   选项给足 48px 触控高度、底栏贴底并让出刘海/home 条；
+   图鉴改成整屏抽屉，账单允许横向滑。 */
+button,#toggle,#ota-fold{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+
+@media (max-width:640px){
+  #app{padding:0 14px}
+  #hud{margin:0 -14px;padding:10px 14px 9px;gap:8px}
+  .hud-main{gap:10px;row-gap:2px}
+  .kv b{font-size:13.5px}
+  .kv i{font-size:10px}
+  #toggle{width:32px;height:32px;flex:none}
+
+  #ota-panel{padding:5px 8px 3px;margin-bottom:8px}
+  #ota-table table{font-size:11.5px}
+  #ota-table th{padding:2px 4px;font-size:10px}
+  #ota-table td{padding:4px 4px}
+  #ota-table .n{width:2.2em}
+  #ota-table td.stick{width:36%}
+  #ota-table td.stick .bar{width:56%;margin-right:5px}
+  #ota-table .sp{font-size:11px}
+
+  #stage{padding:18px 0 calc(104px + env(safe-area-inset-bottom))}
+  #title{font-size:17px;letter-spacing:.12em;margin-bottom:12px}
+  #body p{font-size:16px;line-height:1.85}
+  #body p.quote{font-size:15.5px}
+  #stage.compact #body p{font-size:15px;line-height:1.8}
+
+  #options{gap:10px;margin-top:20px}
+  #options button{padding:12px 14px;font-size:16px;min-height:48px}
+  #options button small{font-size:12px;margin-top:4px}
+  #stage.compact #options button{padding:11px 13px;font-size:15.5px;min-height:46px}
+
+  #foot{padding:12px 0 calc(14px + env(safe-area-inset-bottom));gap:10px}
+  button.primary{padding:12px 20px;font-size:14px;flex:1;min-height:48px}
+  button.ghost{padding:9px 12px;min-height:40px;font-size:12px}
+
+  #pop{left:14px;right:14px;bottom:calc(82px + env(safe-area-inset-bottom));min-width:0}
+  .dgrid{grid-template-columns:repeat(2,1fr)}
+  .echo-grid{grid-template-columns:1fr;gap:6px}
+  .echo-card{padding:12px 13px 10px;margin-top:20px}
+  .bill{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .bill table{min-width:400px}
+  .msg .bubble{max-width:88%}
+
+  #gallery-modal{padding:0;align-items:stretch}
+  .gal-panel{width:100%;max-width:none;max-height:100dvh;border:none;clip-path:none}
+  .gal-head{padding-top:calc(10px + env(safe-area-inset-top))}
+  .gal-list{padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+  #settings-modal{padding:0;align-items:stretch}
+  .set-panel{width:100%;max-width:none;max-height:100dvh;border:none;clip-path:none}
+  .set-panel .gal-head{padding-top:calc(10px + env(safe-area-inset-top))}
+  .set-body{padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+}
+
+@media (max-width:380px){
+  #app{padding:0 11px}
+  #hud{margin:0 -11px;padding:9px 11px 8px}
+  .hud-main{gap:8px}
+  .kv b{font-size:12.5px}
+  .kv i{font-size:9.5px}
+  .gal-core{font-size:13px}
+  .gal-style,.gal-hint{font-size:12px}
+}
+
+/* ══ C+A：像素街机 × 午夜场 ══════════════════════════════════
+   C 是底子（像素、切角、虚线、宋体正文），A 只在「上台」和「结局」
+   两处接管灯光：深色、追光、青绿赛博。失控段仍是纯黑，不能被这里盖掉。 */
+
+/* ── 像素小人：玩家自己的形象 ─────────────────────────────
+   立绘是四张 64×80 的六帧精灵图（web/sprites/idol_{style}.png），
+   按存档的 name_style 换图、按体力/心理挑帧，全部在 app.js 里设。
+   这里只负责帧大小、像素化放大和浮动动画。 */
+#idol{
+  display:flex;align-items:flex-end;gap:10px;
+  margin:0 0 8px;min-height:76px;
+}
+#idol.hidden{display:none}
+/* --fw 是单帧宽度，其余尺寸都从它算，改一处就整体缩放 */
+.idol-sprite{
+  --fw:64px;
+  width:var(--fw);height:calc(var(--fw) * 1.25);flex:none;
+  background-repeat:no-repeat;
+  background-size:calc(var(--fw) * 6) calc(var(--fw) * 1.25);
+  background-position:calc(var(--fw) * -1 * var(--frame, 0)) 0;
+  image-rendering:pixelated;
+  filter:drop-shadow(0 4px 0 rgba(13,74,151,.12));
+}
+.idol-meta{display:flex;flex-direction:column;gap:2px;padding-bottom:5px;min-width:0}
+.idol-meta b{
+  font-family:var(--px);font-size:12px;font-weight:400;letter-spacing:.1em;
+  color:var(--accent-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.idol-meta span{font-family:var(--px);font-size:10px;letter-spacing:.05em;color:var(--dim)}
+#idol.tired .idol-meta span{color:#b06a3e}
+#idol.low .idol-meta span{color:#a83f39}
+#idol.shine .idol-meta b{color:var(--accent)}
+#idol.shine .idol-meta span{color:var(--good)}
+
+/* 浮动用 steps，和像素画保持同一套节奏 */
+.idol-sprite{animation:idolBob 2.8s steps(3,end) infinite}
+@keyframes idolBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+/* 人气起来以后脚下多一层光 */
+#idol.shine .idol-sprite{filter:drop-shadow(0 4px 0 rgba(13,74,151,.12)) drop-shadow(0 0 6px var(--accent))}
+
+/* 事件反应：这一屏把她逗笑/惹哭了，脸换一张，并轻轻弹一下
+   （弹动只走 transform，不动尺寸，所以旁边的字不会跟着跳） */
+#idol.reacting .idol-sprite{
+  animation:idolBob 2.8s steps(3,end) infinite, idolPop .32s steps(3,end);
+}
+@keyframes idolPop{
+  0%{transform:translateY(0) scale(1)}
+  40%{transform:translateY(-2px) scale(1.07)}
+  100%{transform:translateY(0) scale(1)}
+}
+
+/* ── 标题：像素下划线自己展开 ────────────────────────────── */
+#title{position:relative}
+#title.title-in::after{
+  content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;
+  background:var(--accent);transform-origin:left;
+  animation:titleLine .5s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes titleLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ── 选项：逐条上浮，日常行动排成 2×3 ───────────────────── */
+#options button.opt-in{
+  animation:optIn .34s cubic-bezier(.2,.7,.2,1) both;
+  animation-delay:calc(var(--i,0) * 36ms);
+}
+@keyframes optIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+#options.act-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;margin-top:20px;
+}
+#options.act-grid button{
+  min-height:88px;padding:10px 12px;
+  display:flex;flex-direction:column;justify-content:center;gap:4px;
+  font-size:15.5px;line-height:1.35;
+}
+#options.act-grid button small{margin-top:0;font-size:11px;line-height:1.45}
+#options.act-grid button .warn{font-size:11px}
+
+/* ── A：上台/结局的黑暗与追光（青绿赛博） ─────────────────── */
+body.live-stage,
+body.ending-stage:not(.collapse-end):not(.collapsing){
+  --bg:#050d10;--paper:#0a171a;
+  --ink:#e8fff9;--ink2:#c2e8df;--dim:#71968f;
+  --line:#143330;--line2:#26564f;
+  --accent:#23e6c2;--accent-d:#86f7e2;
+  --warm:#55f0d4;--cold:#8bb8ff;
+  --bad:#ff7b8a;--good:#6df0a5;
+  background:#050d10;
+  background-image:
+    radial-gradient(ellipse at 50% -8%,rgba(35,230,194,.17),transparent 58%),
+    linear-gradient(90deg,rgba(60,240,210,.045) 1px,transparent 1px),
+    linear-gradient(rgba(60,240,210,.045) 1px,transparent 1px);
+  background-size:100% 100%,8px 8px,8px 8px;
+  color:var(--ink);
+  transition:background .55s ease,color .55s ease;
+}
+/* 细扫描线：只压在台口/结局，失控纯黑段排除 */
+body.live-stage::after,
+body.ending-stage:not(.collapse-end):not(.collapsing)::after{
+  content:"";position:fixed;inset:0;z-index:30;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(2,18,16,.18) 0 1px,transparent 1px 3px);
+  opacity:.55;mix-blend-mode:multiply;
+}
+body.live-stage #hud,
+body.ending-stage:not(.collapse-end):not(.collapsing) #hud{
+  border-bottom-color:#26564f;
+  box-shadow:0 3px 0 -1px #123330;
+}
+body.live-stage #stage,
+body.ending-stage:not(.collapse-end):not(.collapsing) #stage{
+  background:radial-gradient(ellipse at 50% -6%,rgba(40,240,210,.14),transparent 52%);
+}
+body.live-stage #title,
+body.ending-stage:not(.collapse-end):not(.collapsing) #title{
+  color:var(--ink);
+  border-bottom-color:#26564f;
+  text-shadow:0 0 18px rgba(40,240,210,.32);
+}
+body.live-stage #title.title-in::after,
+body.ending-stage:not(.collapse-end):not(.collapsing) #title.title-in::after{
+  background:var(--warm);box-shadow:0 0 10px rgba(40,240,210,.55);
+}
+body.live-stage .idol-sprite{animation-duration:.62s}
+body.live-stage .idol-sprite{filter:drop-shadow(0 0 10px rgba(40,240,210,.4))}
+body.live-stage #options button{
+  background:#08181a;border-color:#26564f;color:var(--ink);
+  filter:drop-shadow(3px 3px 0 rgba(0,0,0,.45));
+}
+body.live-stage #options button:hover{background:var(--accent);border-color:#9af7ff;color:#041210}
+body.live-stage #options button small{color:#9dc6bd}
+body.live-stage #foot{background:linear-gradient(transparent,var(--bg) 42%)}
+body.live-stage #pop{
+  background:#071618;border-color:var(--accent);color:#d8fff6;
+  box-shadow:4px 4px 0 rgba(0,0,0,.5);
+}
+
+body.ending-stage:not(.collapse-end):not(.collapsing) .echo-card{
+  background:rgba(255,255,255,.05);border-color:#1d4640;
+}
+body.ending-stage:not(.collapse-end):not(.collapsing) .echo-card h4{color:#9dc6bd}
+body.ending-stage:not(.collapse-end):not(.collapsing) .outside{border-top-color:#143330}
+body.ending-stage:not(.collapse-end):not(.collapsing) .outside a{color:var(--warm)}
+body.ending-stage:not(.collapse-end):not(.collapsing) #pop{background:#071618}
+
+/* 失控到最后仍是纯黑，别让小人留在台上 */
+body.collapse-end #idol{display:none !important}
+
+@media (max-width:640px){
+  #idol{min-height:70px;margin-bottom:6px;gap:8px}
+  .idol-sprite{--fw:56px}
+  .idol-meta b{font-size:11px}
+  .idol-meta span{font-size:9.5px}
+  #options.act-grid{gap:8px;margin-top:16px}
+  #options.act-grid button{min-height:82px;padding:9px 10px;font-size:14.5px}
+  #options.act-grid button small{font-size:10.5px}
+}
+@media (max-width:380px){
+  .idol-sprite{--fw:48px}
+  #options.act-grid{gap:7px}
+  #options.act-grid button{min-height:78px;font-size:14px;padding:8px 9px}
+}
+@media (prefers-reduced-motion:reduce){
+  .idol-sprite,#idol.reacting .idol-sprite,
+  #options button.opt-in,#title.title-in::after{animation:none !important}
+}

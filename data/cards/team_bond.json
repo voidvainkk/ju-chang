@@ -1,0 +1,285 @@
+{
+  "_meta": {
+    "kind": "cards",
+    "name": "队友关系",
+    "note": "和队友刷好感的日常卡：每一张都要花时间或花钱，且都有负项，不能纯赚。"
+  },
+  "cards": [
+    {
+      "id": "bond_atang_practice",
+      "type": "团内关系",
+      "title": "多留一个小时",
+      "gate": "阿棠关系 ≥ 42 且 周 ≥ 1",
+      "weight": 1.2,
+      "cooldown": 3,
+      "narrative": "排练散了她没走，说想把最后那一段再对一遍。灯只开了一半，我们从对着镜子抠动作，到就那么坐在地上说话。窗外马路的声音一阵一阵的，她讲她以前在工厂做的那半年。",
+      "options": [
+        {
+          "id": "stay_and_listen",
+          "label": "留下来，听她讲完",
+          "desc": "多一个小时的体力，换她多讲一点",
+          "immediate": {
+            "relation_A": 4,
+            "stamina": -6,
+            "psyche": 2
+          },
+          "delayed": []
+        },
+        {
+          "id": "stay_but_leave_early",
+          "label": "陪半小时，说自己明天还有早班",
+          "desc": "有关系，也有分寸",
+          "immediate": {
+            "relation_A": 2,
+            "stamina": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "ask_about_hers",
+          "label": "把话头转过去，问她怎么看团里的事",
+          "desc": "聊工作以外的，走近一步也踩一步",
+          "immediate": {
+            "relation_A": 2,
+            "relation_B": -3,
+            "psyche": -1
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "bond_atang_birthday",
+      "type": "团内关系",
+      "title": "她的生日在这周",
+      "gate": "阿棠关系 ≥ 42 且 周 ≥ 2",
+      "weight": 1.1,
+      "cooldown": 6,
+      "narrative": "我是在她手机壳后面贴的口红印促销单上看见生日的。她一个字都没提，排练照常来，照常第一个走。小店里的蛋糕要三百多，钱还在房租里。",
+      "options": [
+        {
+          "id": "buy_cake",
+          "label": "买了，散场以后在后台切",
+          "desc": "钱没了，她那晚吃了两口就说够了",
+          "immediate": {
+            "money": -320,
+            "relation_A": 6,
+            "psyche": 3
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "relation_A": 2
+              },
+              "note": "她第二天带了盒自己做的菜放在排练室冰箱里，标签写着我的名字"
+            }
+          ]
+        },
+        {
+          "id": "handwritten",
+          "label": "手写一张卡片，贴在她柜门上",
+          "desc": "不值钱，但只有我看见了这个日子",
+          "immediate": {
+            "relation_A": 3,
+            "stamina": -2,
+            "psyche": 2
+          },
+          "delayed": []
+        },
+        {
+          "id": "say_nothing",
+          "label": "不提，免得她有负担",
+          "desc": "尊重她的沉默，也错过一次",
+          "immediate": {
+            "relation_A": -2,
+            "psyche": -1
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "bond_lulu_after",
+      "type": "团内关系",
+      "title": "散场以后只剩我们两个",
+      "gate": "露露关系 ≥ 40 且 周 ≥ 2",
+      "weight": 1.1,
+      "cooldown": 4,
+      "narrative": "收完器材，露露在门口点了一根烟，看见我只抬了抬下巴。她说台上有几个动作我今天抢了拍子，说她要是再快点就可能撞上我。语气还是那副刺样，但不是骂人的意思。",
+      "options": [
+        {
+          "id": "admit_and_fix",
+          "label": "认下来，说下次配合她",
+          "desc": "把刺接住，她会松一点",
+          "immediate": {
+            "relation_B": 3,
+            "psyche": -2,
+            "dance": 1
+          },
+          "delayed": []
+        },
+        {
+          "id": "push_back_friendly",
+          "label": "怼回去：那你倒是快点",
+          "desc": "用她的方式相处，关系往另一种方向走",
+          "immediate": {
+            "relation_B": 2,
+            "enjou": 1,
+            "psyche": 3
+          },
+          "delayed": []
+        },
+        {
+          "id": "leave_quiet",
+          "label": "说累了，先走",
+          "desc": "不往前走，也省下力气",
+          "immediate": {
+            "relation_B": -2,
+            "stamina": 3
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "bond_lulu_share",
+      "type": "团内关系",
+      "title": "她问我要不要一起打车",
+      "gate": "露露关系 ≥ 40 且 周 ≥ 3",
+      "weight": 1.0,
+      "cooldown": 5,
+      "narrative": "下大雨，打车软件一直显示排队。露露把伞撑开，看我在门口犹豫：『拼一辆？我不咬人。』她身上有股很重的洗衣粉味，站得很近，近到我能看见她伞骨上一小块锈。",
+      "options": [
+        {
+          "id": "share_cab",
+          "label": "上车，各坐一边，聊一路",
+          "desc": "这一路上的话，比三个月排练都多",
+          "immediate": {
+            "relation_B": 4,
+            "money": -60,
+            "psyche": 2
+          },
+          "delayed": []
+        },
+        {
+          "id": "refuse_politely",
+          "label": "说有人来接，自己等雨小",
+          "desc": "守住距离，她也没再多说",
+          "immediate": {
+            "relation_B": -1,
+            "stamina": -3
+          },
+          "delayed": []
+        },
+        {
+          "id": "walk_together",
+          "label": "说干脆一起走过去，路上有伞",
+          "desc": "省了钱，长了距离",
+          "immediate": {
+            "relation_B": 2,
+            "stamina": -8,
+            "psyche": 3
+          },
+          "delayed": [
+            {
+              "when": "条件",
+              "condition": "露露关系 ≥ 70",
+              "effect": {
+                "relation_B": 1
+              },
+              "note": "后来组里有人开玩笑说我们两个走得很近，她当场把话顶回去了"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bond_mamman_note",
+      "type": "团内关系",
+      "title": "她把我写进了她的本子",
+      "gate": "小满关系 ≥ 35 且 周 ≥ 2",
+      "weight": 1.1,
+      "cooldown": 4,
+      "narrative": "小满的本子掉在地上摊开着，我捡起来那一眼，看见自己的名字写满了半页，后面是日期，还有一句『今天她夸我音准了』。她冲过来把本子抢回去，耳朵红得很，说这个是随便写的。",
+      "options": [
+        {
+          "id": "pretend_unseen",
+          "label": "说没看清，把本子还给她",
+          "desc": "守住她的脸面，也把门留一条缝",
+          "immediate": {
+            "relation_C": 2,
+            "psyche": -3
+          },
+          "delayed": []
+        },
+        {
+          "id": "praise_her",
+          "label": "说那页最后一句是真的，她音准确实稳了",
+          "desc": "承认看见了，她当晚大概睡不着",
+          "immediate": {
+            "relation_C": 4,
+            "psyche": 2,
+            "stamina": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "joke_it",
+          "label": "开玩笑说那本子以后得拍给我看",
+          "desc": "玩笑让气氛过去，也让她当真了一半",
+          "immediate": {
+            "relation_C": 2,
+            "enjou": 1,
+            "psyche": -2
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "bond_mamman_breakfast",
+      "type": "团内关系",
+      "title": "排练室的早饭",
+      "gate": "小满关系 ≥ 35 且 周 ≥ 1",
+      "weight": 1.2,
+      "cooldown": 3,
+      "narrative": "周六早上到的时候，排练室的长椅上放着一个保温袋，里面是两个包子和一杯豆浆，还有一张便利贴：『今天别看手机。』字很工整，还画了个笑脸。袋子上写着我的名字，用铅笔写的。",
+      "options": [
+        {
+          "id": "eat_together",
+          "label": "等她来了一起吃，问问她几点起的",
+          "desc": "包子凉了，可话就热了",
+          "immediate": {
+            "relation_C": 3,
+            "stamina": -4,
+            "psyche": 2
+          },
+          "delayed": []
+        },
+        {
+          "id": "eat_alone",
+          "label": "吃了，发一句『谢谢，很好吃』",
+          "desc": "礼貌的温度，够暖不够近",
+          "immediate": {
+            "relation_C": 1,
+            "stamina": 3,
+            "psyche": -1
+          },
+          "delayed": []
+        },
+        {
+          "id": "buy_back",
+          "label": "第二天买两份早饭放回去",
+          "desc": "用她的方式还她",
+          "immediate": {
+            "relation_C": 3,
+            "money": -40,
+            "psyche": 1
+          },
+          "delayed": []
+        }
+      ]
+    }
+  ]
+}
