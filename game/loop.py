@@ -1738,7 +1738,13 @@ class Game:
                 # 之前就差点被看见、或一直在越线：收场不是坐下来谈，是门被人推开。
                 v = next((x for x in st["variants"] if x["id"] == "finale_caught"), None)
         if v is None:
-            v = self.rng.choice(st["variants"])
+            # 同一拍隔两周再回来时，尽量换一张没演过的：
+            # 玩家推开的那个选项不该让同一张卡原地重播（「又遇到第一拍」）。
+            seen = (s.get("_line_seen") or {}).get(lid_id) or []
+            pool = [x for x in st["variants"] if x["id"] not in seen] or st["variants"]
+            v = self.rng.choice(pool)
+            s["_line_seen"] = s.get("_line_seen") or {}
+            s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
         lid_id = lid["_meta"]["id"]
         s["_line_tick"] = s["week"]
         s["_story_try"] = s["week"]
@@ -1772,8 +1778,11 @@ class Game:
         if lid == "zhong":
             cid = s.get("_chaser")
             if not cid and s.get("ota"):
-                cid = max(s["ota"], key=lambda o: o["stick"])["id"]
-                s["_chaser"] = cid
+                # 私联对象黏性固定 75，不排除她就会永远当上「一直来的那个人」。
+                pool = [o for o in s["ota"] if not o.get("is_storyline")]
+                if pool:
+                    cid = max(pool, key=lambda o: o["stick"])["id"]
+                    s["_chaser"] = cid
             ta = next((o for o in s["ota"] if o["id"] == cid), None)
         elif lid == "romance":
             ta = {"name": (v.get("partner") or "阿棠")}
@@ -1783,7 +1792,9 @@ class Game:
             # 120 局实测 37% 中途换过人。
             ta = E.protagonist(s, self.world, self.rng)
         if ta is None and s.get("ota"):
-            ta = max(s["ota"], key=lambda o: o["stick"])
+            pool = [o for o in s["ota"] if not o.get("is_storyline")]
+            if pool:
+                ta = max(pool, key=lambda o: o["stick"])
         return {"ta": ta} if ta else {}
 
     def choose_story(self, oid):
@@ -1825,6 +1836,12 @@ class Game:
             # 收场拍（stage 4）的选项都不带 advance（它不再「往前走」），
             # 但这一拍本身必须记下来，否则末周会反复排「决赛前夜」。
             s["story"][lid_id] = {"stage": st["stage"]}
+        else:
+            # 没推进 = 玩家把这条线推开了。以前这里什么都不做，下一周
+            # line_stage 算出来的 nxt 还是同一个 stage，于是同一拍换一张卡
+            # 又演一遍（私联越线后每周必推，所以看得最明显：「连着触发两次」）。
+            # 推开就该安静几拍，而不是下周原地重播。
+            E.line_cool(s, lid_id, 2)
         s["_line_week"] = s.get("_line_week", {})
         s["_line_week"][lid_id] = s["week"]
         E.clamp(s)

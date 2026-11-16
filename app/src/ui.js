@@ -39,6 +39,8 @@ function setNum(el, v) {
    按存档里的 name_style 选一张，按体力/心理/人气挑帧。
    帧序：1 平静微笑 2 闭眼笑 3 张嘴大笑 4 哭 5 累·无语 6 生气·害臊 */
 const IDOL_STYLES = ["sweet", "night", "odd", "cool"];
+// 剧情线角标配色：私联=红（危险）、重线=紫（压过来）、恋爱=粉
+const LINE_TAG_CLASS = { 私联: "line-shiren", 重线: "line-zhong", 恋爱: "line-romance" };
 const IDOL_FRAMES = {
   calm: 0,     // 平静微笑
   smile: 1,    // 闭眼笑
@@ -566,14 +568,19 @@ function renderStep(step, snap) {
     void titleEl.offsetWidth;
     titleEl.classList.add("title-in");
   }
-  // 右上角的小标签：版聊 / 回考
+  // 右上角的小标签：版聊 / 回考 / 剧情线
   $("stage").querySelectorAll(".corner-tag").forEach((n) => n.remove());
-  const hasTag = step.type === "chat" || !!step.recall;
+  const lineTag = step.line && step.line_name ? step.line_name : "";
+  const hasTag = step.type === "chat" || !!step.recall || !!lineTag;
   $("stage").classList.toggle("has-tag", hasTag);
   if (step.type === "chat") {
     $("stage").insertAdjacentHTML("afterbegin", `<div class="corner-tag chat">版聊</div>`);
   } else if (step.recall) {
     $("stage").insertAdjacentHTML("afterbegin", `<div class="corner-tag recall">回考</div>`);
+  } else if (lineTag) {
+    // 三条剧情线各自的专属卡：颜色区分，避免分不清自己在哪条线上。
+    const cls = LINE_TAG_CLASS[lineTag] || "line";
+    $("stage").insertAdjacentHTML("afterbegin", `<div class="corner-tag ${cls}">${lineTag}</div>`);
   }
   body.innerHTML = "";
   // 谁在跟我打交道：每屏都先清掉上一条，再按这一屏重挂

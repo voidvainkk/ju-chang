@@ -1235,8 +1235,12 @@ def _remember_chaser(s, line, v=None):
     if not ((line.get("_meta") or {}).get("chaser_schema") or (v or {}).get("select_chaser")):
         return
     if not s.get("_chaser") and s.get("ota"):
-        best = max(s["ota"], key=lambda o: o["stick"])
-        s["_chaser"] = best["id"]
+        # 私联对象（is_storyline）黏性固定 75，不排除的话她永远最高，
+        # 重线会把她当成「一直来的那个人」——两条线的专属 OTA 就串了。
+        pool = [o for o in s["ota"] if not o.get("is_storyline")]
+        if pool:
+            best = max(pool, key=lambda o: o["stick"])
+            s["_chaser"] = best["id"]
 
 
 def line_stage(s, line):

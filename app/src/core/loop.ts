@@ -2105,7 +2105,15 @@ export class Game {
         v = (st.variants || []).find((x: any) => x.id === "finale_caught");
       }
     }
-    if (v === null || v === undefined) v = this.rng.choice(st.variants);
+    if (v === null || v === undefined) {
+      // 同一拍隔两周再回来时，尽量换一张没演过的：
+      // 玩家推开的那个选项不该让同一张卡原地重播（「又遇到第一拍」）。
+      if (!s._line_seen) s._line_seen = {};
+      const seen: string[] = s._line_seen[lidId] || [];
+      const pool = (st.variants || []).filter((x: any) => !seen.includes(x.id));
+      v = this.rng.choice(pool.length ? pool : st.variants);
+      s._line_seen[lidId] = seen.concat([v.id]).slice(-8);
+    }
     s._line_tick = s.week;
     s._story_try = s.week;
     if (!s._line_week) s._line_week = {};
@@ -2146,8 +2154,12 @@ export class Game {
     if (lid === "zhong") {
       let cid = s._chaser;
       if (!cid && s.ota && s.ota.length) {
-        cid = s.ota.reduce((a, b) => (b.stick > a.stick ? b : a)).id;
-        s._chaser = cid;
+        // 私联对象（isStoryline）黏性固定 75，不排除她就会永远当上「一直来的那个人」。
+        const pool = s.ota.filter((o) => !o.is_storyline);
+        if (pool.length) {
+          cid = pool.reduce((a, b) => (b.stick > a.stick ? b : a)).id;
+          s._chaser = cid;
+        }
       }
       ta = (s.ota || []).find((o) => o.id === cid) ?? null;
     } else if (lid === "romance") {
@@ -2158,7 +2170,8 @@ export class Game {
       ta = E.protagonist(s, this.world, this.rng);
     }
     if (ta === null && s.ota && s.ota.length) {
-      ta = s.ota.reduce((a, b) => (b.stick > a.stick ? b : a));
+      const pool = s.ota.filter((o) => !o.is_storyline);
+      if (pool.length) ta = pool.reduce((a, b) => (b.stick > a.stick ? b : a));
     }
     return ta ? { ta } : {};
   }
@@ -2208,6 +2221,11 @@ export class Game {
       // 但这一拍本身必须记下来，否则末周会反复排「决赛前夜」。
       if (!s.story) s.story = {};
       s.story[lidId] = { stage: st.stage };
+    } else {
+      // 没推进 = 玩家把这条线推开了。以前这里什么都不做，下一周
+      // lineStage 算出来的 nxt 还是同一个 stage，于是同一拍换一张卡
+      // 又演一遍（私联越线后每周必推，所以看得最明显：「连着触发两次」）。
+      E.lineCool(s, lidId, 2);
     }
     if (!s._line_week) s._line_week = {};
     s._line_week[lidId] = s.week;

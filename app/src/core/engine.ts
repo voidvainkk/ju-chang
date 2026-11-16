@@ -1415,9 +1415,13 @@ function _gateOk(s: State, line: StoryLine, st: LineStage): boolean {
 export function _rememberChaser(s: State, line: StoryLine, v?: any): void {
   if (!(line._meta?.chaser_schema || v?.select_chaser)) return;
   if (!s._chaser && s.ota?.length) {
-    let best = s.ota[0];
-    for (const o of s.ota) if (o.stick > best.stick) best = o;
-    s._chaser = best.id;
+    // 私联对象（is_storyline）黏性固定 75，不排除她就会永远当上「一直来的那个人」。
+    const pool = s.ota.filter((o) => !o.is_storyline);
+    if (pool.length) {
+      let best = pool[0];
+      for (const o of pool) if (o.stick > best.stick) best = o;
+      s._chaser = best.id;
+    }
   }
 }
 

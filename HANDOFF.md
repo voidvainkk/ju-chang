@@ -1,7 +1,7 @@
 # 《聚场》交接文件（HANDOFF）
 
 > 地下偶像模拟器·网页游戏。这份文件是**给下一个对话的入口**：读完它 + `DESIGN.md`，就能直接接着干，不用重新摸一遍。
-> 最后更新：**2026-11-17 凌晨**（…；**§6.20 TS 移植对账全通过（85115 项）**；**§6.21 前端接 TS 引擎完成，变纯静态站**；**§6.22 已上线 ju-chang.pages.dev + 自定义域名，并修了三个界面问题：立绘随风格变、版聊补对方回音、OTA 表移到右上角默认收起**；**§6.23 四项：线索卡「今天的舞台」、弹窗收成右下角小方块可展开、星期几改汉字、指向 OTA 的「他/她」全改「ta」**）
+> 最后更新：**2026-11-17 凌晨**（…；**§6.20 TS 移植对账全通过（85115 项）**；**§6.21 前端接 TS 引擎完成，变纯静态站**；**§6.22 已上线 ju-chang.pages.dev + 自定义域名，并修了三个界面问题：立绘随风格变、版聊补对方回音、OTA 表移到右上角默认收起**；**§6.23 四项：线索卡「今天的舞台」、弹窗收成右下角小方块可展开、星期几改汉字、指向 OTA 的「他/她」全改「ta」**；**§6.24 剧情线三修：同拍重播加冷却、chaser 排除剧情主角防串台、三条线卡右上角打 tag**）
 
 ---
 
@@ -950,3 +950,73 @@ if (snap) (snap as any).name_style = g.name_style;
 结果：`validate_all.py` 八组全 0（CARD 136 / STORY 14 / MEMORY 21）；`✓ rng: 84 项`、`✓ trace: 9369 项`、`✓ loop: 85115 项`；`typecheck` exit 0；`build` → 33 modules、`index-Cahs8-8e.js` 486.45 kB（gzip 158.56）、`index-NjKaVal-.css` 29.15 kB。
 
 
+
+
+## 6.24 剧情线三处修正：同拍重播 / 专属 OTA 串台 / 线上标签（2026-11-17 凌晨）
+
+用户原话：「私联线触发有时候有bug 连着触发了两次 而且有时候两条线专属的ota会混乱 恋爱线有一次我在第四拍的时候又遇到了第一拍剧情 锁线感觉没做好 以后把这三条线上的卡右上角打个tag吧」。
+
+### 根因：不是 stage 回退，是「同拍换卡重播」
+
+审计（40 局 × first/last/rand 三种点击策略）：`stage 回退 = 0`、`同周同线两次 = 0`，但**同线相邻同 stage = 65 次**（romance 45 / shiren 20 / zhong 0），其中 shiren 有 6 次是**同一张卡连播**。典型样本：`cross_wechat_red → give_work → cross_wechat_red`。
+
+原因在 `game/loop.py:1824 choose_story()`（对应 `app/src/core/loop.ts:2206 chooseStory()`）：
+
+```python
+if lid_id == "zhong" or o.get("advance") or st["stage"] >= 4:
+    s["story"][lid_id] = {"stage": st["stage"]}
+```
+
+只有带 `advance` 的选项才记进度。玩家选了 stage1–3 里「不推进」的选项（`give_work` / `pity_distance` / `ca_quiet` / `xa_stepout` / `ya_pretend` / `stop_here` 等）时进度原地不动，下周 `line_stage()` 算出的 `nxt` 还是同一 stage → 同一拍换一张卡再演一遍。私联线越线后 `_shiren_if_crossed()` **不等骰子、每周必推**，所以重播在私联线上最扎眼——就是用户说的「连着触发了两次」。
+
+### ① 推开就安静两拍（两侧同步）
+
+`game/loop.py:1827` / `app/src/core/loop.ts:2210` 补 `else` 分支：
+
+```python
+else:
+    # 没推进 = 玩家把这条线推开了，推开就该安静几拍，
+    # 而不是下周原地重播（私联越线后每周必推，所以看得最明显）。
+    E.line_cool(s, lid_id, 2)
+```
+
+`line_cool` 是现成的（`engine.py:1258`，写 `_line_cool[lid] = week + 2`，`line_stage` 在 `engine.py:1248` 检查）。
+
+### ② 同一拍恢复时换一张没演过的卡
+
+`game/loop.py:1740` / `app/src/core/loop.ts:2108` 抽 variant 时加了去重：
+
+```python
+seen = (s.get("_line_seen") or {}).get(lid_id) or []
+pool = [x for x in st["variants"] if x["id"] not in seen] or st["variants"]
+v = self.rng.choice(pool)
+s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
+```
+
+只保留最近 8 张，避免数组无限长。
+
+### ③ 专属 OTA 串台：chaser 排除 is_storyline
+
+排查 40 局 × 3 策略**没复现**串台（`重线 chaser = shiren_prota` 共 0 局、`私联主角出现在重线/恋爱` 共 0 局），但代码里有明确隐患：**私联对象 `stick` 硬写 75**（`engine.py:366`），而 chaser 是 `max(stick)` 选出来的——她一旦进 `s["ota"]`，就永远是最高的那个，重线会把她当「一直来的那个人」。修法是所有 chaser 选取点加 `not o.get("is_storyline")` 过滤，共三处：
+
+- `game/engine.py:1233 _remember_chaser()`；
+- `game/loop.py:1772 _line_slots()` 的 zhong 分支与末尾兜底；
+- `app/src/core/engine.ts:1415 _rememberChaser()` 与 `app/src/core/loop.ts:2143 _lineSlots()` 同步。
+
+### ④ 三条线的卡右上角打 tag
+
+前端消费已有的 `step.line_name`（`loop.ts:2119` 输出，`{shiren:"私联",zhong:"重线",romance:"恋爱"}`）：
+
+- `app/src/ui.js:44` 加 `LINE_TAG_CLASS = { 私联: "line-shiren", 重线: "line-zhong", 恋爱: "line-romance" }`；
+- `app/src/ui.js:570` 的角标段加第三分支（版聊 → 回考 → 剧情线，互斥）；
+- `web/style.css:131` 加三个配色：私联 `#a3283f` 白字（危险）、重线 `#5a3080` 白字（压过来）、恋爱 `#f6d9e3` 深粉字。
+- tag 沿用现有 `.corner-tag` 的绝对定位（`top:24px;right:0`），`#stage.has-tag #title{padding-right:70px}` 自动生效。
+
+### 验证
+
+- 重生成基准：`& $py tools\loop_trace.py app\test\loop_expected.json`（1229621 bytes）、`& $py tools\trace_dump.py app\test\trace_expected.json`（145039 bytes）。
+- `& $py tools\validate_all.py` 八组全 0。
+- `✓ rng: 84 项` / `✓ trace: 9369 项` / `✓ loop: 85007 项（4 个种子、945 屏）`——屏数从 938 涨到 945（多了安静两周的局）。
+- `typecheck` exit 0；`build` → 33 modules、`index-BQafIPzu.js` 487.01 kB（gzip 158.74）、`index-C6kcTScL.css` 29.37 kB。
+- 40 局 × 3 策略复测：**同线同卡相邻 = 0**（原 6）、同线同 stage 相邻 = 40（全是安静 2 周后回来，间隔正好 2 周）、stage 倒退 = 0。结局分布里「后来」45 / 「用完」22 / 「现生快乐」20 / 「执念成魔」12 / 「散场」10，其余各 1–4 局，没有新结局断供。
+- 浏览器实测（8792）：版聊卡右上角 `corner-tag chat`「版聊」（`rect=[979,387,44,24]`、右边与 `#stage` 右边 1023 对齐）；重线卡 `corner-tag line-zhong`「重线」紫底白字、`titlePad=70px` 生效。

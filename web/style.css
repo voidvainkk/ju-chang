@@ -128,6 +128,9 @@ body{
 }
 .corner-tag.chat{color:var(--accent-d);border-color:var(--accent-d);background:var(--paper)}
 .corner-tag.recall{color:#fff;border-color:#8d2019;background:var(--bad)}
+.corner-tag.line-shiren{color:#fff;border-color:#7a1c2e;background:#a3283f}
+.corner-tag.line-zhong{color:#fff;border-color:#3b1f52;background:#5a3080}
+.corner-tag.line-romance{color:#5a2438;border-color:#c06a8a;background:#f6d9e3}
 
 /* ── 版聊：一条条聊天记录 ───────────────────────────────── */
 .chat-log{display:flex;flex-direction:column;gap:12px;margin:2px 0 4px}
