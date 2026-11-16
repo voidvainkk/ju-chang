@@ -216,13 +216,23 @@ function renderOtaTable(list) {
   </table>`;
 }
 
+// OTA 面板默认收起（HUD 右边一个小方块）。只记住「玩家主动展开过」这一种状态，
+// 没存过就是收起——所以新玩家第一眼不会被一张表挡住正文。
+const OTA_FOLD_KEY = "ju-chang.otafold";
 function applyOtaFold(folded) {
-  $("ota-panel").classList.toggle("fold", folded);
-  $("ota-fold").textContent = folded ? "⌄" : "⌃";
-  localStorage.setItem("chengchang.otafold", folded ? "1" : "0");
+  const panel = $("ota-panel");
+  if (!panel) return;
+  panel.classList.toggle("fold", folded);
+  const btn = $("ota-fold");
+  if (btn) {
+    btn.textContent = folded ? "OTA" : "OTA ✕";
+    btn.setAttribute("aria-expanded", folded ? "false" : "true");
+    btn.title = folded ? "她们（点开）" : "收起";
+  }
+  localStorage.setItem(OTA_FOLD_KEY, folded ? "1" : "0");
 }
 if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold(!$("ota-panel").classList.contains("fold"));
-applyOtaFold(localStorage.getItem("chengchang.otafold") === "1");
+applyOtaFold(localStorage.getItem(OTA_FOLD_KEY) !== "0");
 
 /* ---------- 舞台 ---------- */
 function para(text, cls) {

@@ -17,13 +17,14 @@
       <span class="kv co"><b id="v-enjou2">—</b><i>炎上</i></span>
       <span class="kv co"><b id="v-banzi2">—</b><i>板子</i></span>
     </div>
-    <button id="toggle" title="展开详细数值">⌄</button>
+    <div class="hud-tools">
+      <section id="ota-panel" class="fold">
+        <button id="ota-fold" title="她们" aria-expanded="false">OTA</button>
+        <div id="ota-table"></div>
+      </section>
+      <button id="toggle" title="展开详细数值">⌄</button>
+    </div>
   </header>
-
-  <section id="ota-panel">
-    <header><span>OTA</span><button id="ota-fold" title="收起">⌃</button></header>
-    <div id="ota-table"></div>
-  </section>
 
   <section id="detail" class="hidden">
     <div class="dgrid">

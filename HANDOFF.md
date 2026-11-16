@@ -1,15 +1,15 @@
 # 《聚场》交接文件（HANDOFF）
 
 > 地下偶像模拟器·网页游戏。这份文件是**给下一个对话的入口**：读完它 + `DESIGN.md`，就能直接接着干，不用重新摸一遍。
-> 最后更新：**2026-11-16**（…；**§6.20 TS 移植：`engine.ts` + `loop.ts` 与 Python 逐屏对账全部通过（85115 项）**；**§6.21 前端接 TS 引擎完成——`vite build` 出 486KB 纯静态 `dist/`，浏览器实测从开局跑到结局「后来」，存档/图鉴/记事本/重开全部正常，只差上 Cloudflare Pages**）
+> 最后更新：**2026-11-17 凌晨**（…；**§6.20 TS 移植对账全通过（85115 项）**；**§6.21 前端接 TS 引擎完成，变纯静态站**；**§6.22 已上线 ju-chang.pages.dev + 自定义域名，并修了三个界面问题：立绘随风格变、版聊补对方回音、OTA 表移到右上角默认收起**）
 
 ---
 
 ## 0. 一句话现状
 
-**已经能从头到尾玩完一季八周并判出结局，而且现在有两套跑法。**
+**已经能从头到尾玩完一季八周并判出结局，而且已经上线了。**
 
-- **新（推荐、要上云的那套）**：纯静态网页。`game/*.py` 的引擎与流程已翻成 TypeScript（`app/src/core/`），`vite build` 出 486KB 的 `dist/`，扔任何静态托管都能玩，**不需要服务端**。存档在图鉴在 localStorage。见 §6.20 / §6.21。
+- **线上（玩家走这条）**：<https://ju-chang.pages.dev/> / <https://diocosplay.dpdns.org/>。纯静态网页，`game/*.py` 的引擎与流程已翻成 TypeScript（`app/src/core/`），`vite build` 出 486KB 的 `dist/`。存档和图鉴在 localStorage。**推 `main` 就自动部署**。见 §6.20 / §6.21 / §6.22 / `DEPLOY.md`。
 - **旧（留着当参照和标准答案）**：`game/server.py`（纯 Python，无第三方库）起本地服务 + `web/index.html` + `web/style.css`，两者用 `/api/*` 通信。`web/app.js` 已删，前端逻辑现在的家是 `app/src/ui.js`。Python 侧的真正价值是 `tools/trace_dump.py` / `tools/loop_trace.py` 那套**对账标准答案**——改 TS 引擎后必须复跑，别让两侧悄悄分叉。
 
 - 数据层已封版：**136 张事件卡**（含 §6.19.3 重写的 15 张版聊卡「观众发消息 → 偶像回」）、3 条在用剧情线、5 个种子 OTA、21 条记忆线索 + 42 张两拍回考卡、序章、**16 结局**判决表。
@@ -657,7 +657,7 @@ if got & {"cut_early", "deleted_ta"}:
 2. ~~**周日券经济副作用**（§6.4）：收入多五成，是否压周日券价或分成，待用户定。~~ —— **2026-11-15 用户拍板：不用管，「钱多点挺好的」**，保持不变，以后不再提。
 3. **结局平衡**（§7.3，2026-11-16 做了三轮，**整体仍未收口**）：见 §6.18——删不可达「交易孤立」、修 `check_cond` bool 短路、劣加 `money_kept`；第二轮 A 把炎上倍率降到 2.5、残局门槛抬到炎上≥80、台上加舞台≥55；第三轮（§6.18.2）做真话卡+真话率、拆 `true_talk/recall_ok`、压重线抽线、如影（开盒≥80 且私联≥第2拍）/空心（真话率<40%）/守住（真话率≥50% 且门槛放宽）接线。改后随机 20 种子：残局 55 / 劣 40 / 散场 36 / 如影 26 / 执念 24，空心上到 7、守住在档案里出现。**待定**：① 台上/彗星触发率是否继续追（用户已说不追）；② 如影随机 13% 是否偏多 —— **用户 m02807 拍板：不抬门槛，保持开盒≥80 且私联≥第2拍（2026-11-16 收口）**；③ enjou 每周 8% 衰减没动；④ 营业线专属结局位空着，用户已明确不补。教训：**先收口、别硬压触发率，等玩家真玩一轮再定**。
 4. **回考两拍在界面上的展示**（§6.10 已把「说/问」打通、选项会重排）：现在一季能锁到 3~5 条线索、收场能出满 3 题。**仍未做**的是让玩家在界面上看得出来「这是回考」——目前靠 `compact` 与「（她问的是哪一样。）」这句提示。**2026-11-16（§6.18.4）已加**：`rq_stage == "ask"` 的卡在 step 带 `recall: true`，右上角挂红色「回考」tag；`say` 卡（第一次听说）不挂。
-5. **长期**：~~版聊点对点引用回复模板~~（§6.18.4 已做成真聊天记录 + 引用条）、~~回响结算~~（§6.18.5 已有结局屏「这一季的回响」+ 跨周目图鉴，尚未做跨周目「姿态/记忆」）、二周目「姿态」、欠租/打工冲突的界面提示文案、~~引擎翻成 TS~~（§6.20 已完成 engine.ts + loop.ts，85115 项逐屏对账全对）、~~前端接 TS 引擎~~（**§6.21 已完成，`vite build` 出纯静态 `dist/`，浏览器实测跑完一整季**）、**剩下：上 Cloudflare Pages**。
+5. **长期**：~~版聊点对点引用回复模板~~（§6.18.4 已做成真聊天记录 + 引用条）、~~回响结算~~（§6.18.5 已有结局屏「这一季的回响」+ 跨周目图鉴，尚未做跨周目「姿态/记忆」）、二周目「姿态」、欠租/打工冲突的界面提示文案、~~引擎翻成 TS~~（§6.20 已完成 engine.ts + loop.ts，85115 项逐屏对账全对）、~~前端接 TS 引擎~~（**§6.21 已完成**）、~~上 Cloudflare Pages~~（**§6.22 已上线 `ju-chang.pages.dev` + 自定义域名 `diocosplay.dpdns.org`，推仓库即自动部署**）。**剩下没有硬待办了**，等玩家真玩几轮再收反馈。
 6. **已明确不做**：OTA 个人线（功能与记忆回考重复）、OTA 原型卡（用户「算了吧，不写了，以后再想到新卡叫你」）——**别主动写新卡，等他点名**。
 7. ~~**⚠️ 私联线终局拷问疑似没接进运行时**~~ —— **已于 §6.10 修完**（`_line_tick` 跨周误判 + `finale` 接入 loop + 复用回考系统）。剩余小尾巴：`storyline_shiren.json` 里 `finale.gate` 的文本仍写「周 = 6」，实际走的是 `engine.FINALE_WEEK(s) = weeks_total`，文本是说明性的、不影响运行，但要改文案时记得同步。
 
@@ -865,4 +865,45 @@ cd 聚场; & $node $pnpm exec vite build     # 486KB / gzip 158KB
 ```
 
 **下一步就是部署**：`dist/` 是纯静态，可以直接 `wrangler pages deploy dist` 或把 GitHub 仓库接进 Cloudflare Pages（构建命令 `pnpm build`、输出目录 `dist`）。仓库 `voidvainkk/ju-chang` 已推到 GitHub。
+
+---
+
+## 6.22 已上线 + 三个界面问题（2026-11-17 凌晨）
+
+**线上地址**：<https://ju-chang.pages.dev/>（自定义域名 <https://diocosplay.dpdns.org/>，A 记录 `104.21.12.196` / `172.67.195.162`，实测 200）。**以后更新就是推仓库**：`git push origin main` → Cloudflare 收 webhook → `pnpm build` → 自动部署，1–2 分钟，不用再碰控制台。部署细节见 `DEPLOY.md`。
+
+⚠️ **`localStorage` 按域名隔离**——`ju-chang.pages.dev` 的存档在 `diocosplay.dpdns.org` 下看不到。建议固定用一个地址玩，别两边来回切。
+
+**用户提的三个问题与修法：**
+
+**① 立绘不随选的风格变，永远是王道系。**
+根因：`app/src/core/loop.ts:500 snapshot()` 返回的字段里**没有 `name_style`**。Python 版也是 `snapshot()` 不含、由 `server.py:124 _dump_game()` 单独补的，搬家时漏了这层。前端 `app/src/ui.js:124` 是 `IDOL_STYLES.includes(s.name_style) ? s.name_style : "sweet"` → 永远拿到 `undefined` → 永远退回 sweet。
+修法：**不要动 `snapshot()`**（那是 85115 项逐屏对账的基准，多一个字段就全红）。改在 `app/src/boot.ts` 的 `payload()` 里补一行：
+```ts
+const snap = g.snapshot();
+if (snap) (snap as any).name_style = g.name_style;
+```
+
+**② 版聊卡回复之后没有对方的下一步反馈，只有一句 desc（「把话推回去」）。**
+根因：`data/cards/chat.json` 15 张卡 45 个 option **全都只写了 `id/label/desc/immediate`，一张都没有 `note`**。而 `app/src/core/loop.ts:1139` 的回执组装是 `body = [this._fill(o.note || o.desc || "就这样吧。")]` → 只剩 desc。
+修法：给 45 个 option 全量补 `note`（语气照其他卡的 73 条 note 走：「对方当场怎么接」）。例：
+- `chat_store_seen/a` → 「他回：「你头发是湿的，一眼就认出来了。」」
+- `chat_banner_text/b` → 「「肉麻的才有人看啊。」——说完还是问了句到底写什么好」
+- `chat_live_wait/b` → 「「哦。」过了会儿补一句「那我睡了。」」
+
+**③ OTA 表从横跨整行改成右上角小方块，默认收起。**
+- `web/index.html`：`#ota-panel` 从 HUD 下的独立一段**搬进 `#hud`**，放进新的 `.hud-tools` 层（`#toggle` 左边）；`class="fold"` 默认收起；`<button id="ota-fold">OTA</button>`，删掉原来的 `<header>`。
+- `web/style.css`：`.hud-tools{display:flex;align-items:center;gap:8px;flex:none}`；`#ota-panel header{display:none}`；**展开态用绝对定位盖出来**——`#ota-panel:not(.fold){position:absolute;right:0;top:100%;z-index:20;width:min(84vw,340px);margin-top:6px}`，因为它现在是「随时查的侧面板」，不该把正文往下推。窄屏 `width:min(88vw,320px)`。
+- `app/src/ui.js` 的 `applyOtaFold`：键名 `chengchang.otafold` → `ju-chang.otafold`；按钮文字 `OTA` / `OTA ✕` + 同步 `aria-expanded`；**默认值反过来**：`localStorage.getItem(KEY) !== "0"`（没存过就收起，原来是 `=== "1"` 默认展开）。
+
+**实测（`python -m http.server 8780 --directory dist`）**：
+- ③ 收起态 `panelRect=[949,15,44,24]`、`inHud:true`、`#ota-table display:none`、`#stage` 顶部仍在 363（正文没被推开）；点开后 `rect=[713,58,340,288]`、`right:1053` 与 HUD 右边缘对齐、5 行数据，`localStorage["ju-chang.otafold"]="0"`。
+- ① 把存档 `name_style` 从 `sweet` 改成 `night` 后刷新 → `backgroundImage` = `url(".../idol_night.png")`，`#idol-name`="柚子"。
+- ② 点「手幅」卡第二项，回执出现「「肉麻的才有人看啊。」——说完还是问了句到底写什么好」。
+
+**注意**：改 `chat.json` 的文案后 `app/test/loop_expected.json` 会全红，必须重生成标准答案：
+```powershell
+& $py tools\loop_trace.py app\test\loop_expected.json   # 1230361 bytes
+```
+再跑 `& $node --experimental-strip-types app\test\loop.test.ts` → 应回到 `✓ loop: 85115 项全对`。**改任何玩家可见的文案都要走这一步。**
 

@@ -211,7 +211,12 @@ function noteEnding(): void {
 
 function payload() {
   const g = GAME!;
-  return { step: g.current(), snapshot: g.snapshot(), over: g.over };
+  const snap = g.snapshot();
+  // `name_style` 不在 `loop.py` 的 `snapshot()` 里（那份是逐屏对账的基准，
+  // 多一个字段就让 85115 项全红），所以在 payload 这一层补——Python 版的
+  // `server.py:124` 也是这么处理的。立绘靠它选四张精灵图之一。
+  if (snap) (snap as any).name_style = g.name_style;
+  return { step: g.current(), snapshot: snap, over: g.over };
 }
 
 /** 新开一局。`seed` 为 null 时自己掷一个整数——`PyRandom` 不收 None。 */
