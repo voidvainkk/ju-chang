@@ -1,7 +1,7 @@
 # 《聚场》交接文件（HANDOFF）
 
 > 地下偶像模拟器·网页游戏。这份文件是**给下一个对话的入口**：读完它 + `DESIGN.md`，就能直接接着干，不用重新摸一遍。
-> 最后更新：**2026-11-17 凌晨**（…；**§6.20 TS 移植对账全通过（85115 项）**；**§6.21 前端接 TS 引擎完成，变纯静态站**；**§6.22 已上线 ju-chang.pages.dev + 自定义域名，并修了三个界面问题：立绘随风格变、版聊补对方回音、OTA 表移到右上角默认收起**）
+> 最后更新：**2026-11-17 凌晨**（…；**§6.20 TS 移植对账全通过（85115 项）**；**§6.21 前端接 TS 引擎完成，变纯静态站**；**§6.22 已上线 ju-chang.pages.dev + 自定义域名，并修了三个界面问题：立绘随风格变、版聊补对方回音、OTA 表移到右上角默认收起**；**§6.23 四项：线索卡「今天的舞台」、弹窗收成右下角小方块可展开、星期几改汉字、指向 OTA 的「他/她」全改「ta」**）
 
 ---
 
@@ -906,4 +906,47 @@ if (snap) (snap as any).name_style = g.name_style;
 & $py tools\loop_trace.py app\test\loop_expected.json   # 1230361 bytes
 ```
 再跑 `& $node --experimental-strip-types app\test\loop.test.ts` → 应回到 `✓ loop: 85115 项全对`。**改任何玩家可见的文案都要走这一步。**
+
+## 6.23 四项：代词中性化 / 弹窗小方块 / 星期汉字 / 话题文案（2026-11-17 凌晨）
+
+用户原话：「话题改回今天的营业太奇怪了 还不如说今天的舞台呢 还有我想把那种加好感弹窗也做成小方块在右下角 然后星期几的数字统一改成汉字 然后有时候ota性别会错乱 所以把他/她直接改成ta吧」。
+
+### ① 线索卡第三选项：「今天的营业」→「今天的舞台」
+
+`tools/build_ota_recall.py:92` 的 `say_cold`：`"label": "把话题拐回今天的营业"` → `"把话题拐回今天的舞台"`。desc 本来就是「今天最后一首你们跳得真好」，不用改。重生成后 `data/cards/ota_recall.json` 里新 label 21 次、旧文案 0 次。
+
+### ② 数值弹窗：右下角小方块，黏性/关系收进「+N」展开
+
+- `app/src/ui.js:270 popup()`：主数值放 `<div class="pmain">`；黏性（`.pota`）与队友关系（`.pmate`）不为空时追加 `<button class="pmore" aria-expanded="false">+N</button>` + `<div class="pextra">`；每次重设 `box.classList.remove("hidden", "open")`；点 `.pmore` 切 `open` 类、文字在 `+N` / `收起` 之间换。
+- `web/style.css` 的 `#pop` 整段重写：`right:16px`、`bottom:calc(96px + env(safe-area-inset-bottom,0px))`、`min-width:96px`、`max-width:min(58vw,220px)`、`padding:6px 8px`、`font-size:12px`；`#pop.open{max-width:min(78vw,300px)}` + `#pop.open .pextra{display:block}`；手机断点 `right:12px`、`#pop.open{max-width:min(84vw,320px)}`。
+- **实测**：收起态 `105×72`、`right:16 / bottom:96`；点开 `+1` → `137×108`、`.pextra` 从 `none` 变 `block`、按钮文字变「收起」，仍然贴在右下角。
+
+### ③ 星期几改汉字
+
+两侧必须同步（Python 是对账标准答案）：
+- `app/src/core/loop.ts:691` 后加 `const DAY_CN = ["", "一", "二", "三", "四", "五", "六", "日"];`，`title` 改 `` `周${DAY_CN[day] || day}，晚上做点什么` ``。
+- `game/loop.py:480` 后加 `DAY_CN = ("", "一", "二", "三", "四", "五", "六", "日")`，`title` 改 `"周%s，晚上做点什么" % DAY_CN[day]`。
+- day 只取 1–6（游戏是周一到周六，没有周日）。「第 N 周」那类是周数不是星期几，用户没要求，**没动**。
+- **实测**：行动屏标题显示「周二，晚上做点什么」。
+
+### ④ 指向 OTA 的「他/她」全部改「ta」
+
+新建 `tools/neutralize_pronouns.py`（可 import 也可 CLI，`--dry` 只看不改）：
+- `neutralizer(text)`：先把「他/她」「她/他」并列收成 ta；`GUARD = {"其他","吉他","他处","利他"}` 用 `\x01XX\x01` 占位保护；`PLURAL = {"他们":"ta们","她们":"ta们"}`；再 `replace("他","ta").replace("她","ta")`；最后还原占位。
+- `walk(obj)` 递归处理 dict/list 里所有**值**字符串（键名不动——线索 key「她们散了」故意保留）；`detect_indent()` 照原文件缩进写回（有的文件 `indent=1`、有的 `indent=2`）。
+- 两个生成器接入：`tools/build_ota_memory.py` 与 `tools/build_ota_recall.py` 的写盘处改成 `json.dump(_neutralize(doc), f, ...)`，以后重生成不会再冒出「他/她」。
+
+**改动的文件**：`data/ota_memory.json`（332→1）、`data/cards/ota_recall.json`（501→1）、`data/cards/ota.json`（50→0）、`data/cards/chat.json`（8→0）、`data/cards/shiroi.json`（29→0）。残余那个 1 是 dict 键「她们散了」，其 value 已变成「后来ta们自己散了」。
+
+**为什么只改这五个文件（关键判断，别扩大）**：OTA 性别是 `game/engine.py:261 _gender_for()` 按原型掷的（女友粉→女、男友粉→男、其余 `rng.choice(["女","女","男"])`），所以**只有指向 OTA 的代词才会打架**。主角固定女（用「我」）、队友阿棠/露露/小满固定女、`private.json` 搬器材的男生固定男 —— 这些**故意没动**。`storylines/*.json` 也没动（shiren 的「她」多指小满/运营；zhong 的 chaser 虽是 OTA，但 137 处混着整段人称，改动收益不抵风险）；`结局.md`、`endings.json`、`endings_lore.json` 同样没动（「他」有 12 处指运营/路人，blind replace 会错）。
+
+### 验证与重生成
+
+改 truth 文案会连带影响基准，**两份都要重生成**：
+```powershell
+& $py tools\loop_trace.py app\test\loop_expected.json    # 1230647 bytes
+& $py tools\trace_dump.py app\test\trace_expected.json    # truth「她们散了」→「ta们散了」
+```
+结果：`validate_all.py` 八组全 0（CARD 136 / STORY 14 / MEMORY 21）；`✓ rng: 84 项`、`✓ trace: 9369 项`、`✓ loop: 85115 项`；`typecheck` exit 0；`build` → 33 modules、`index-Cahs8-8e.js` 486.45 kB（gzip 158.56）、`index-NjKaVal-.css` 29.15 kB。
+
 

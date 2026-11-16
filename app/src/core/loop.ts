@@ -689,6 +689,7 @@ export class Game {
     const left = Game.ACT_SAT - n0(this.wk.act);
     const s = this.state!;
     const day = left > 0 ? 7 - left : 6;
+    const DAY_CN = ["", "一", "二", "三", "四", "五", "六", "日"];
     const st = pyRound(s.stamina);
     let body: string[];
     if (left > 0) {
@@ -699,7 +700,7 @@ export class Game {
     if (st < 15) body.push("身体一直是空的，脑子里像隔着一层。");
     return {
       type: "choice",
-      title: `周${day}，晚上做点什么`,
+      title: `周${DAY_CN[day] || day}，晚上做点什么`,
       body,
       kind: "act",
       options: [

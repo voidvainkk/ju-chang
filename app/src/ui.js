@@ -301,11 +301,26 @@ function popup(delta, snap, sticks, mates) {
         `<div class="prow"><span>${name}</span>
          <b class="${v > 0 ? "up" : "dn"}">${v > 0 ? "+" : ""}${v}</b>${nowMate(name)}</div>`).join("")}</div>`
     : "";
-  box.innerHTML = main + ota + mate;
-  box.classList.remove("hidden");
+  // 右下角只露主数值；黏性/关系多的时候收进「更多」，点一下展开
+  const extra = ota + mate;
+  const extraN = sticks2.length + mates2.length;
+  box.innerHTML = `<div class="pmain">${main}</div>`
+    + (extra
+      ? `<button type="button" class="pmore" aria-expanded="false">+${extraN}</button>
+         <div class="pextra">${extra}</div>`
+      : "");
+  box.classList.remove("hidden", "open");
   box.classList.remove("in");
   void box.offsetWidth;
   box.classList.add("in");
+  const more = box.querySelector(".pmore");
+  if (more) {
+    more.onclick = () => {
+      const open = box.classList.toggle("open");
+      more.setAttribute("aria-expanded", open ? "true" : "false");
+      more.textContent = open ? "收起" : `+${extraN}`;
+    };
+  }
 }
 
 // 失控演出：灯一盏盏灭 + 最后两屏裁字

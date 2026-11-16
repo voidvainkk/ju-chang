@@ -741,8 +741,10 @@ for _c in CLUES:
     assert _c["key"] in CLUE_LABEL, ("未登记", _c["key"])
 assert len(CLUE_LABEL) == len(CLUES), ("登记表与线索数不一致", len(CLUE_LABEL), len(CLUES))
 
+from neutralize_pronouns import walk as _neutralize  # noqa: E402
+
 with open(OUT, "w", encoding="utf-8") as f:
-    json.dump(doc, f, ensure_ascii=False, indent=2)
+    json.dump(_neutralize(doc), f, ensure_ascii=False, indent=2)
     f.write("\n")
 
 from collections import Counter

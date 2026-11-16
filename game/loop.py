@@ -478,6 +478,7 @@ class Game:
         left = self.ACT_SAT - self.wk["act"]
         s = self.state
         day = 7 - left if left > 0 else 6
+        DAY_CN = ("", "一", "二", "三", "四", "五", "六", "日")
         st = round(s["stamina"])
         if left > 0:
             body = ["周六之前还有 %d 个晚上。" % (left - 1)]
@@ -487,7 +488,7 @@ class Game:
             body.append("身体一直是空的，脑子里像隔着一层。")
         return {
             "type": "choice",
-            "title": "周%d，晚上做点什么" % day,
+            "title": "周%s，晚上做点什么" % DAY_CN[day],
             "body": body,
             "kind": "act",
             "options": [

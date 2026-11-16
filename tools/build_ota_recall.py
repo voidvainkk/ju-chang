@@ -89,7 +89,7 @@ SAY_OPTIONS = [
     },
     {
         "id": "say_cold",
-        "label": "把话题拐回今天的营业",
+        "label": "把话题拐回今天的舞台",
         "desc": "「今天最后一首你们跳得真好」",
         "mode": "cold",
         "immediate": {"@speaker": -3, "fame": 2},
@@ -275,9 +275,11 @@ doc = {
     "cards": cards,
 }
 
+from neutralize_pronouns import walk as _neutralize  # noqa: E402
+
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 with open(OUT, "w", encoding="utf-8") as f:
-    json.dump(doc, f, ensure_ascii=False, indent=2)
+    json.dump(_neutralize(doc), f, ensure_ascii=False, indent=2)
     f.write("\n")
 
 from collections import Counter

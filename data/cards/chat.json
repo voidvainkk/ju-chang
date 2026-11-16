@@ -37,12 +37,12 @@
             "@speaker": 3,
             "psyche": -1
           },
-          "note": "他回：「你头发是湿的，一眼就认出来了。」"
+          "note": "ta回：「你头发是湿的，一眼就认出来了。」"
         },
         {
           "id": "b",
           "label": "回：那怎么不过来",
-          "desc": "给他一个下次",
+          "desc": "给ta一个下次",
           "immediate": {
             "@speaker": 2,
             "stamina": -1,
@@ -59,7 +59,7 @@
             "psyche": 1,
             "stamina": -1
           },
-          "note": "他回了个「好」。后面半天没再说话。"
+          "note": "ta回了个「好」。后面半天没再说话。"
         }
       ]
     },
@@ -274,13 +274,13 @@
         },
         {
           "id": "b",
-          "label": "回：替我谢谢他们",
+          "label": "回：替我谢谢ta们",
           "desc": "客气",
           "immediate": {
             "@speaker": 1,
             "psyche": -1
           },
-          "note": "「他们说想听你多唱一首。」"
+          "note": "「ta们说想听你多唱一首。」"
         },
         {
           "id": "c",
@@ -343,7 +343,7 @@
         {
           "id": "c",
           "label": "回：早点回去，别冻着",
-          "desc": "催他走",
+          "desc": "催ta走",
           "immediate": {
             "@speaker": 3,
             "psyche": -2
@@ -458,13 +458,13 @@
         {
           "id": "c",
           "label": "回：下次少放点水",
-          "desc": "教他",
+          "desc": "教ta",
           "immediate": {
             "@speaker": 1,
             "psyche": -1,
             "stamina": -1
           },
-          "note": "「好，下次少放点。」——他大概记住了"
+          "note": "「好，下次少放点。」——ta大概记住了"
         }
       ]
     },
