@@ -37,6 +37,33 @@ POINTS = MEM["_meta"]["points"]            # '+2/-3' 等字符串，仅作文档
 # 重型线索必须等关系深了才说（不参与常驻随机）
 HEAVY_LOCK_GATE = "（任一 OTA 黏性 ≥ 70 且 认识周数 ≥ 3）"
 
+# ---- 第一拍「认真接话」的追问句 ----
+# 2026-11-17：原来 21 条线索共用一句「那你怎么没买？」——只有水果那条成立，
+# 套到香菜/天气/加班上就成了废话。改成每条线索配一句真正接得上她刚才那句话的追问。
+SAY_WARM = {
+    "fruit_craving": "那你怎么没买？",
+    "food_hate": "那你最后挑出来吃了吗？",
+    "daily_drink": "不喝的话会怎么样？",
+    "pet_dream": "两年了，怎么还不敢养？",
+    "weather_hate": "那你今天怎么回去的？",
+    "loop_song": "哪首，我听听。",
+    "commute": "那你是几点起的？",
+    "snack": "什么牌子，我也去买一包。",
+    "phone_app": "刷什么呢，能刷两小时？",
+    "work_file": "改到第几版了？",
+    "off_work": "那你们几点才吃上饭？",
+    "pet_type": "咬坏几根了？",
+    "dream_place": "三年都没去，是什么拦着？",
+    "family_pressure": "那你怎么回的？",
+    "money_habit": "那吃饭怎么办？",
+    "commuter_route": "这么远，那你还来？",
+    "first_visit": "那你后来是怎么抬起头的？",
+    "spare_thing": "压箱底的那些，还想过吗？",
+    "alone_reason": "那现在呢，还觉得没地方去吗？",
+    "what_keeps": "就因为这个？",
+    "prev_group": "后来呢，还想起过吗？",
+}
+
 # ---- 第一拍三个反应 ----
 # mode: warm = 认真接话（她以为你记住了，答错更痛）
 #       flat = 随意应一声（正常）
@@ -143,6 +170,12 @@ def say_card(key, c):
     for o in SAY_OPTIONS:
         oo = dict(o)
         oo["rq_lock"] = {"clue": key, "slot": "speaker"}
+        if o["mode"] == "warm":
+            # 认真接话的那句追问按线索定制（2026-11-17 修：原来 21 条共用一句
+            # 「那你怎么没买？」——只有水果那条成立，套到香菜/加班上就是废话）。
+            # label 直接放她说出口的那一句，跟版聊卡「回：……」的写法一致。
+            oo["label"] = "「%s」" % SAY_WARM[key]
+            oo["desc"] = "顺着她的话往下问一句，把这句话接住了"
         opts.append(oo)
     # 重型线索：真值在上场前还没定，由玩家运行时抽定后取 say_full[该值] 的整句；
     # 文案里先用第一句做占位，并标记 say_mode 让运行时知道要换。

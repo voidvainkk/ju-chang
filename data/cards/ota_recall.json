@@ -43,8 +43,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那你怎么没买？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -215,8 +215,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那你最后挑出来吃了吗？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -387,8 +387,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「不喝的话会怎么样？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -559,8 +559,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「两年了，怎么还不敢养？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -731,8 +731,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那你今天怎么回去的？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -903,8 +903,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「哪首，我听听。」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -1075,8 +1075,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那你是几点起的？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -1247,8 +1247,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「什么牌子，我也去买一包。」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -1419,8 +1419,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「刷什么呢，能刷两小时？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -1591,8 +1591,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「改到第几版了？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -1763,8 +1763,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那你们几点才吃上饭？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -1935,8 +1935,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「咬坏几根了？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -2107,8 +2107,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「三年都没去，是什么拦着？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -2279,8 +2279,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那你怎么回的？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -2451,8 +2451,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那吃饭怎么办？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -2623,8 +2623,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「这么远，那你还来？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -2795,8 +2795,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那你后来是怎么抬起头的？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -2971,8 +2971,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「压箱底的那些，还想过吗？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -3147,8 +3147,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「那现在呢，还觉得没地方去吗？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -3323,8 +3323,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「就因为这个？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
@@ -3499,8 +3499,8 @@
       "options": [
         {
           "id": "say_warm",
-          "label": "顺着她的话往下问一句",
-          "desc": "「那你怎么没买？」把这句话接住了",
+          "label": "「后来呢，还想起过吗？」",
+          "desc": "顺着她的话往下问一句，把这句话接住了",
           "mode": "warm",
           "immediate": {
             "@speaker": 5,
