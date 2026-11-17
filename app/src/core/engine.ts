@@ -483,47 +483,27 @@ function _protaPreset(mem_def: any, rng: PyRandom): Record<string, string> {
 }
 
 /**
- * 这一季的专属私联对象：第一次上场前生成，之后整季都是她。
+ * 这一季的私联对象：从已经认识的 OTA 里挑一个「不会走的」，不再凭空造人。
  *
- * 同时作为 is_storyline 的 OTA 挂进 s.ota（这样 ota_all 一类效果也落在她身上），
- * 但 pick_ota 会跳过 is_storyline，她不会跑去别的卡里串场。
+ * 不再每次生成 stick=75 的 shiren_prota（既跟玩家追的人无关，又永远顶着
+ * 最高黏性把重线 chaser 的位置占了）。改成从黏性靠前的几位里随机挑一个，
+ * 整季固定（写进 s._prota），并补一套 memory 预设供占位符和终局拷问用。
  */
 export function protagonist(s: State, world: World, rng: PyRandom): Ota | null {
   const p0 = s._prota;
   if (p0) return p0;
+  let pool: Ota[] = (s.ota ?? []).filter((o) => !o.is_storyline);
+  pool = pool.slice().sort((a, b) => n0(b.stick) - n0(a.stick)).slice(0, 3);
+  if (!pool.length) return null;
+  const p: any = rng.choice(pool);
   const ln: any = shirenLine(world) ?? {};
   const mem_def = ln.memory_key ?? {};
-  const pool = world.pool ?? {};
-  const archs = pool.archetypes ?? [];
-  if (!archs.length) return null;
-  const arch: any = rng.choice(archs);
-  const gender = _genderFor(arch, rng);
-  const used = new Set((s.ota ?? []).map((o) => o.name));
-  let names: string[] = ((pool.name_pools ?? {})[gender] ?? []).filter((n: string) => !used.has(n));
-  if (!names.length) {
-    names = ((pool.name_pools ?? {})["其他"] ?? []).filter((n: string) => !used.has(n));
-  }
-  if (!names.length) return null;
-  const fts: string[] = arch.fan_types ?? [];
-  const p: any = {
-    id: "shiren_prota",
-    name: rng.choice(names),
-    gender,
-    fan_type: fts.length ? fts[0] : "女友粉",
-    archetype: arch.id,
-    spend: pyInt(g(arch, "base_spend", 3)),
-    // 越线门槛是「某个 OTA 黏性 ≥ 75」，她就是那个 75
-    stick: 75.0,
-    weeks_known: Math.max(2, pyInt(n0(g(s, "week", 1)))),
-    is_seed: false,
-    is_storyline: true,
-    met_week: g(s, "week", 1),
-    notes: "私下里认识的那个人。",
-    memory: _protaPreset(mem_def, rng),
-  };
+  const preset = _protaPreset(mem_def, rng);
+  const mem = p.memory ?? (p.memory = {});
+  for (const [k, v] of Object.entries(preset)) if (!(k in mem)) mem[k] = v;
+  p.is_storyline = true;
+  if (!p.notes) p.notes = "私下里认识的那个人。";
   s._prota = p;
-  if (!s.ota) s.ota = [];
-  s.ota.push(p);
   return p;
 }
 
@@ -1412,15 +1392,18 @@ function _gateOk(s: State, line: StoryLine, st: LineStage): boolean {
  * 导出是因为 `loop.py` 直接调 `E._remember_chaser()`（L1745）——
  * 谁在场由流程决定，不是引擎自己算的，所以这条得让外面能叫。
  */
-export function _rememberChaser(s: State, line: StoryLine, v?: any): void {
+export function _rememberChaser(s: State, line: StoryLine, v?: any, rng?: PyRandom): void {
   if (!(line._meta?.chaser_schema || v?.select_chaser)) return;
   if (!s._chaser && s.ota?.length) {
-    // 私联对象（is_storyline）黏性固定 75，不排除她就会永远当上「一直来的那个人」。
-    const pool = s.ota.filter((o) => !o.is_storyline);
+    // 不再固定选黏性最大的：从黏性靠前的几位里随机挑，挑完定死整线不换。
+    const pool = s.ota
+      .filter((o) => !o.is_storyline)
+      .slice()
+      .sort((a, b) => n0(b.stick) - n0(a.stick))
+      .slice(0, 3);
     if (pool.length) {
-      let best = pool[0];
-      for (const o of pool) if (o.stick > best.stick) best = o;
-      s._chaser = best.id;
+      const chosen = rng ? rng.choice(pool) : pool[0];
+      s._chaser = chosen.id;
     }
   }
 }
@@ -1870,7 +1853,7 @@ export function doWeek(
     const o = v.options[oi];
     const snap: Record<string, number> = {};
     for (const k of ["zhong", "zhongs", "heat", "heart"]) snap[k] = Number(n0(g(s, k, 0)));
-    _rememberChaser(s, line, v);
+    _rememberChaser(s, line, v, rng);
     applyOption(s, o, rng, {}, null);
     // 剧情线的推进量以前靠选项自己写 immediate.zhong，但那些选项绝大多数只写 zhongs，
     // 结果是重线永远停在 stage 0。推进量在引擎这一层补。

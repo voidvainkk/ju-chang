@@ -1,0 +1,111 @@
+{
+ "_meta": {
+  "category": "私联表白",
+  "design_note": "私联线选了不推进的选项时，她不会消失，而是又发来一条私信——带选项：回、冷、推开各有代价。gate 恒为假（『仅私联踩空时由流程插入』不在任何资源表里），这张卡永远不会进普通抽卡池，只能由 loop 在私联踩空时显式 _render_card 后 push。这样玩家一直不往后，她就一直表白，而不是同一拍换卡重播。",
+  "resource_keys": {
+   "money": "钱",
+   "stamina": "体力",
+   "psyche": "心理",
+   "fame": "人气",
+   "ota_all": "全体OTA黏性",
+   "@ta": "这一个TA的黏性",
+   "enjou": "炎上",
+   "kaibox": "开盒风险"
+  }
+ },
+ "cards": [
+  {
+   "id": "confess_late_shot",
+   "type": "私联表白",
+   "title": "凌晨两点的一张截图",
+   "gate": "仅私联踩空时由流程插入",
+   "weight": 0,
+   "narrative": "手机亮了一下。{{ta}}发来一张截图，是今天台上那一下的抓拍，角度很低，像是从很靠前的位置仰着拍的。下面跟了一行：『我看了好多遍。』消息发送时间是两点零七。",
+   "options": [
+    {
+     "id": "confess_back_warm",
+     "label": "回她：谢谢，我也很喜欢那一场",
+     "desc": "把那句话接住",
+     "immediate": { "@ta": 6, "kaibox": 2 },
+     "note": "她几乎是秒回：『那我下次还拍。』隔了几秒又发来一个笑脸。"
+    },
+    {
+     "id": "confess_back_cold",
+     "label": "已读，把手机扣在桌上",
+     "desc": "不回，也不删",
+     "immediate": { "@ta": -5, "psyche": -1 },
+     "note": "屏幕暗下去，那句话还留在通知栏里。她没有再发第二条。"
+    },
+    {
+     "id": "confess_back_push",
+     "label": "回她：别这个点发，被看到不好",
+     "desc": "把界线往前挪一寸",
+     "immediate": { "@ta": -8, "enjou": 1 },
+     "note": "她回了个『对不起』，然后真的没再说话。"
+    }
+   ]
+  },
+  {
+   "id": "confess_rain_note",
+   "type": "私联表白",
+   "title": "她说那天下了雨",
+   "gate": "仅私联踩空时由流程插入",
+   "weight": 0,
+   "narrative": "{{ta}}发来一段语音，背景里是很大的雨声。她说散场的时候忘带伞，在门口站了很久，手机里翻来翻去，最后只拨开对话框看了看，又按掉了。『也没什么事。就是想让你知道。』",
+   "options": [
+    {
+     "id": "confess_rain_care",
+     "label": "回她：下次我给你送伞",
+     "desc": "把那句没说出口的接上",
+     "immediate": { "@ta": 7, "kaibox": 2 },
+     "note": "她发来一串省略号，最后是『那说好了』。看得出来她在笑。"
+    },
+    {
+     "id": "confess_rain_quiet",
+     "label": "回一个『路上小心』",
+     "desc": "不越那一寸",
+     "immediate": { "@ta": 2, "psyche": -1 },
+     "note": "她回了个『嗯』。对话就停在那里，谁都没有再往前一步。"
+    },
+    {
+     "id": "confess_rain_away",
+     "label": "不回，第二天当没发生过",
+     "desc": "雨会停，这件事也会",
+     "immediate": { "@ta": -7, "enjou": 1 },
+     "note": "第二天她照常来，照常坐在列里，一句没提那场雨。"
+    }
+   ]
+  },
+  {
+   "id": "confess_one_more",
+   "type": "私联表白",
+   "title": "就一句，说完就删",
+   "gate": "仅私联踩空时由流程插入",
+   "weight": 0,
+   "narrative": "{{ta}}发来一句『我有一句话，说完就删』。过了半分钟，又是『算了，不说了』。再过半分钟：『你别问了。』对话框顶上一直显示『对方正在输入』，反复亮了三次。",
+   "options": [
+    {
+     "id": "confess_one_wait",
+     "label": "回她：我等着，你说",
+     "desc": "把门留着",
+     "immediate": { "@ta": 6, "kaibox": 2 },
+     "note": "她终于发过来一句很短的话，看完才知道她犹豫了那么久是为了什么。"
+    },
+    {
+     "id": "confess_one_stop",
+     "label": "回她：别发这种，我不爱看",
+     "desc": "把门关上",
+     "immediate": { "@ta": -6, "psyche": -1 },
+     "note": "『对方正在输入』灭了。这次是真的没有再亮起来。"
+    },
+    {
+     "id": "confess_one_silent",
+     "label": "截图，但不回",
+     "desc": "留着，仅此而已",
+     "immediate": { "@ta": -3, "enjou": 1 },
+     "note": "那句话躺在相册里。她大概以为自己删干净了。"
+    }
+   ]
+  }
+ ]
+}

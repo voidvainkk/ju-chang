@@ -1749,7 +1749,7 @@ class Game:
         s["_line_tick"] = s["week"]
         s["_story_try"] = s["week"]
         s["_line_week"] = s.get("_line_week") or {}
-        E._remember_chaser(s, lid, v)
+        E._remember_chaser(s, lid, v, self.rng)
         slots = self._line_slots(lid_id, v)
         pending = ("line", lid_id, st, v, slots)
         self.pending = pending
@@ -1771,6 +1771,26 @@ class Game:
     def _line_name(lid):
         return {"shiren": "私联", "zhong": "重线", "romance": "恋爱"}.get(lid, "")
 
+    def _confess_step(self, slots):
+        """私联踩空后她又发来的那条私信。带选项，回/冷/推开各有代价。
+
+        卡库里 type=私联表白 的卡 gate 恒假，永远不会进普通抽卡池，只从
+        这里显式推。三张轮换，尽量不连着发同一张（记 _last_confess）。
+        """
+        s = self.state
+        cards = [c for c in self.world.get("cards", []) if c.get("type") == "私联表白"]
+        if not cards:
+            return None
+        last = s.get("_last_confess")
+        pool = [c for c in cards if c.get("id") != last] or cards
+        card = self.rng.choice(pool)
+        s["_last_confess"] = card.get("id")
+        step = self._render_card(card, slots)
+        step["_card"] = card
+        step["_slots"] = slots
+        step["face"] = ((slots or {}).get("ta") or {}).get("name") or "私信"
+        return step
+
     def _line_slots(self, lid, v):
         """剧情线里 {{ta}} 是谁：重线跟着「一直来的那个人」，私联/恋爱各有自己的对象。"""
         s = self.state
@@ -1778,23 +1798,23 @@ class Game:
         if lid == "zhong":
             cid = s.get("_chaser")
             if not cid and s.get("ota"):
-                # 私联对象黏性固定 75，不排除她就会永远当上「一直来的那个人」。
+                # 高黏性里随机挑，不再固定 max(stick)——否则永远同一个人。
                 pool = [o for o in s["ota"] if not o.get("is_storyline")]
+                pool = sorted(pool, key=lambda o: -float(o.get("stick") or 0))[:3]
                 if pool:
-                    cid = max(pool, key=lambda o: o["stick"])["id"]
+                    cid = self.rng.choice(pool)["id"]
                     s["_chaser"] = cid
             ta = next((o for o in s["ota"] if o["id"] == cid), None)
         elif lid == "romance":
             ta = {"name": (v.get("partner") or "阿棠")}
         elif lid == "shiren":
-            # 私联的对象是这一季生成的那个人，整季都是她。
-            # 以前这里落到 max(stick) 的兜底，每一拍重算一次，
-            # 120 局实测 37% 中途换过人。
+            # 私联对象从现有高黏性 OTA 里挑一个「不会走的」，整季固定。
             ta = E.protagonist(s, self.world, self.rng)
         if ta is None and s.get("ota"):
             pool = [o for o in s["ota"] if not o.get("is_storyline")]
+            pool = sorted(pool, key=lambda o: -float(o.get("stick") or 0))[:3]
             if pool:
-                ta = max(pool, key=lambda o: o["stick"])
+                ta = self.rng.choice(pool)
         return {"ta": ta} if ta else {}
 
     def choose_story(self, oid):
@@ -1832,16 +1852,15 @@ class Game:
         # 只有真的往前走了一拍才记进度：重线的选项没有 advance（怎么答都压过来），
         # 另外两条要看选项。没推进就别写 story——否则私联「半开一扇门」也会
         # 留下一条 stage 0 的记录，可能被兜底选成主线，而它永远迈不出下一步。
+        confessed = False
         if lid_id == "zhong" or o.get("advance") or st["stage"] >= 4:
             # 收场拍（stage 4）的选项都不带 advance（它不再「往前走」），
             # 但这一拍本身必须记下来，否则末周会反复排「决赛前夜」。
             s["story"][lid_id] = {"stage": st["stage"]}
-        else:
-            # 没推进 = 玩家把这条线推开了。以前这里什么都不做，下一周
-            # line_stage 算出来的 nxt 还是同一个 stage，于是同一拍换一张卡
-            # 又演一遍（私联越线后每周必推，所以看得最明显：「连着触发两次」）。
-            # 推开就该安静几拍，而不是下周原地重播。
-            E.line_cool(s, lid_id, 2)
+        elif lid_id == "shiren":
+            # 私联踩空：不写进度、也不加冷却。她会再发一条私信表白过来。
+            # 一直不往前，她就一直表白——卡库里三张轮换，回/冷/推开各有代价。
+            confessed = True
         s["_line_week"] = s.get("_line_week", {})
         s["_line_week"][lid_id] = s["week"]
         E.clamp(s)
@@ -1859,8 +1878,15 @@ class Game:
             self._finish()
             return
         # 这一拍踩空了（拒绝、把线关了）：这条线安静两周
-        if "line_closed" in (o.get("flags") or []) or "romance_giveup" in (o.get("flags") or []):
+        closed = "line_closed" in (o.get("flags") or []) or "romance_giveup" in (o.get("flags") or [])
+        if closed:
             E.line_cool(s, lid_id, 2)
+        # 私联踩空且没有明确断线：她又发来一条私信表白。插到队首，立刻成为下一屏。
+        # 一直不往前就一直表白（三张轮换），而不是同一拍换卡重播。
+        if confessed and not closed:
+            step = self._confess_step(slots)
+            if step:
+                self.push_front(step)
         self.after_step()
 
     def _resume_live(self):

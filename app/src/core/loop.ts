@@ -2117,7 +2117,7 @@ export class Game {
     s._line_tick = s.week;
     s._story_try = s.week;
     if (!s._line_week) s._line_week = {};
-    E._rememberChaser(s, lid, v);
+    E._rememberChaser(s, lid, v, this.rng);
     const slots = this._lineSlots(lidId, v);
     const pending: any[] = ["line", lidId, st, v, slots];
     this.pending = pending;
@@ -2147,6 +2147,22 @@ export class Game {
     return ({ shiren: "私联", zhong: "重线", romance: "恋爱" } as Record<string, string>)[lid] ?? "";
   }
 
+  /** 私联踩空后她又发来的私信表白卡：三张轮换，带选项，回/冷/推开各有代价。 */
+  private _confessStep(slots: Record<string, Ota>): any {
+    const s = this.state!;
+    const cards = (this.world.cards || []).filter((c: any) => c.type === "私联表白");
+    if (!cards.length) return null;
+    const last = s._last_confess;
+    const pool = cards.filter((c: any) => c.id !== last);
+    const card = this.rng.choice(pool.length ? pool : cards);
+    s._last_confess = card.id;
+    const step = this._renderCard(card, slots);
+    step._card = card;
+    step._slots = slots;
+    step.face = (slots?.ta || {}).name || "私信";
+    return step;
+  }
+
   /** 剧情线里 `{{ta}}` 是谁：重线跟着「一直来的那个人」，私联/恋爱各有自己的对象。 */
   private _lineSlots(lid: string, v: any): Record<string, Ota> {
     const s = this.state!;
@@ -2154,10 +2170,14 @@ export class Game {
     if (lid === "zhong") {
       let cid = s._chaser;
       if (!cid && s.ota && s.ota.length) {
-        // 私联对象（isStoryline）黏性固定 75，不排除她就会永远当上「一直来的那个人」。
-        const pool = s.ota.filter((o) => !o.is_storyline);
+        // 高黏性里随机挑，不再固定 max(stick)——否则永远同一个人。
+        const pool = s.ota
+          .filter((o) => !o.is_storyline)
+          .slice()
+          .sort((a, b) => n0(b.stick) - n0(a.stick))
+          .slice(0, 3);
         if (pool.length) {
-          cid = pool.reduce((a, b) => (b.stick > a.stick ? b : a)).id;
+          cid = this.rng.choice(pool).id;
           s._chaser = cid;
         }
       }
@@ -2165,13 +2185,16 @@ export class Game {
     } else if (lid === "romance") {
       ta = { name: gv(v, "partner", null) || "阿棠" } as Ota;
     } else if (lid === "shiren") {
-      // 私联的对象是这一季生成的那个人，整季都是她。
-      // 以前这里落到 max(stick) 的兜底，每一拍重算一次，120 局实测 37% 中途换过人。
+      // 私联对象从现有高黏性 OTA 里挑一个「不会走的」，整季固定。
       ta = E.protagonist(s, this.world, this.rng);
     }
     if (ta === null && s.ota && s.ota.length) {
-      const pool = s.ota.filter((o) => !o.is_storyline);
-      if (pool.length) ta = pool.reduce((a, b) => (b.stick > a.stick ? b : a));
+      const pool = s.ota
+        .filter((o) => !o.is_storyline)
+        .slice()
+        .sort((a, b) => n0(b.stick) - n0(a.stick))
+        .slice(0, 3);
+      if (pool.length) ta = this.rng.choice(pool);
     }
     return ta ? { ta } : {};
   }
@@ -2216,16 +2239,15 @@ export class Game {
     // 只有真的往前走了一拍才记进度：重线的选项没有 advance（怎么答都压过来），
     // 另外两条要看选项。没推进就别写 story——否则私联「半开一扇门」也会
     // 留下一条 stage 0 的记录，可能被兜底选成主线，而它永远迈不出下一步。
+    let confessed = false;
     if (lidId === "zhong" || o.advance || st.stage >= 4) {
       // 收场拍（stage 4）的选项都不带 advance（它不再「往前走」），
       // 但这一拍本身必须记下来，否则末周会反复排「决赛前夜」。
       if (!s.story) s.story = {};
       s.story[lidId] = { stage: st.stage };
-    } else {
-      // 没推进 = 玩家把这条线推开了。以前这里什么都不做，下一周
-      // lineStage 算出来的 nxt 还是同一个 stage，于是同一拍换一张卡
-      // 又演一遍（私联越线后每周必推，所以看得最明显：「连着触发两次」）。
-      E.lineCool(s, lidId, 2);
+    } else if (lidId === "shiren") {
+      // 私联踩空：不写进度、也不加冷却。她会再发一条私信表白过来。
+      confessed = true;
     }
     if (!s._line_week) s._line_week = {};
     s._line_week[lidId] = s.week;
@@ -2249,8 +2271,15 @@ export class Game {
       return;
     }
     // 这一拍踩空了（拒绝、把线关了）：这条线安静两周
-    if (flags.has("line_closed") || flags.has("romance_giveup")) {
+    const closed = flags.has("line_closed") || flags.has("romance_giveup");
+    if (closed) {
       E.lineCool(s, lidId, 2);
+    }
+    // 私联踩空且没有明确断线：她又发来一条私信表白。插到队首，立刻成为下一屏。
+    // 一直不往前就一直表白（三张轮换），而不是同一拍换卡重播。
+    if (confessed && !closed) {
+      const step = this._confessStep(slots);
+      if (step) this.pushFront(step);
     }
     this.afterStep();
   }

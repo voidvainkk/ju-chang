@@ -1,7 +1,7 @@
 # 《聚场》交接文件（HANDOFF）
 
 > 地下偶像模拟器·网页游戏。这份文件是**给下一个对话的入口**：读完它 + `DESIGN.md`，就能直接接着干，不用重新摸一遍。
-> 最后更新：**2026-11-17 凌晨**（…；**§6.20 TS 移植对账全通过（85115 项）**；**§6.21 前端接 TS 引擎完成，变纯静态站**；**§6.22 已上线 ju-chang.pages.dev + 自定义域名，并修了三个界面问题：立绘随风格变、版聊补对方回音、OTA 表移到右上角默认收起**；**§6.23 四项：线索卡「今天的舞台」、弹窗收成右下角小方块可展开、星期几改汉字、指向 OTA 的「他/她」全改「ta」**；**§6.24 剧情线三修：同拍重播加冷却、chaser 排除剧情主角防串台、三条线卡右上角打 tag**）
+> 最后更新：**2026-11-17 凌晨**（…；**§6.20 TS 移植对账全通过（85115 项）**；**§6.21 前端接 TS 引擎完成，变纯静态站**；**§6.22 已上线 ju-chang.pages.dev + 自定义域名，并修了三个界面问题：立绘随风格变、版聊补对方回音、OTA 表移到右上角默认收起**；**§6.23 四项：线索卡「今天的舞台」、弹窗收成右下角小方块可展开、星期几改汉字、指向 OTA 的「他/她」全改「ta」**；**§6.24 剧情线三修：同拍重播加冷却、chaser 排除剧情主角防串台、三条线卡右上角打 tag**；**§6.25 私联踩空改「她一直发私信表白」（撤销冷却）+ 主角/chaser 从高黏性 OTA 里随机挑，见下方——注意 §6.24 的冷却方案已被 §6.25 推翻**）
 
 ---
 
@@ -12,13 +12,13 @@
 - **线上（玩家走这条）**：<https://ju-chang.pages.dev/> / <https://diocosplay.dpdns.org/>。纯静态网页，`game/*.py` 的引擎与流程已翻成 TypeScript（`app/src/core/`），`vite build` 出 486KB 的 `dist/`。存档和图鉴在 localStorage。**推 `main` 就自动部署**。见 §6.20 / §6.21 / §6.22 / `DEPLOY.md`。
 - **旧（留着当参照和标准答案）**：`game/server.py`（纯 Python，无第三方库）起本地服务 + `web/index.html` + `web/style.css`，两者用 `/api/*` 通信。`web/app.js` 已删，前端逻辑现在的家是 `app/src/ui.js`。Python 侧的真正价值是 `tools/trace_dump.py` / `tools/loop_trace.py` 那套**对账标准答案**——改 TS 引擎后必须复跑，别让两侧悄悄分叉。
 
-- 数据层已封版：**136 张事件卡**（含 §6.19.3 重写的 15 张版聊卡「观众发消息 → 偶像回」）、3 条在用剧情线、5 个种子 OTA、21 条记忆线索 + 42 张两拍回考卡、序章、**16 结局**判决表。
+- 数据层已封版：**139 张事件卡**（136 张常规 + §6.25 新增的 3 张「私联表白」卡；常规卡里含 §6.19.3 重写的 15 张版聊卡「观众发消息 → 偶像回」）、3 条在用剧情线、5 个种子 OTA、21 条记忆线索 + 42 张两拍回考卡、序章、**16 结局**判决表。
 - **结局现在真的都能打到**（现 16 个；§6.10 把私联终局「收场」接进运行时后，`truly_seen` / `used_as_tool` 会真的被写入；§6.13 加了「控制不了」，§6.18 删了结构不可达的「交易孤立」）。
 - **私联收场是三条路**（§6.13）：答错 → 「用完」；答对 → 沉沦「唯一」/ 断联「控制不了」。后者是整段自动演出：按钮全消失、屏幕自己翻、炎上与板子一路涨到 999。演出写的是「原来我不止她一个」——机制还是一个人，浮出来的是她一个人的账本。
 - **一季只走一条剧情线**（§6.11）：私联 / 队友恋爱 / 重线不再抢同一个每周推线口，第一条被玩家主动推进的线锁定为这一季主线，另外两条不再出现。
 - **私联线现在是「一个人」而不是「一阵风」**（§6.12）：她的名字、原型、猫叫什么、常点哪杯、老家在哪都整局固定；拒绝不再算推进；选「以后别来了」真的会断线。
 - **规则只读代码为准**：新跑法看 `app/src/core/*.ts`，旧跑法看 `game/*.py`（两套必须一致，靠三个对账测试守住）。`DESIGN.md` 是设计意图，部分数值已被后续改动覆盖，见 §4 / §5。
-- 校验：`tools/validate_all.py` 八组全 0；三个对账测试全绿（rng 84 / trace 9369 / loop 85115）。
+- 校验：`tools/validate_all.py` 八组全 0；三个对账测试全绿（rng 84 / trace 9290 / loop 77880）——项数因 §6.25 随机选角改了 rng 序列而变，属预期。
 - 旧服务地址 **http://127.0.0.1:8765**；新构建本地预览 **http://127.0.0.1:8780**（`python -m http.server 8780 --directory dist`）。
 
 ---
@@ -45,8 +45,8 @@ cd 聚场
 **三个对账测试必须全绿再往下走**（改任何 `app/src/core/*.ts` 都要复跑）：
 ```powershell
 & $node --experimental-strip-types app\test\rng.test.ts    # ✓ 84 项
-& $node --experimental-strip-types app\test\trace.test.ts  # ✓ 9369 项
-& $node --experimental-strip-types app\test\loop.test.ts   # ✓ 85115 项
+& $node --experimental-strip-types app\test\trace.test.ts  # ✓ 9290 项（§6.25 后）
+& $node --experimental-strip-types app\test\loop.test.ts   # ✓ 77880 项（§6.25 后）
 & $node "$PWD\node_modules\typescript\bin\tsc" --noEmit     # exit 0
 ```
 
@@ -83,7 +83,7 @@ Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'server\.py
 ### 前端工程 `app/`（§6.21 起是主线，改任何东西都看这里）
 - `app/src/core/rng.ts`（278 行）——CPython `random.Random` 的 MT19937 精确移植。**别改逻辑**，改了就过不了 `rng.test.ts` 的 84 项。
 - `app/src/core/engine.ts`（约 2170 行）——`game/engine.py` 全量移植，函数 camelCase。数据层是 `loadFiles(files)` / `loadWorld(files?)`，`RawFiles` = `相对路径 -> JSON`。
-- `app/src/core/loop.ts`（约 2320 行）——`game/loop.py` 的 `Game` 类全量移植（70 个方法、4600 字文案）。**改这里的任何一屏文案，都必须让 `loop.test.ts` 继续绿**（它有 85115 项逐屏对账）。
+- `app/src/core/loop.ts`（约 2320 行）——`game/loop.py` 的 `Game` 类全量移植（70 个方法、4600 字文案）。**改这里的任何一屏文案，都必须让 `loop.test.ts` 继续绿**（它有 77880 项逐屏对账，§6.25 后）。
 - `app/src/core/bill.ts`（78 行）/ `types.ts`（176 行）。
 - `app/src/boot.ts`（317 行）——替代 `game/server.py`。`loadDataFiles()` 用 `import.meta.glob` 把 `data/**` 和 `结局.md` 打进 bundle；导出唯一的 `call(path, body)`。
 - `app/src/ui.js`（约 810 行）——界面层，从旧 `web/app.js` 原样搬来，只改了 `api()` 的实现。**要改 UI 就改这个文件**，不是 `web/app.js`（已删）。
@@ -1020,3 +1020,35 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - `typecheck` exit 0；`build` → 33 modules、`index-BQafIPzu.js` 487.01 kB（gzip 158.74）、`index-C6kcTScL.css` 29.37 kB。
 - 40 局 × 3 策略复测：**同线同卡相邻 = 0**（原 6）、同线同 stage 相邻 = 40（全是安静 2 周后回来，间隔正好 2 周）、stage 倒退 = 0。结局分布里「后来」45 / 「用完」22 / 「现生快乐」20 / 「执念成魔」12 / 「散场」10，其余各 1–4 局，没有新结局断供。
 - 浏览器实测（8792）：版聊卡右上角 `corner-tag chat`「版聊」（`rect=[979,387,44,24]`、右边与 `#stage` 右边 1023 对齐）；重线卡 `corner-tag line-zhong`「重线」紫底白字、`titlePad=70px` 生效。
+
+---
+
+## 6.25 私联踩空改「她一直表白」+ 主角随机挑（2026-11-17 凌晨）
+
+用户看了 §6.24 后改方向，原话：「我觉得私联线如果不advance要不写ota发私信表白的卡吧 不要加两周冷却 然后一直不往后一直表白就这样 然后我希望不一定要粘性最大的当主角 也可以随机找一个不会走的」。**§6.24 的「①推开就安静两拍（line_cool）」方案已作废**——用户要的不是冷却，而是「你越不往前，她越追着表白」。确认过的两个细节：表白卡=**带选项的卡**（2–3 个回应，影响黏性/炎上）；主角=**chaser 和私联 TA 两处都改**成随机挑。
+
+### ① 撤销 line_cool，改成私信表白卡循环
+- `game/loop.py:1855 choose_story()` / `app/src/core/loop.ts:2242 chooseStory()`：原 `else` 分支的 `E.line_cool(s, lid_id, 2)` 改成「私联踩空 → `confessed = True`」（不写 story、不加冷却）。其它线（恋爱/重线）不推进仍什么也不做。
+- **断线选项不表白**：`o.flags` 里有 `line_closed`/`romance_giveup` 时仍 `E.line_cool(s, lid_id, 2)`；表白卡插在 `_finish()` / closed 判断**之后**，即 `if confessed and not closed:` 才 `push_front(self._confess_step(slots))`（Python :1884-1889 / TS :2273-2280）。表白卡插队首 → 回执屏之后立刻成为下一屏。
+- `_confess_step(slots)`（Python :1774）/ `_confessStep(slots)`（TS `static lineName` 后）：从 `world.cards` 里筛 `type == "私联表白"`，避开 `_last_confess` 做三张轮换，`rng.choice` → `_render_card` → 挂 `_card`/`_slots`/`face=ta.name`。**一直不往前就一直表白**，只有明确断线或用推进选项才停。
+- 新数据 `data/cards/confess.json`：3 张（`confess_late_shot` 凌晨截图 / `confess_rain_note` 雨夜语音 / `confess_one_more` 说完就删），每张 3 选项（回 / 冷 / 推开），`immediate` 都带负面项（避 validate_all「纯赚」规则）；`gate="仅私联踩空时由流程插入"` 是恒假条件（不在资源表/flags 里），**永不进普通抽卡池**，只能由流程显式推。`{{ta}}` 占位由 `_fill` 填真实名字。
+
+### ② 主角不再固定 max(stick)，改成高黏性里随机挑
+- `game/engine.py:327 protagonist()` / `app/src/core/engine.ts` 同名函数整体重写：**不再凭空造 `id=shiren_prota`/`stick=75` 的新 OTA**，改成从 `s.ota` 里排除 `is_storyline` → 按 stick 降序取前 3 → `rng.choice` → 选中者写 `is_storyline=True`、`s._prota = p`，**整季固定**。
+- **关键**：选中后补一套 `_prota_preset(mem_def, rng)` 的 memory（`setdefault`，不覆盖已有值）——`{{cat_name}}`/`{{home}}` 占位符和终局拷问都靠 `s._prota.memory`，漏了就整屏填「对方」。这是本轮最大风险点，已靠 trace/loop 对账守住。
+- chaser 同步随机：`game/engine.py:1212 _remember_chaser()` 加 `rng` 参数（调用点 `game/loop.py:1752`、`game/engine.py:1693 do_week`），`app/src/core/engine.ts` 同名函数 + `runSeason` 调用点、`app/src/core/loop.ts:2120 _maybeStory()` 都传 `rng`；`_lineSlots()` 的 zhong 分支与兜底（Python :1798 / TS 对应处）也改成 stick 降序前 3 + `rng.choice`。**选完写死不换**（`if not s._chaser`），整线稳定。
+
+### 存档 / 随机序列
+- 存档 `boot.ts:63` 整体序列化 `g.state`，`_prota` / `_last_confess` 都在 state 上，刷新后完整恢复，私联对象不会中途换人。
+- 随机选角会消耗 rng，所以**两份基准必须重生成**，对账项数随之变化（属预期，不是分叉）。
+
+### 验证（全绿）
+- 重生成基准：`& $py tools\loop_trace.py app\test\loop_expected.json`（1127890 bytes）、`& $py tools\trace_dump.py app\test\trace_expected.json`（144577 bytes）。
+- `& $py tools\validate_all.py` 八组全 0（`total_cards = 139` = 136 + 3 表白卡）。
+- `✓ rng: 84 项` / `✓ trace: 9290 项` / `✓ loop: 77880 项（4 个种子、853 屏）`——项数比 §6.24 少，是随机选角改了 rng 序列、跑局路径变了。
+- 表白卡在 Python 标准答案 seed0 第 75 屏触发（结局「唯一」），face = 真实 OTA「第零排」而非旧的 `shiren_prota` → 随机选角生效；三套对账全绿 → TS 与 Python 同路径、终局拷问 memory 未崩。
+- `typecheck` exit 0；`build` → 34 modules、`index-Bv17sJ0d.js` 490.89 kB（gzip 160.07）、`index-C6kcTScL.css` 29.37 kB。
+- 浏览器冒烟（8793）：自动播放 130 步无控制台报错，角标「恋爱/版聊/重线」正常。
+
+### 遗留观察（未改）
+`game/engine.py:1024 warm_ota()` 仍会把 `is_storyline` 的私联主角放进周末特典会名单，但她从不作为 speaker 出现（探针 speaker 0 次）。此轮没动；若要求「周末也完全不出现」，单独改 `warm_ota()` 排除即可。

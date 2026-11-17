@@ -325,54 +325,33 @@ def _prota_preset(mem_def, rng):
 
 
 def protagonist(s, world, rng):
-    """这一季的专属私联对象：第一次上场前生成，之后整季都是她。
+    """这一季的私联对象：从已经认识的 OTA 里挑一个「不会走的」，不再凭空造人。
 
-    以前 `_line_slots` 对私联没有专门分支，落到 `max(stick)` 的兜底，
-    于是每一拍都按当时的黏性重算一次——120 局实测 37% 中途换过人
-    （盐渍水母 → 今天也不困 → 第零排），而 `{{cat_name}}`、`{{flower}}`
-    这些「她自己的细节」根本没有来源，只能被兜成「对方」。
-
-    现在：一次生成、写进 s["_prota"]、同时作为 is_storyline 的 OTA 挂进
-    s["ota"]（这样 ota_all 一类效果也落在她身上），但 pick_ota 会跳过
-    is_storyline，她不会跑去别的卡里串场。
+    旧实现每次凭空生成一个 stick=75 的 shiren_prota：既跟玩家已经在追的人
+    毫无关系，又永远顶着最高黏性，把重线 chaser 的位置也占了（两条线的
+    专属 OTA 因此串台）。现在改成：从现有 OTA 里取黏性靠前的几个，随机挑
+    一个当私联对象——不一定是黏性最大的那个。选中后整季固定（写进
+    s["_prota"]），并补一套 memory 预设：{{cat_name}} 这类占位符和终局
+    拷问都要靠它，漏了就会整屏填成「对方」。
     """
     p = s.get("_prota")
     if p:
         return p
+    pool = [o for o in (s.get("ota") or []) if not o.get("is_storyline")]
+    # 黏性靠前的几位里随机；不足三位就都算候选
+    pool = sorted(pool, key=lambda o: -float(o.get("stick") or 0))[:3]
+    if not pool:
+        return None
+    p = rng.choice(pool)
     ln = shiren_line(world) or {}
     mem_def = ln.get("memory_key") or {}
-    pool = (world or {}).get("pool") or {}
-    archs = pool.get("archetypes") or []
-    if not archs:
-        return None
-    arch = rng.choice(archs)
-    gender = _gender_for(arch, rng)
-    used = {o["name"] for o in s.get("ota") or []}
-    names = [n for n in (pool.get("name_pools") or {}).get(gender, []) if n not in used]
-    if not names:
-        names = [n for n in (pool.get("name_pools") or {}).get("其他", []) if n not in used]
-    if not names:
-        return None
-    fts = list(arch.get("fan_types") or [])
-    p = {
-        "id": "shiren_prota",
-        "name": rng.choice(names),
-        "gender": gender,
-        "fan_type": fts[0] if fts else "女友粉",
-        "archetype": arch["id"],
-        "spend": int(arch.get("base_spend", 3)),
-        # 越线门槛是「某个 OTA 黏性 ≥ 75」，她就是那个 75：
-        # 走到这一步的人，早就不是第一次来了。
-        "stick": 75.0,
-        "weeks_known": max(2, int(s.get("week") or 1)),
-        "is_seed": False,
-        "is_storyline": True,
-        "met_week": s.get("week"),
-        "notes": "私下里认识的那个人。",
-        "memory": _prota_preset(mem_def, rng),
-    }
+    preset = _prota_preset(mem_def, rng)
+    mem = p.setdefault("memory", {})
+    for k, v in preset.items():
+        mem.setdefault(k, v)
+    p["is_storyline"] = True
+    p.setdefault("notes", "私下里认识的那个人。")
     s["_prota"] = p
-    s.setdefault("ota", []).append(p)
     return p
 
 
@@ -1230,17 +1209,21 @@ def _gate_ok(s, line, st):
     return _enter_value(s, line, st) >= need
 
 
-def _remember_chaser(s, line, v=None):
-    """记住「她」是谁：重线每一拍都跟着同一个人走。"""
+def _remember_chaser(s, line, v=None, rng=None):
+    """记住「她」是谁：重线每一拍都跟着同一个人走。
+
+    不再固定选黏性最大的——私联对象黏性天然最高（越线门槛 75），每次都她
+    当 chaser 会让两条线串台。改成从黏性靠前的几位里随机挑一个，挑完定
+    死、整线不换。rng 由调用方传进来，和 TS 侧消耗同一条随机序列。
+    """
     if not ((line.get("_meta") or {}).get("chaser_schema") or (v or {}).get("select_chaser")):
         return
     if not s.get("_chaser") and s.get("ota"):
-        # 私联对象（is_storyline）黏性固定 75，不排除的话她永远最高，
-        # 重线会把她当成「一直来的那个人」——两条线的专属 OTA 就串了。
         pool = [o for o in s["ota"] if not o.get("is_storyline")]
+        pool = sorted(pool, key=lambda o: -float(o.get("stick") or 0))[:3]
         if pool:
-            best = max(pool, key=lambda o: o["stick"])
-            s["_chaser"] = best["id"]
+            chosen = rng.choice(pool) if rng is not None else pool[0]
+            s["_chaser"] = chosen["id"]
 
 
 def line_stage(s, line):
@@ -1707,7 +1690,7 @@ def do_week(s, world, rng, policy=None):
         oi = policy(s, {"_line": line, "_stage": st}, v["options"]); oi = 0 if oi is None else oi
         o = v["options"][oi]
         _snap = {k: s.get(k, 0) for k in ("zhong", "zhongs", "heat", "heart")}
-        _remember_chaser(s, line, v)
+        _remember_chaser(s, line, v, rng)
         apply_option(s, o, rng, slots={})
         # 剧情线的推进量以前靠选项自己写 immediate.zhong，但那些选项绝大多数只写 zhongs，
         # 结果是重线永远停在 stage 0。推进量在引擎这一层补，选项只管写「她攒下的」。
