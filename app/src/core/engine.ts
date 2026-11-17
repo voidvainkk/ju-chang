@@ -502,7 +502,13 @@ export function protagonist(s: State, world: World, rng: PyRandom): Ota | null {
   const mem_def = ln.memory_key ?? {};
   const preset = _protaPreset(mem_def, rng);
   const mem = p.memory ?? (p.memory = {});
-  for (const [k, v] of Object.entries(preset)) if (!(k in mem)) mem[k] = v;
+  // 方案A：把她自己说过的值预先锁进真值表（加前缀与普通回考隔离）。
+  // 收场拷问的 ensureTruth 见键已存在便不再另掷——「她说的=拷问问的=判对的」同一个值。
+  const truth = s._truth ?? (s._truth = {});
+  for (const [k, v] of Object.entries(preset)) {
+    if (!(k in mem)) mem[k] = v;
+    if (!hasOwn(truth, "shiren_" + k)) truth["shiren_" + k] = mem[k];
+  }
   p.is_storyline = true;
   if (!p.notes) p.notes = "私下里认识的那个人。";
   s._prota = p;
@@ -1593,6 +1599,52 @@ export function finaleQuizCards(s: State, _world: World, rng: PyRandom, n = 3): 
         label: v,
         desc: "",
         rq_pick: { clue: cid, slot: "speaker", choice: v === truth ? "true" : "false" },
+      })),
+    });
+  }
+  return cards;
+}
+
+/**
+ * 私联收场拷问的独立出题通道（方案A）。
+ *
+ * 只从私联对象「自己随口说过的小事」出题——即 memory_key 里 kind=choice
+ * 的项。这些值在 protagonist() 里已预锁进 s._truth（键名加 shiren_ 前缀
+ * 与普通回考隔离），所以：她叙事里说的 = 这里问的 = 判题认的对答案，同一个
+ * 值。不再走 s.clues 那套 ota_memory 题库，避免两套真值错位。
+ */
+export function shirenFinaleQuizCards(s: State, world: World, rng: PyRandom, n = 3): Card[] {
+  const ln: any = shirenLine(world) ?? {};
+  const memDef: Record<string, any> = ln.memory_key ?? {};
+  const keys = Object.keys(memDef).filter(
+    (k) => memDef[k]?.kind === "choice" && Array.isArray(memDef[k]?.pool) && memDef[k].pool.length
+  );
+  if (!keys.length) return [];
+  rng.shuffle(keys);
+  const cards: Card[] = [];
+  for (const cid of keys.slice(0, n)) {
+    const item = memDef[cid] ?? {};
+    const vals: string[] = [...(item.pool ?? [])];
+    const truth = s._truth?.["shiren_" + cid];
+    if (!truth || !vals.includes(truth)) continue;
+    const say = item.ask_q ?? "『我说过的那件小事，你还记得吗？』";
+    cards.push({
+      id: `finale_quiz_shiren_${cid}`,
+      type: "OTA记忆",
+      title: "收场",
+      _meta: {
+        rq_stage: "ask",
+        clue: "shiren_" + cid,
+        react_good: item.react_good ?? {},
+        react_bad: item.react_bad ?? {},
+        finale: true,
+      },
+      narrative: say.split("{truth}").join("那个"),
+      options: vals.map((v, i) => ({
+        id: `pick_${i}`,
+        label: v,
+        desc: "",
+        rq_pick: { clue: "shiren_" + cid, slot: "speaker", choice: v === truth ? "true" : "false" },
       })),
     });
   }

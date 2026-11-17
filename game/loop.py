@@ -1420,39 +1420,13 @@ class Game:
             self.push(st)
 
     # ---------- 私联终局：收场 ----------
-    def _ensure_finale_clues(self, need=3):
-        """收场前补足「她说过」的细节，保证拷问至少有三条真的出现过。
-
-        线索只来自 `ota_say_*` 卡，而私联可能第 6、7 周才越线，剩下的特典
-        根本不够说出三件事（200 seed 探针里 97 次收场有 18 次少于三题，
-        最少只有一题）。这里在收场开头补一段「她把以前说过的零碎又数了一遍」，
-        把缺的细节当场说出来并记进 clues，题目就都有出处。
-        """
-        s = self.state
-        have = len(E.finale_clue_pool(s))
-        if have >= need:
-            return []
-        mem = E._memory()
-        cand = [cid for cid in mem if cid not in (s.get("clues") or {})]
-        self.rng.shuffle(cand)
-        out = []
-        for cid in cand[:need - have]:
-            c = mem.get(cid) or {}
-            truth = E.ensure_truth(s, cid, self.rng)
-            s.setdefault("clues", {})[cid] = {
-                "state": "said", "asked": False, "said_week": s.get("week"),
-                "who": None, "truth": truth,
-            }
-            say = (c.get("say") or "").replace("{truth}", str(truth))
-            if say:
-                out.append(say)
-        return out
-
     def _begin_finale(self):
         """末周开头把「收场」排上：先一句前夜的话，然后是三问。"""
         s = self.state
-        recap = self._ensure_finale_clues(3)
-        quiz = E.finale_quiz_cards(s, self.world, self.rng, 3)
+        # 方案A：拷问走私联独立通道，只从她自己随口说过的小事出题。
+        # 真值在 protagonist() 里已预锁（她说的=拷问问的=判对的同一个值），
+        # 不再需要「收场前临时补三条线索」那一段——那正是线索突兀的根源。
+        quiz = E.shiren_finale_quiz_cards(s, self.world, self.rng, 3)
         s["_finale"] = {"phase": "intro", "quiz": quiz,
                         "idx": 0, "ok": 0, "total": len(quiz)}
         ln = E.shiren_line(self.world) or {}
@@ -1460,9 +1434,6 @@ class Game:
         slots, _ta = self._finale_slots()
         intro = self._fill(fin.get("intro") or "", slots)
         body = [intro] if intro else ["场馆空着，灯只开了一半。"]
-        if recap:
-            body.append("最后一场之前，她把以前说过的零碎又数了一遍。")
-            body.extend(recap)
         self.push({"type": "text", "title": "收场", "body": body})
 
     def _after_finale(self):

@@ -347,8 +347,12 @@ def protagonist(s, world, rng):
     mem_def = ln.get("memory_key") or {}
     preset = _prota_preset(mem_def, rng)
     mem = p.setdefault("memory", {})
+    truth = s.setdefault("_truth", {})
     for k, v in preset.items():
         mem.setdefault(k, v)
+        # 方案A：把她自己说过的值预先锁进真值表（加前缀与普通回考隔离）。
+        # 收场拷问的 ensure_truth 见键已存在便不再另掷——「她说的=拷问问的=判对的」同一个值。
+        truth.setdefault("shiren_" + k, mem[k])
     p["is_storyline"] = True
     p.setdefault("notes", "私下里认识的那个人。")
     s["_prota"] = p
@@ -1434,6 +1438,48 @@ def finale_quiz_cards(s, world, rng, n=3):
             # 这里再洗一次就洗两遍了，位置会和真值对不上。
             "options": [{"id": "pick_%d" % i, "label": v, "desc": "",
                          "rq_pick": {"clue": cid, "slot": "speaker",
+                                     "choice": "true" if v == truth else "false"}}
+                        for i, v in enumerate(vals)],
+        })
+    return cards
+
+
+def shiren_finale_quiz_cards(s, world, rng, n=3):
+    """私联收场拷问的独立出题通道（方案A）。
+
+    只从私联对象「自己随口说过的小事」出题——即 memory_key 里 kind=choice
+    的项。这些值在 protagonist() 里已预锁进 s['_truth']（键名加 shiren_ 前缀
+    与普通回考隔离），所以：她叙事里说的 = 这里问的 = 判题认的对答案，是同一个
+    值。不再走 s['clues'] 那套 ota_memory 题库，避免两套真值错位——玩家越认真
+    记、越被判错的割裂。
+    """
+    ln = shiren_line(world) or {}
+    mem_def = ln.get("memory_key") or {}
+    keys = [k for k, item in mem_def.items()
+            if (item or {}).get("kind") == "choice"
+            and list((item or {}).get("pool") or [])]
+    if not keys:
+        return []
+    rng.shuffle(keys)
+    cards = []
+    for cid in keys[:n]:
+        item = mem_def[cid] or {}
+        vals = list(item.get("pool") or [])
+        truth = s.get("_truth", {}).get("shiren_" + cid)
+        if not truth or truth not in vals:
+            continue
+        say = item.get("ask_q") or "『我说过的那件小事，你还记得吗？』"
+        cards.append({
+            "id": "finale_quiz_shiren_%s" % cid,
+            "type": "OTA记忆",
+            "title": "收场",
+            "_meta": {"rq_stage": "ask", "clue": "shiren_" + cid,
+                      "react_good": item.get("react_good") or {},
+                      "react_bad": item.get("react_bad") or {},
+                      "finale": True},
+            "narrative": say.replace("{truth}", "那个"),
+            "options": [{"id": "pick_%d" % i, "label": v, "desc": "",
+                         "rq_pick": {"clue": "shiren_" + cid, "slot": "speaker",
                                      "choice": "true" if v == truth else "false"}}
                         for i, v in enumerate(vals)],
         })

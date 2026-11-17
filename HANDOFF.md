@@ -1107,3 +1107,32 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 
 ### 改动文件（本轮提交）
 `tools/build_zhong.py`、`data/storylines/storyline_zhong.json`、`app/test/loop_expected.json`、`app/test/trace_expected.json`、`HANDOFF.md`。
+
+---
+
+## 6.28 私联线文案重写 + 收场拷问「真值统一」（方案A）（2026-11-18 凌晨）
+
+承接用户 m01146「审查一下私联线+推完整剧情」→ 多轮拍板 → m01370「ok 都做 顺手清」授权落地。**审核结论：私联线没有恋爱线那种「结局藏随机变体」硬 bug**（收场钉死末周、不抽变体；三道拷问题都能答；五前置拍变体殊途同归；三结局可达=答错「用完」/答对沉沦「唯一」/答对断联「控制不了」）。但发现一处与恋爱线「越线必被撞破」同类的割裂，这次一并治本。
+
+### 病根：两套真值源错位
+「她叙事里随口说过的小事」（占位符 {{cat_name}}/{{drink}}/{{song}} 等，来自 `tools/build_shiren.py` 的 memory_key 12 条，开局由 `protagonist()` 掷值写进 protagonist.memory）与「收场拷问的小事」（原走 `s["clues"]`，来自 ota_memory.json 21 条 key，真值由 `ensure_truth` 从**自己的 set 另掷一次**）是两套数据、各掷各的真值，key 几乎不重叠（私联 cat_name/drink/song vs ota pet_type/daily_drink/loop_song）。结果：她当面说「点酸梅汤」，收场标准答案却是另一套池掷的冰美式——玩家越认真记、越被判错。另外线索不足时 `_ensure_finale_clues` 会在收场开头当场补三条（「她把以前说过的零碎又数了一遍」），这就是「线索少/突兀」的根源。
+
+### 方案A：预锁真值 + 私联独立出题（判定点一行不改）
+核心洞察：`ensure_truth(s,cid,rng)` 只在 `_truth` **没有**该 cid 时才掷值。于是在 `protagonist()` 锁定 memory 值时**同步**写 `s["_truth"]["shiren_"+key]=那个值`（加 `shiren_` 前缀与普通 OTA 回考隔离，21 条 ota key 里只有 food_hate 重叠，靠前缀避开污染）。判题点见键已存在便直接返回她说过的值，所以 `game/loop.py` 与 `app/src/core/loop.ts` 两处收场判定**一行都不用改**。新增 `shiren_finale_quiz_cards`/`shirenFinaleQuizCards`：只从私联 memory_key 里 kind=choice 的 6 项出题（题干=ask_q、选项=pool 原序、真值=预锁值、rq_pick.clue=`shiren_`+key），完全绕过 s.clues。`_begin_finale` 改调它，并**删掉**已无用的 `_ensure_finale_clues` 临时补线索（Python + TS 两侧对称删）。→「她说的=拷问问的=判对的」同一个值。
+
+### 文案重写（只改 `tools/build_shiren.py` → 重生成 json，数值/flag 结构不动）
+- **拍2 见面**（嫌原吃面/送站/送回家怪）：A「场馆外的那杯热的」散场侧门递两杯热的指尖相碰（她记得 {{drink}}、挑掉 {{food_hate}}）；B「顺路的那一段」并肩走、路灯把影子拉长挨在一起；C「就剩她一个人」我从后台出来、队友已被接走、她先回头确认那群人拐过街角才靠近说『就你了。就现在。』——专挑四下无人、我队友都不在，禁忌感。
+- **拍4 裂痕**（直白紧张 + 吻，题面收手、亲密动作全在选项）：三变体 A「只跟我说这一句」偏僻小馆十指相扣 / B「共听一副耳机」河堤夜路靠肩 / C「指尖停在脸侧」旧街区捧脸逼近；题面直白写「我」多紧张（怕被认出、手心冷汗、心跳砰砰、脚像钉住），**不替玩家做亲密动作**；选项1=最投入的吻〔A team_knows / B official_denial / C manager_leverage〕、选项2=轻一档的吻〔A denied / B 无 flag / C double_life〕、选项3=明确断联〔A/B cut_early，C deleted_ta+cut_early〕（「我们再也不能这样了 / 别再找我 / 以后别再见了」）。"控制不了"的撒谎铺垫保留。
+- **拍5 收场**（面对面拷问+铺垫+暧昧）：intro 改为「从那晚加上微信算起我们走了很久…空场馆只剩我们两个…她替我理头发、指尖停在耳边…『我问你几件事，都要是都记得，我就信——你记住的是我这个人』」；outcomes note 改暧昧第一人称（「我会真的是你的唯一，对吧？」），性别统一 {{ta}}。
+- **顺手清**：删掉 `finale.final_choices` 四条死选项（go_public/cut_clean/sink/draw_line，flag final_public/final_cut/final_sink/final_boundary 全是从不上屏的死 flag）精简为实际两条 sink/cut_clean；清拍2C `knows_home` flag + 「记成你家」/ 拍1C「认出你住的大概方向」的住址私生味；拷问题「她住什么样的地方」的装置一并让位给独立通道（fact 类 home 不再预设、不进拷问）。
+- POV 铁律：引号外正文不得含「你」，题干/反应里的「你」全包在『』内——validate 八组全 0。
+
+### 改动文件
+`tools/build_shiren.py`、`data/storylines/storyline_shiren.json`、`game/engine.py`、`game/loop.py`、`app/src/core/engine.ts`、`app/src/core/loop.ts`、`app/test/loop_expected.json`（trace_expected 未变：本轮不动每周状态数值）。
+
+### 验证（全绿）
+- `build_shiren.py` 重生成（stages 5 + finale 单列 = 原 6 拍、variants 15、final_choices 2）；`validate_all.py` 八组全 0（139 卡 / 14 stage / 21 线索）。
+- 重生成基准：`trace_expected.json` 145189 bytes、`loop_expected.json` 1300032 bytes；`✓ rng 84 / ✓ trace 9326 / ✓ loop 89718 项（4 种子、984 屏）`全对（loop 比旧版 89652 多 66 项=新收场拷问流程被走到）。
+- **方案A 定向探针**（临时脚本已删）：40 种子 ×3 题，「她叙事说过的值 == 拷问判对真值 == 卡面 true 选项」，0 失败。
+- `typecheck` exit 0（删了 TS 侧失效的 `_ensureFinaleClues` 以过未使用检查）；`build` 34 modules（`index-tVzBc6vE.js` 503.92 kB / gzip 163.87）。
+- 浏览器冒烟（4173 preview）：清 localStorage 存档后开局「二十二点三十分」段正常上屏、无控制台报错；确认新文案已打进 dist。

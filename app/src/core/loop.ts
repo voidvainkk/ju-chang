@@ -1731,54 +1731,19 @@ export class Game {
 
   // ---------------- 私联终局：收场 ----------------
 
-  /**
-   * 收场前补足「她说过」的细节，保证拷问至少有三条真的出现过。
-   *
-   * 线索只来自 `ota_say_*` 卡，而私联可能第 6、7 周才越线，剩下的特典
-   * 根本不够说出三件事（200 seed 探针里 97 次收场有 18 次少于三题，
-   * 最少只有一题）。这里在收场开头补一段「她把以前说过的零碎又数了一遍」，
-   * 把缺的细节当场说出来并记进 clues，题目就都有出处。
-   */
-  private _ensureFinaleClues(need = 3): string[] {
-    const s = this.state!;
-    const have = E.finaleCluePool(s).length;
-    if (have >= need) return [];
-    const mem = E.memoryTable() as Record<string, any>;
-    const cand = Object.keys(mem).filter((cid) => !(s.clues || {})[cid]);
-    this.rng.shuffle(cand);
-    const out: string[] = [];
-    for (const cid of cand.slice(0, need - have)) {
-      const c = mem[cid] || {};
-      const truth = E.ensureTruth(s, cid, this.rng);
-      if (!s.clues) s.clues = {};
-      s.clues[cid] = {
-        state: "said",
-        asked: false,
-        said_week: s.week,
-        who: null,
-        truth,
-      };
-      const say = String(gv(c, "say", "")).split("{truth}").join(String(truth));
-      if (say) out.push(say);
-    }
-    return out;
-  }
-
   /** 末周开头把「收场」排上：先一句前夜的话，然后是三问。 */
   private _beginFinale(): void {
     const s = this.state!;
-    const recap = this._ensureFinaleClues(3);
-    const quiz = E.finaleQuizCards(s, this.world, this.rng, 3);
+    // 方案A：拷问走私联独立通道，只从她自己随口说过的小事出题。
+    // 真值在 protagonist() 里已预锁（她说的=拷问问的=判对的同一个值），
+    // 不再需要「收场前临时补三条线索」那一段——那正是线索突兀的根源。
+    const quiz = E.shirenFinaleQuizCards(s, this.world, this.rng, 3);
     s._finale = { phase: "intro", quiz, idx: 0, ok: 0, total: quiz.length };
     const ln = E.shirenLine(this.world) || ({} as any);
     const fin = ln.finale || {};
     const { slots } = this._finaleSlots();
     const intro = this._fill(gv(fin, "intro", ""), slots);
     const body = intro ? [intro] : ["场馆空着，灯只开了一半。"];
-    if (recap.length) {
-      body.push("最后一场之前，她把以前说过的零碎又数了一遍。");
-      body.push(...recap);
-    }
     this.push({ type: "text", title: "收场", body });
   }
 
