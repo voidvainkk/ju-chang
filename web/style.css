@@ -78,8 +78,8 @@ body{
 
 /* ── BGM 唱片：蓝白同心圆，默认不转、不放歌 ───────────────── */
 .bgm-box{
-  position:relative;display:flex;align-items:center;gap:2px;flex:none;
-  padding-bottom:12px; /* 给底下那行小字留位置 */
+  position:relative;display:flex;align-items:center;flex:none;
+  margin-right:2px;
 }
 .bgm-disc{
   position:relative;width:34px;height:34px;flex:none;
@@ -100,10 +100,6 @@ body{
 .bgm-disc:hover{border-color:var(--accent-d)}
 .bgm-box.playing .bgm-disc{animation-play-state:running}
 @keyframes discSpin{to{transform:rotate(360deg)}}
-.bgm-caption{
-  position:absolute;left:0;bottom:0;white-space:nowrap;
-  font-family:var(--px);font-size:7.5px;letter-spacing:.02em;color:var(--dim);
-}
 
 /* ── 详细面板 ──────────────────────────────────────────── */
 #detail{
@@ -637,6 +633,12 @@ body.collapsing #gallery{display:none !important}
 .bgm-track .bgm-n{flex:none;font-size:10px;color:var(--dim);letter-spacing:.08em}
 .bgm-track.active .bgm-n{color:#cfe0f6}
 .bgm-track .bgm-eq{margin-left:auto;font-size:11px;color:#fff;letter-spacing:1px}
+.bgm-controls{flex:none;padding:10px 14px 14px;border-top:1px solid var(--line);
+  display:flex;flex-direction:column;gap:10px}
+.bgm-seek,.bgm-vol{display:flex;align-items:center;gap:8px;
+  font-family:var(--px);font-size:10px;color:var(--dim);letter-spacing:.04em}
+.bgm-seek input,.bgm-vol input{flex:1;min-width:0;height:18px;accent-color:var(--accent);cursor:pointer}
+.bgm-seek span,.bgm-vol span:last-child{min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
 .muted{color:var(--dim)}
 
 /* ══ 移动端（主要游玩场景）══════════════════════════════════
@@ -654,7 +656,6 @@ button,#toggle,#ota-fold{-webkit-tap-highlight-color:transparent;touch-action:ma
   #toggle{width:32px;height:32px;flex:none}
   .hud-tools{gap:6px}
   .bgm-disc{width:28px;height:28px}
-  .bgm-caption{font-size:6.5px}
 
   #ota-panel:not(.fold){width:min(88vw,320px)}
   #ota-panel:not(.fold) #ota-table{padding:3px 7px 5px}

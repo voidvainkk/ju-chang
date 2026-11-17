@@ -243,16 +243,38 @@ const BGM_TRACKS = [
   { src: "bgm_3.mp3", name: "Digital Coma" },
   { src: "bgm_4.mp3", name: "Digital Rot Lullaby (1)" },
   { src: "bgm_5.mp3", name: "Digital Rot Lullaby" },
+  { src: "bgm_6.mp3", name: "Sweet Overdose Lullaby" },
 ];
 let bgmIndex = -1;          // -1 = 还没选过歌
 let bgmAudio = null;
 let bgmMenuOpen = false;
+let bgmSeeking = false;
 
+const bgmFmt = (s) => {
+  if (!isFinite(s) || s < 0) s = 0;
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return `${m}:${String(sec).padStart(2, "0")}`;
+};
 function bgmEnsureAudio() {
   if (bgmAudio) return;
   bgmAudio = new Audio();
   bgmAudio.loop = false;
+  const volEl = $("bgm-volume");
+  bgmAudio.volume = volEl ? (+volEl.value) / 100 : 0.7;
   bgmAudio.addEventListener("ended", () => bgmSelect((bgmIndex + 1) % BGM_TRACKS.length));
+  bgmAudio.addEventListener("loadedmetadata", bgmSyncMeta);
+  bgmAudio.addEventListener("timeupdate", bgmSyncProgress);
+}
+function bgmSyncMeta() {
+  const dur = $("bgm-dur");
+  if (dur) dur.textContent = bgmFmt(bgmAudio && bgmAudio.duration);
+}
+function bgmSyncProgress() {
+  const prog = $("bgm-progress"), cur = $("bgm-cur");
+  if (!bgmAudio || !prog || bgmSeeking) return;
+  const d = bgmAudio.duration;
+  prog.value = (isFinite(d) && d > 0) ? Math.round(bgmAudio.currentTime / d * 1000) : 0;
+  if (cur) cur.textContent = bgmFmt(bgmAudio.currentTime);
 }
 function bgmSetPlaying(on) {
   const box = $("bgm-box"), disc = $("bgm-disc");
@@ -265,6 +287,7 @@ function bgmPlay(i) {
   bgmIndex = i;
   bgmAudio.src = BGM_TRACKS[i].src;
   bgmAudio.load();
+  bgmSyncMeta();
   bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
 }
 function bgmTogglePlay() {
@@ -294,10 +317,39 @@ function bgmOpenMenu(open) {
   bgmMenuOpen = open;
   const m = $("bgm-modal");
   if (m) m.classList.toggle("hidden", !open);
-  if (open) bgmRenderList();
+  if (open) { bgmRenderList(); bgmSyncMeta(); bgmSyncProgress(); }
 }
 if ($("bgm-disc")) $("bgm-disc").onclick = () => bgmOpenMenu(!bgmMenuOpen);
 if ($("bgm-close")) $("bgm-close").onclick = () => bgmOpenMenu(false);
+
+/* 进度条：拖动时暂停同步，松手后 seek */
+if ($("bgm-progress")) {
+  const prog = $("bgm-progress");
+  prog.addEventListener("input", () => {
+    bgmSeeking = true;
+    const cur = $("bgm-cur");
+    if (cur && bgmAudio && isFinite(bgmAudio.duration))
+      cur.textContent = bgmFmt(bgmAudio.duration * prog.value / 1000);
+  });
+  const commit = () => {
+    if (!bgmSeeking) return;
+    bgmSeeking = false;
+    if (bgmAudio && isFinite(bgmAudio.duration) && bgmAudio.duration > 0)
+      bgmAudio.currentTime = bgmAudio.duration * prog.value / 1000;
+  };
+  prog.addEventListener("change", commit);
+  prog.addEventListener("pointerup", commit);
+}
+/* 音量条 */
+if ($("bgm-volume")) {
+  const vol = $("bgm-volume"), label = $("bgm-volval");
+  if (label) label.textContent = vol.value;
+  vol.addEventListener("input", () => {
+    const v = +vol.value;
+    if (bgmAudio) bgmAudio.volume = v / 100;
+    if (label) label.textContent = v;
+  });
+}
 
 /* ---------- 舞台 ---------- */
 function para(text, cls) {
@@ -894,6 +946,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if (!$("gallery-modal").classList.contains("hidden")) closeGallery();
   else if (!$("settings-modal").classList.contains("hidden")) closeJournal();
+  else if (typeof bgmOpenMenu === "function" && bgmMenuOpen) bgmOpenMenu(false);
 });
 
 refresh();

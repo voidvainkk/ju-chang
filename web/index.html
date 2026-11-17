@@ -20,7 +20,6 @@
     <div class="hud-tools">
       <div id="bgm-box" class="bgm-box">
         <button id="bgm-disc" class="bgm-disc" title="选歌 / 放歌" aria-label="选歌或放歌"></button>
-        <span class="bgm-caption">even devil may cry</span>
       </div>
       <section id="ota-panel" class="fold">
         <button id="ota-fold" title="她们" aria-expanded="false">OTA</button>
@@ -96,6 +95,18 @@
       <button id="bgm-close" class="ghost">关上</button>
     </div>
     <div id="bgm-list" class="bgm-list"></div>
+    <div class="bgm-controls">
+      <div class="bgm-seek">
+        <span id="bgm-cur">0:00</span>
+        <input id="bgm-progress" type="range" min="0" max="1000" value="0" aria-label="播放进度">
+        <span id="bgm-dur">0:00</span>
+      </div>
+      <div class="bgm-vol">
+        <span>音量</span>
+        <input id="bgm-volume" type="range" min="0" max="100" value="70" aria-label="音量">
+        <span id="bgm-volval">70</span>
+      </div>
+    </div>
   </div>
 </div>
 <script type="module" src="../app/src/main.ts"></script>
