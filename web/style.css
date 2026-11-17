@@ -73,8 +73,44 @@ body{
 #toggle:hover{background:var(--accent);color:#fff;border-color:var(--accent-d)}
 #toggle.on{color:#fff;background:var(--accent);border-color:var(--accent-d);transform:rotate(180deg)}
 
-/* HUD 右边那一组：OTA 小方块 + 详细数值开关 */
+/* HUD 右边那一组：唱片 + OTA 小方块 + 详细数值开关 */
 .hud-tools{display:flex;align-items:center;gap:8px;flex:none}
+
+/* ── BGM 唱片：蓝白同心圆，默认不转、不放歌 ───────────────── */
+.bgm-box{
+  position:relative;display:flex;align-items:center;gap:2px;flex:none;
+  padding-bottom:12px; /* 给底下那行小字留位置 */
+}
+.bgm-disc{
+  position:relative;width:34px;height:34px;flex:none;
+  border:2px solid var(--ink);border-radius:50%;
+  background:
+    radial-gradient(circle at center,
+      var(--paper) 0 3px,            /* 中心孔 */
+      var(--accent) 3px 7px,         /* 蓝标签 */
+      var(--ink2) 7px 8px,           /* 一圈深描边 */
+      transparent 8px),              /* 其余透出下面的纹路 */
+    repeating-radial-gradient(circle at center,
+      #dbe9f8 0 2px, #b9d2ee 2px 3px); /* 蓝白纹路 */
+  box-shadow:1px 1px 0 rgba(13,74,151,.18);
+  cursor:pointer;padding:0;
+  animation:discSpin 3.2s linear infinite;
+  animation-play-state:paused;
+}
+.bgm-disc:hover{border-color:var(--accent-d)}
+.bgm-box.playing .bgm-disc{animation-play-state:running}
+@keyframes discSpin{to{transform:rotate(360deg)}}
+.bgm-next{
+  width:18px;height:34px;flex:none;
+  background:var(--paper);border:2px solid var(--ink);color:var(--ink2);
+  font-family:var(--px);font-size:16px;line-height:1;cursor:pointer;
+  clip-path:var(--cut);padding:0 0 2px;
+}
+.bgm-next:hover{background:var(--accent);color:#fff}
+.bgm-caption{
+  position:absolute;left:0;bottom:0;white-space:nowrap;
+  font-family:var(--px);font-size:7.5px;letter-spacing:.02em;color:var(--dim);
+}
 
 /* ── 详细面板 ──────────────────────────────────────────── */
 #detail{
@@ -605,6 +641,10 @@ button,#toggle,#ota-fold{-webkit-tap-highlight-color:transparent;touch-action:ma
   .kv b{font-size:13.5px}
   .kv i{font-size:10px}
   #toggle{width:32px;height:32px;flex:none}
+  .hud-tools{gap:6px}
+  .bgm-disc{width:28px;height:28px}
+  .bgm-next{height:28px;width:16px;font-size:14px}
+  .bgm-caption{font-size:6.5px}
 
   #ota-panel:not(.fold){width:min(88vw,320px)}
   #ota-panel:not(.fold) #ota-table{padding:3px 7px 5px}

@@ -236,6 +236,49 @@ function applyOtaFold(folded) {
 if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold(!$("ota-panel").classList.contains("fold"));
 applyOtaFold(localStorage.getItem(OTA_FOLD_KEY) !== "0");
 
+/* ---------- BGM 唱片（默认不放歌，点唱片播放/暂停，箭头切歌） ---------- */
+const BGM_TRACKS = [
+  { src: "bgm_1.mp3", name: "Offline Sedation" },
+  { src: "bgm_2.mp3", name: "Digital Coma (1)" },
+  { src: "bgm_3.mp3", name: "Digital Coma" },
+  { src: "bgm_4.mp3", name: "Digital Rot Lullaby (1)" },
+  { src: "bgm_5.mp3", name: "Digital Rot Lullaby" },
+];
+let bgmIndex = 0;
+let bgmAudio = null;
+function bgmLoad(i) {
+  bgmIndex = (i + BGM_TRACKS.length) % BGM_TRACKS.length;
+  const wasPlaying = bgmAudio && !bgmAudio.paused;
+  if (!bgmAudio) {
+    bgmAudio = new Audio();
+    bgmAudio.loop = false;
+    bgmAudio.addEventListener("ended", () => bgmNext());
+  }
+  bgmAudio.src = BGM_TRACKS[bgmIndex].src;
+  bgmAudio.load();
+  if (wasPlaying) bgmAudio.play().catch(() => {});
+}
+function bgmSetPlaying(on) {
+  const box = $("bgm-box"), disc = $("bgm-disc");
+  if (box) box.classList.toggle("playing", on);
+  if (disc) disc.title = on ? "暂停" : "放歌";
+}
+function bgmToggle() {
+  if (!bgmAudio || !bgmAudio.src) bgmLoad(bgmIndex);
+  if (bgmAudio.paused) {
+    bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
+  } else {
+    bgmAudio.pause();
+    bgmSetPlaying(false);
+  }
+}
+function bgmNext() {
+  bgmLoad(bgmIndex + 1);
+  if (bgmAudio) bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
+}
+if ($("bgm-disc")) $("bgm-disc").onclick = bgmToggle;
+if ($("bgm-next")) $("bgm-next").onclick = (e) => { e.stopPropagation(); bgmNext(); };
+
 /* ---------- 舞台 ---------- */
 function para(text, cls) {
   if (!text) return "";
