@@ -100,13 +100,6 @@ body{
 .bgm-disc:hover{border-color:var(--accent-d)}
 .bgm-box.playing .bgm-disc{animation-play-state:running}
 @keyframes discSpin{to{transform:rotate(360deg)}}
-.bgm-next{
-  width:18px;height:34px;flex:none;
-  background:var(--paper);border:2px solid var(--ink);color:var(--ink2);
-  font-family:var(--px);font-size:16px;line-height:1;cursor:pointer;
-  clip-path:var(--cut);padding:0 0 2px;
-}
-.bgm-next:hover{background:var(--accent);color:#fff}
 .bgm-caption{
   position:absolute;left:0;bottom:0;white-space:nowrap;
   font-family:var(--px);font-size:7.5px;letter-spacing:.02em;color:var(--dim);
@@ -626,6 +619,24 @@ body.collapsing #gallery{display:none !important}
 .set-note{margin-top:8px;font-size:11.5px;color:var(--dim)}
 .set-danger{color:#b23a2e;border-color:#d8b6b0}
 .set-danger.armed{background:#b23a2e;color:#fff;border-color:#b23a2e}
+
+/* ---------- BGM 选歌弹窗 ---------- */
+#bgm-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;
+  justify-content:center;padding:24px;background:rgba(12,22,38,.42);
+  backdrop-filter:blur(2px)}
+#bgm-modal.hidden{display:none}
+.bgm-panel{width:min(420px,94vw);display:flex;flex-direction:column;
+  background:var(--paper);border:1px solid var(--line2);clip-path:var(--cut);
+  box-shadow:0 18px 60px rgba(15,35,60,.18)}
+.bgm-list{padding:8px 12px 14px;display:flex;flex-direction:column;gap:4px}
+.bgm-track{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:9px 10px;background:transparent;border:1px solid transparent;
+  font-family:var(--px);font-size:12px;color:var(--ink);cursor:pointer;clip-path:var(--cut)}
+.bgm-track:hover{background:var(--line);border-color:var(--line2)}
+.bgm-track.active{background:var(--accent);color:#fff;border-color:var(--accent-d)}
+.bgm-track .bgm-n{flex:none;font-size:10px;color:var(--dim);letter-spacing:.08em}
+.bgm-track.active .bgm-n{color:#cfe0f6}
+.bgm-track .bgm-eq{margin-left:auto;font-size:11px;color:#fff;letter-spacing:1px}
 .muted{color:var(--dim)}
 
 /* ══ 移动端（主要游玩场景）══════════════════════════════════
@@ -643,7 +654,6 @@ button,#toggle,#ota-fold{-webkit-tap-highlight-color:transparent;touch-action:ma
   #toggle{width:32px;height:32px;flex:none}
   .hud-tools{gap:6px}
   .bgm-disc{width:28px;height:28px}
-  .bgm-next{height:28px;width:16px;font-size:14px}
   .bgm-caption{font-size:6.5px}
 
   #ota-panel:not(.fold){width:min(88vw,320px)}

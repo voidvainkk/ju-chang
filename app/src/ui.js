@@ -236,7 +236,7 @@ function applyOtaFold(folded) {
 if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold(!$("ota-panel").classList.contains("fold"));
 applyOtaFold(localStorage.getItem(OTA_FOLD_KEY) !== "0");
 
-/* ---------- BGM 唱片（默认不放歌，点唱片播放/暂停，箭头切歌） ---------- */
+/* ---------- BGM 唱片（默认不放歌，点唱片弹选歌窗） ---------- */
 const BGM_TRACKS = [
   { src: "bgm_1.mp3", name: "Offline Sedation" },
   { src: "bgm_2.mp3", name: "Digital Coma (1)" },
@@ -244,40 +244,60 @@ const BGM_TRACKS = [
   { src: "bgm_4.mp3", name: "Digital Rot Lullaby (1)" },
   { src: "bgm_5.mp3", name: "Digital Rot Lullaby" },
 ];
-let bgmIndex = 0;
+let bgmIndex = -1;          // -1 = 还没选过歌
 let bgmAudio = null;
-function bgmLoad(i) {
-  bgmIndex = (i + BGM_TRACKS.length) % BGM_TRACKS.length;
-  const wasPlaying = bgmAudio && !bgmAudio.paused;
-  if (!bgmAudio) {
-    bgmAudio = new Audio();
-    bgmAudio.loop = false;
-    bgmAudio.addEventListener("ended", () => bgmNext());
-  }
-  bgmAudio.src = BGM_TRACKS[bgmIndex].src;
-  bgmAudio.load();
-  if (wasPlaying) bgmAudio.play().catch(() => {});
+let bgmMenuOpen = false;
+
+function bgmEnsureAudio() {
+  if (bgmAudio) return;
+  bgmAudio = new Audio();
+  bgmAudio.loop = false;
+  bgmAudio.addEventListener("ended", () => bgmSelect((bgmIndex + 1) % BGM_TRACKS.length));
 }
 function bgmSetPlaying(on) {
   const box = $("bgm-box"), disc = $("bgm-disc");
   if (box) box.classList.toggle("playing", on);
-  if (disc) disc.title = on ? "暂停" : "放歌";
+  if (disc) disc.title = on ? "暂停 / 选歌" : "选歌 / 放歌";
+  bgmRenderList();
 }
-function bgmToggle() {
-  if (!bgmAudio || !bgmAudio.src) bgmLoad(bgmIndex);
-  if (bgmAudio.paused) {
-    bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
-  } else {
-    bgmAudio.pause();
-    bgmSetPlaying(false);
-  }
+function bgmPlay(i) {
+  bgmEnsureAudio();
+  bgmIndex = i;
+  bgmAudio.src = BGM_TRACKS[i].src;
+  bgmAudio.load();
+  bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
 }
-function bgmNext() {
-  bgmLoad(bgmIndex + 1);
-  if (bgmAudio) bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
+function bgmTogglePlay() {
+  if (!bgmAudio || bgmIndex < 0) return;
+  if (bgmAudio.paused) bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => {});
+  else { bgmAudio.pause(); bgmSetPlaying(false); }
 }
-if ($("bgm-disc")) $("bgm-disc").onclick = bgmToggle;
-if ($("bgm-next")) $("bgm-next").onclick = (e) => { e.stopPropagation(); bgmNext(); };
+function bgmSelect(i) {
+  if (i === bgmIndex) bgmTogglePlay();   // 点当前曲目 = 暂停/继续
+  else bgmPlay(i);
+}
+function bgmRenderList() {
+  const list = $("bgm-list");
+  if (!list) return;
+  list.innerHTML = BGM_TRACKS.map((t, i) => {
+    const active = i === bgmIndex;
+    const playing = active && bgmAudio && !bgmAudio.paused;
+    return `<button class="bgm-track${active ? " active" : ""}" data-i="${i}">`
+      + `<span class="bgm-n">${String(i + 1).padStart(2, "0")}</span>`
+      + `<span>${t.name}</span>`
+      + (playing ? `<span class="bgm-eq">♪</span>` : "")
+      + `</button>`;
+  }).join("");
+  list.querySelectorAll(".bgm-track").forEach(b => { b.onclick = () => bgmSelect(+b.dataset.i); });
+}
+function bgmOpenMenu(open) {
+  bgmMenuOpen = open;
+  const m = $("bgm-modal");
+  if (m) m.classList.toggle("hidden", !open);
+  if (open) bgmRenderList();
+}
+if ($("bgm-disc")) $("bgm-disc").onclick = () => bgmOpenMenu(!bgmMenuOpen);
+if ($("bgm-close")) $("bgm-close").onclick = () => bgmOpenMenu(false);
 
 /* ---------- 舞台 ---------- */
 function para(text, cls) {

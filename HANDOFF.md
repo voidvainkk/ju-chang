@@ -1141,18 +1141,18 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 
 ## 6.29 首页 BGM 唱片（蓝白唱片 + 放歌/切歌）（2026-11-18 凌晨）
 
-用户 m01967 要求：5 首歌做成 BGM，蓝白色唱片放 OTA 左边，**默认不放歌**，点唱片放歌/暂停、点小箭头切歌，底下加一行小字「even devil may cry」，播放时唱片转起来。纯前端改动，不碰 TS 引擎。
+用户 m01967 要求：5 首歌做成 BGM，蓝白色唱片放 OTA 左边，**默认不放歌**，底下加一行小字「even devil may cry」，播放时唱片转起来。初版用切歌小箭头；用户 m02201「能不能不要这个按钮 点一下唱片出一个弹窗」→ 改为点唱片弹选歌窗（去掉切歌按钮）。纯前端改动，不碰 TS 引擎。
 
 ### 实现
 - 5 首源 mp3（`D:\下载\`：Offline Sedation / Digital Coma(1) / Digital Coma / Digital Rot Lullaby(1) / Digital Rot Lullaby）复制为 `web/sprites/bgm_1.mp3`..`bgm_5.mp3`（vite `publicDir=web/sprites`，构建后铺到站点根 `dist/bgm_*.mp3`，共约 22.8MB）。
-- `web/index.html`：在 `<div class="hud-tools">` 内、`<section id="ota-panel">` 前插入 `<div id="bgm-box">`，含 `#bgm-disc`（唱片按钮）、`#bgm-next`（切歌 ›）、`.bgm-caption`（even devil may cry）——DOM 顺序保证唱片在 OTA 左边。
-- `web/style.css`：`.bgm-disc` 34px 纯 CSS 同心圆唱片（radial-gradient 中心孔+蓝标签+深描边 + repeating-radial-gradient 蓝白纹路两层背景），`animation:discSpin 3.2s linear infinite; animation-play-state:paused`，`.bgm-box.playing .bgm-disc{animation-play-state:running}`。移动端 @media(max-width:640px) 唱片缩到 28px、caption 6.5px。
-- `app/src/ui.js`：BGM_TRACKS（5 首）+ 单例 Audio，`bgmLoad/bgmSetPlaying/bgmToggle/bgmNext`；点唱片播放/暂停，点 › 切下一首（stopPropagation），`audio.ended` 自动下一首，play 成功后给 box 加 `playing` 类。默认不 new Audio、不加载、不播放。
+- `web/index.html`：在 `<div class="hud-tools">` 内、`<section id="ota-panel">` 前插入 `<div id="bgm-box">`，含 `#bgm-disc`（唱片按钮）、`.bgm-caption`（even devil may cry）——DOM 顺序保证唱片在 OTA 左边；页尾加 `<div id="bgm-modal">` 选歌弹窗（复用 gal-head 样式 + `#bgm-list` 曲目列表 + `#bgm-close`）。
+- `web/style.css`：`.bgm-disc` 34px 纯 CSS 同心圆唱片（radial-gradient 中心孔+蓝标签+深描边 + repeating-radial-gradient 蓝白纹路两层背景），`animation:discSpin 3.2s linear infinite; animation-play-state:paused`，`.bgm-box.playing .bgm-disc{animation-play-state:running}`；`#bgm-modal` 弹窗 + `.bgm-track`（选中态蓝底、♪ 播放标记）样式。移动端 @media(max-width:640px) 唱片缩到 28px、caption 6.5px。
+- `app/src/ui.js`：BGM_TRACKS（5 首）+ 单例 Audio，`bgmEnsureAudio/bgmSetPlaying/bgmPlay/bgmTogglePlay/bgmSelect/bgmRenderList/bgmOpenMenu`；**点唱片弹选歌窗**（不再有切歌按钮），点曲目=选歌播放、再点当前曲目=暂停/继续、曲目高亮带 ♪，`audio.ended` 自动下一首，播放时给 box 加 `playing` 类。默认不 new Audio、不加载、不播放。
 - 坑：`radial-gradient` 不能直接嵌 `repeating-radial-gradient` 当颜色停点，改为两层 background（第一层中心到 8px 后 transparent，第二层纹路）。
 
 ### 验证（全绿）
 - `typecheck` exit 0、`build` 34 modules（index-X9ibD3Hc.css / index-DKa1yzI1.js），dist/bgm_1..5.mp3 齐全。
-- 浏览器冒烟（4173 preview）：唱片在 OTA 左边（实测 disc.x < ota.x）；默认 `paused`、不转、无 playing 类；点唱片 → 加载 bgm_1.mp3（readyState 4、无 error）且开转；点 › → currentSrc 变 bgm_2.mp3 继续转；再点唱片 → 暂停、停转、title 回「放歌」；无控制台报错。`fetch('bgm_1.mp3')` 返回 200/audio/mpeg/3.2MB。
+- 浏览器冒烟（4173 preview）：唱片在 OTA 左边（实测 disc.x < ota.x）；默认弹窗 hidden、`paused`、不转、无 playing 类、无切歌按钮；点唱片 → 弹出选歌窗（5 曲目）；点「02 Digital Coma (1)」→ 该曲目高亮带 ♪、加载 bgm_2.mp3、唱片开转、弹窗保持开着可连续选；点「关上」→ 弹窗关但音乐继续放、唱片继续转；无控制台报错。`fetch('bgm_1.mp3')` 返回 200/audio/mpeg/3.2MB。
 
 ### 改动文件
 `web/index.html`、`web/style.css`、`app/src/ui.js`、`web/sprites/bgm_1.mp3`..`bgm_5.mp3`（新增）、`HANDOFF.md`。

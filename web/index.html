@@ -19,8 +19,7 @@
     </div>
     <div class="hud-tools">
       <div id="bgm-box" class="bgm-box">
-        <button id="bgm-disc" class="bgm-disc" title="放歌 / 暂停" aria-label="放歌或暂停"></button>
-        <button id="bgm-next" class="bgm-next" title="下一首" aria-label="下一首">›</button>
+        <button id="bgm-disc" class="bgm-disc" title="选歌 / 放歌" aria-label="选歌或放歌"></button>
         <span class="bgm-caption">even devil may cry</span>
       </div>
       <section id="ota-panel" class="fold">
@@ -88,6 +87,15 @@
       <button id="set-close" class="ghost">关上</button>
     </div>
     <div id="set-body" class="set-body"></div>
+  </div>
+</div>
+<div id="bgm-modal" class="hidden" aria-modal="true" role="dialog">
+  <div class="bgm-panel">
+    <div class="gal-head">
+      <span>even devil may cry</span>
+      <button id="bgm-close" class="ghost">关上</button>
+    </div>
+    <div id="bgm-list" class="bgm-list"></div>
   </div>
 </div>
 <script type="module" src="../app/src/main.ts"></script>
