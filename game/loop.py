@@ -204,6 +204,8 @@ class Game:
                 self.pending = ("card", head["_card"], head.get("_slots") or {})
             elif head.get("line") and head.get("_line"):
                 self.pending = head["_line"]
+            elif head.get("rtalk") and head.get("_rtalk"):
+                self.pending = head["_rtalk"]
             elif head.get("talk") and head.get("_talk"):
                 self.pending = head["_talk"]
             elif head.get("type") == "choice" and head.get("kind") in ("offer", "empty", "leave"):
@@ -824,6 +826,9 @@ class Game:
         if self.pending[0] == "line":
             # 剧情线的卡被当成普通卡点了（line 标记丢了）：转给 choose_story
             return self.choose_story(oid)
+        if self.pending[0] == "rtalk":
+            # 「谈一谈」那张卡被当成普通卡点了：转给 choose_romance_talk
+            return self.choose_romance_talk(oid)
         if self.pending[0] == "talk":
             # 特典那张卡被当成普通卡点了：屏幕上是特典卡才转过去，否则就是被别的卡抢了 pending
             if (self.queue and self.queue[0].get("talk")):
@@ -1700,6 +1705,73 @@ class Game:
         st = E.line_stage(s, ln)
         return (ln, st) if st else None
 
+    def _maybe_romance_talk(self):
+        """「谈一谈」独立幕：确认关系后、还没做过一次性表态时，每周开头来问一次。
+        选「再等等/逃避」只攒 risk，下周照问（越拖越勤）；选「公开/只看当下」收下表态，不再问。
+        不占抽线骰子、不写 story 进度；末周 force_finale 时跳过它，直接推收场。"""
+        s = self.state
+        if E.mainline(s) != "romance":
+            return None
+        fl = s.get("flags") or set()
+        if "romance_confirmed" not in fl:
+            return None
+        # 表过态就不再问（公开 / 只看当下，都是一次性收下）
+        if "romance_public_intent" in fl or "romance_now_intent" in fl:
+            return None
+        # 每周最多问一次
+        if int(s.get("_rtalk_week", -1)) == int(s.get("week", 0)):
+            return None
+        ln = E.romance_line(self.world)
+        if ln is None or E.line_locked(s, ln):
+            return None
+        talks = ln.get("talks") or []
+        if not talks:
+            return None
+        # 三变体轮换：尽量不接着问同一张
+        last = s.get("_last_rtalk", "")
+        pool = [t for t in talks if t.get("id") != last]
+        talk = self.rng.choice(pool if pool else talks)
+        s["_last_rtalk"] = talk.get("id")
+        slots = {"ta": {"name": "阿棠"}}
+        pending = ("rtalk", talk, slots)
+        body = [self._fill(talk.get("narrative", ""), slots)]
+        return {
+            "type": "card",
+            "rtalk": True,
+            "title": self._fill(talk.get("title", ""), slots),
+            "face": slots["ta"]["name"],
+            "speaker": slots["ta"]["name"],
+            "compact": True,
+            "body": body,
+            "options": [{"id": o["id"], "label": self._fill(o["label"], slots),
+                         "desc": self._fill(o.get("desc", ""), slots)}
+                        for o in (talk.get("options") or [])],
+            "_rtalk": pending,
+        }
+
+    def choose_romance_talk(self, oid):
+        """「谈一谈」那张卡的落子：收下表态或只攒一点 risk。"""
+        if not self.pending:
+            return self.advance()
+        _, talk, slots = self.pending
+        o = next(x for x in talk["options"] if x["id"] == oid)
+        s = self.state
+        before = _snap(s)
+        E.apply_option(s, o, self.rng, slots, card=talk)
+        # 关键：apply_option 只把 flag 塞进 s["flags"]，risk 的数值累积在 apply_story_flags 里
+        E.apply_story_flags(s, o)
+        s["_rtalk_week"] = s["week"]
+        E.clamp(s)
+        self.pending = None
+        self.queue.pop(0)
+        body = [x for x in [self._fill(o.get("note", ""), slots)] if x]
+        if not body:
+            body = [x for x in [self._fill(o.get("desc", ""), slots)] if x]
+        self.push({"type": "receipt", "title": self._fill(o.get("label", ""), slots),
+                   "body": body, "delta": _delta(before, s),
+                   "face": (slots.get("ta") or {}).get("name", "阿棠")})
+        self.after_step()
+
     def _maybe_story(self, force_finale=False):
         """每周开头先问一句：这一周有没有哪条线在走。
 
@@ -1707,6 +1779,11 @@ class Game:
         choose_story 收尾也调它），结果排完动作那一周就再也推不动线——
         一周也推进不了。现在只由每周开头那一次调用决定，本函数不自锁。"""
         s = self.state
+        # 「谈一谈」是独立通道：不占每周抽线的骰子，也不写 story 进度。
+        if not force_finale:
+            rtalk_step = self._maybe_romance_talk()
+            if rtalk_step is not None:
+                return rtalk_step
         line = None
         forced = False
         if force_finale:
@@ -1733,9 +1810,18 @@ class Game:
         lid_id = lid["_meta"]["id"]
         v = None
         if lid_id == "romance" and st["stage"] == 4:
+            # 收场这一晚会不会被人撞破：不再一票否决，按「意图 + 攒下的 risk」掷一次骰。
+            # 公开意图 = 本来就打算摊开，几乎不怕被看见（risk 攒够才有一点风声）；
+            # 只想顾当下 / 一直没表态 = 越拖越悬，risk 越高越容易被推开门。
             fl = s.get("flags") or set()
-            if "close_call" in fl or "romance_risk" in fl:
-                # 之前就差点被看见、或一直在越线：收场不是坐下来谈，是门被人推开。
+            risk = max(0, int(float(s.get("romance_risk") or 0)))
+            if "romance_public_intent" in fl:
+                caught_pct = 20 if risk >= 3 else 0
+            elif "romance_now_intent" in fl:
+                caught_pct = min(90, 60 + 10 * risk)
+            else:
+                caught_pct = min(90, 50 + 15 * risk)
+            if self.rng.random() * 100 < caught_pct:
                 v = next((x for x in st["variants"] if x["id"] == "finale_caught"), None)
         if v is None:
             # 同一拍隔两周再回来时，尽量换一张没演过的：

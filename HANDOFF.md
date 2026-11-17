@@ -1052,3 +1052,34 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 
 ### 遗留观察（未改）
 `game/engine.py:1024 warm_ota()` 仍会把 `is_storyline` 的私联主角放进周末特典会名单，但她从不作为 speaker 出现（探针 speaker 0 次）。此轮没动；若要求「周末也完全不出现」，单独改 `warm_ota()` 排除即可。
+
+---
+
+## 6.26 恋爱线重做：风险累积 + 「谈一谈」独立幕 + 撞破改掷骰（2026-11-17 晚）
+
+承接 2026-11-17 白天那场会话（session-33d7b1b9，标题「查看 Handoff 并接手聚场」）——那轮把恋爱线大改写进了工作区但**没跑完校验/没提交/没写 handoff**，本轮接手补完。用户 4 项设计意图（原话见对话）：「越线必被撞破 → 越线后应该有个谈一谈，无视风险才可能被撞破」「方案 A：恋爱线选项更暧昧、撞破改概率事件；打算以后公开→走到毕业日、只看当下→大概率被撞破」「单独开一幕戏，拖着以后还会有谈一谈的机会」；暧昧文案用户已拍板「力度都不错就这样写上去」。
+
+### 诊断（为什么要改）
+旧逻辑「越线必被撞破」是一票否决：越界拍写的 `close_call`/`romance_risk` flag 全仓无法清除，收场判定 `if "close_call" in fl or "romance_risk" in fl` 一命中就强制进 `finale_caught`（「后来」），毕业日线直接没戏；「帘子后面」卡变成「想推进就必踩坑」。
+
+### 改了什么（Python 标准答案 + TS 两侧对称）
+**数据**（`data/storylines/storyline_romance.json`，由 `tools/build_romance.py` 生成）：
+- 四拍 12 变体 narrative 全部暧昧化重写（身体距离/呼吸/欲言又止），重点越界与确认两拍；POV 铁律保持第一人称（引号外不得出现「你」）。
+- romance line 新增 `ln.talks` 三变体（`talk_rooftop`/`talk_backstage`/`talk_practice_room`），每变体 4 选项：`talk_public`→`romance_public_intent`、`talk_now`→`romance_now_intent`、`talk_wait`/`talk_avoid`→`romance_risk`，全 `advance=0`，带第一人称 `note`。talks 直接挂在 line 对象上（`StoryLine` 接口有 `[k:string]:any`），**不用改 loadWorld / types.ts / World 接口**。
+
+**状态/引擎**（`game/engine.py` + `app/src/core/engine.ts`）：BASE 加 `romance_risk=0`、clamp 计数类循环加 `romance_risk`、`apply_story_flags()` 里 `if "romance_risk" in flags: s["romance_risk"] += 1`（TS `applyStoryFlags` 对应 :575-578）——risk 是可抵消的数值，不再是不可清除的 flag 死刑。
+
+**流程**（`game/loop.py` + `app/src/core/loop.ts`，对称）：
+- 新 `_maybe_romance_talk()` / `chooseRomanceTalk()`（TS :2104 / :1578）：确认关系后（`romance_confirmed` in flags）、未做一次性表态（无 `romance_public_intent`/`romance_now_intent`）、每周最多一次（`_rtalk_week`）、末周 forceFinale 跳过；三变体轮换避开 `_last_rtalk`；不占抽线骰子、不写 story 进度。落子走 `applyOption` + **`applyStoryFlags`**（关键：risk 数值在这里累积，普通 chooseTalk 不调它）。
+- `chooseCard`/`choose_card` 分流、`current()` 的 pending 恢复、`_maybeStory` 开头拦截，两侧都加了 `rtalk` 通道。
+- **收场掷骰**（TS :2112-2128 / Python `_maybe_story` stage4 分支）：`risk=trunc(romance_risk)`；`romance_public_intent`→撞破概率 `risk>=3?20:0`%；`romance_now_intent`→`min(90,60+10*risk)`%；其余（含一直没表态）→`min(90,50+15*risk)`%；`rng.random()*100 < caughtPct` 才进 `finale_caught`，否则走正常季末结局。即「公开意图≈走到毕业日、只看当下≈大概率被撞破、拖着不表态风险越攒越高」。
+
+### 验证（全绿）
+- `& $py tools\validate_all.py` 八组全 0（`total_cards = 139`）。注意 validate_all **只查 stages/variants，不查 talks**——talks 的 POV/文案靠 loop 对账守。
+- 重生成基准（改了 loop 逻辑与文案，必须重生成）：`& $py tools\trace_dump.py app\test\trace_expected.json`（145189 bytes）、`& $py tools\loop_trace.py app\test\loop_expected.json`（1300638 bytes）。
+- `✓ rng: 84 项` / `✓ trace: 9326 项` / `✓ loop: 89652 项（4 个种子、984 屏）`——项数比 §6.25 涨（loop 77880→89652、屏数 853→984），证明 rtalk 卡被脚本走到且两侧同步。
+- `typecheck` exit 0；`build` → 34 modules、`index-DY5qSD0r.js` 499.18 kB（gzip 162.45）、`index-C6kcTScL.css` 29.37 kB。
+- 浏览器冒烟（4173 本地 preview）：无控制台报错，开局→起名（王道/摇滚/和风/地雷四系按钮）→进入周末数值屏正常推进。
+
+### 改动文件（本轮提交）
+`app/src/core/engine.ts`、`app/src/core/loop.ts`、`app/test/loop_expected.json`、`app/test/trace_expected.json`、`data/storylines/storyline_romance.json`、`game/engine.py`、`game/loop.py`、`tools/build_romance.py`。临时备份 `tools/build_romance.py.bak-romance` 已删。

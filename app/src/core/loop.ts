@@ -364,6 +364,8 @@ export class Game {
         this.pending = ["card", head._card, head._slots || {}];
       } else if (head.line && head._line) {
         this.pending = head._line;
+      } else if (head.rtalk && head._rtalk) {
+        this.pending = head._rtalk;
       } else if (head.talk && head._talk) {
         this.pending = head._talk;
       } else if (
@@ -1052,6 +1054,10 @@ export class Game {
       // 剧情线的卡被当成普通卡点了（line 标记丢了）：转给 chooseStory
       return this.chooseStory(oid);
     }
+    if (this.pending[0] === "rtalk") {
+      // 「谈一谈」那张卡被当成普通卡点了：转给 chooseRomanceTalk
+      return this.chooseRomanceTalk(oid);
+    }
     if (this.pending[0] === "talk") {
       // 特典那张卡被当成普通卡点了：屏幕上是特典卡才转过去，
       // 否则就是被别的卡抢了 pending
@@ -1568,6 +1574,32 @@ export class Game {
     this.afterStep();
   }
 
+  /** 「谈一谈」那张卡的落子：收下表态或只攒一点 risk。 */
+  chooseRomanceTalk(oid: string): any {
+    if (!this.pending) return this.advance();
+    const [, talk, slots] = this.pending as [string, any, Record<string, Ota>];
+    const o = (talk.options || []).find((x: Option) => x.id === oid)!;
+    const s = this.state!;
+    const before = snap(s);
+    E.applyOption(s, o, this.rng, slots, talk as Card);
+    // 关键：applyOption 只把 flag 塞进 s.flags，risk 的数值累积在 applyStoryFlags 里
+    E.applyStoryFlags(s, o);
+    s._rtalk_week = s.week;
+    E.clamp(s);
+    this.pending = null;
+    this.queue.shift();
+    let body: string[] = [this._fill(gv(o, "note", ""), slots)].filter((x) => x);
+    if (!body.length) body = [this._fill(gv(o, "desc", ""), slots)].filter((x) => x);
+    this.push({
+      type: "receipt",
+      title: this._fill(gv(o, "label", ""), slots),
+      body,
+      delta: delta(before, s),
+      face: (slots.ta as Ota)?.name || "阿棠",
+    });
+    this.afterStep();
+  }
+
   /** 每周末记一行「历史大事」的底账；只记真发生过的值。 */
   private _journalWeek(week: number): void {
     const s = this.state!;
@@ -2065,6 +2097,49 @@ export class Game {
   }
 
   /**
+   * 「谈一谈」独立幕：确认关系后、还没做过一次性表态时，每周开头来问一次。
+   * 选「再等等/逃避」只攒 risk，下周照问（越拖越勤）；选「公开/只看当下」收下表态，不再问。
+   * 不占抽线骰子、不写 story 进度；末周 forceFinale 时跳过它，直接推收场。
+   */
+  private _maybeRomanceTalk(): Step | null {
+    const s = this.state!;
+    if (E.mainline(s) !== "romance") return null;
+    const fl: Set<string> = s.flags || new Set<string>();
+    if (!fl.has("romance_confirmed")) return null;
+    // 表过态就不再问（公开 / 只看当下，都是一次性收下）
+    if (fl.has("romance_public_intent") || fl.has("romance_now_intent")) return null;
+    // 每周最多问一次
+    if (n0(gv(s, "_rtalk_week", -1)) === n0(s.week)) return null;
+    const ln = E.romanceLine(this.world);
+    if (ln === null || E.lineLocked(s, ln)) return null;
+    const talks: any[] = (ln as any).talks || [];
+    if (!talks.length) return null;
+    // 三变体轮换：尽量不接着问同一张
+    const last = gv(s, "_last_rtalk", "");
+    const pool = talks.filter((t) => t.id !== last);
+    const talk = this.rng.choice(pool.length ? pool : talks);
+    s._last_rtalk = talk.id;
+    const slots: Record<string, Ota> = { ta: { name: "阿棠" } as Ota };
+    const pending: any[] = ["rtalk", talk, slots];
+    const body = [this._fill(gv(talk, "narrative", ""), slots)];
+    return {
+      type: "card",
+      rtalk: true,
+      title: this._fill(gv(talk, "title", ""), slots),
+      face: (slots.ta as Ota).name,
+      speaker: (slots.ta as Ota).name,
+      compact: true,
+      body,
+      options: (talk.options || []).map((o: Option) => ({
+        id: o.id,
+        label: this._fill(o.label, slots),
+        desc: this._fill(gv(o, "desc", ""), slots),
+      })),
+      _rtalk: pending,
+    };
+  }
+
+  /**
    * 每周开头先问一句：这一周有没有哪条线在走。
    *
    * 以前这里的 `_story_try` 两周共用一次拦截，结果排完动作那一周就再也推不动线
@@ -2072,6 +2147,11 @@ export class Game {
    */
   private _maybeStory(forceFinale = false): Step | null {
     const s = this.state!;
+    // 「谈一谈」是独立通道：不占每周抽线的骰子，也不写 story 进度。
+    if (!forceFinale) {
+      const rtalkStep = this._maybeRomanceTalk();
+      if (rtalkStep !== null) return rtalkStep;
+    }
     let line: [any, any] | null = null;
     let forced = false;
     if (forceFinale) {
@@ -2099,9 +2179,20 @@ export class Game {
     const lidId = lid._meta.id;
     let v: any = null;
     if (lidId === "romance" && st.stage === 4) {
+      // 收场这一晚会不会被人撞破：不再一票否决，按「意图 + 攒下的 risk」掷一次骰。
+      // 公开意图 = 本来就打算摊开，几乎不怕被看见（risk 攒够才有一点风声）；
+      // 只想顾当下 / 一直没表态 = 越拖越悬，risk 越高越容易被推开门。
       const fl = s.flags || new Set();
-      if (fl.has("close_call") || fl.has("romance_risk")) {
-        // 之前就差点被看见、或一直在越线：收场不是坐下来谈，是门被人推开。
+      const risk = Math.max(0, Math.trunc(n0(gv(s, "romance_risk", 0))));
+      let caughtPct: number;
+      if (fl.has("romance_public_intent")) {
+        caughtPct = risk >= 3 ? 20 : 0;
+      } else if (fl.has("romance_now_intent")) {
+        caughtPct = Math.min(90, 60 + 10 * risk);
+      } else {
+        caughtPct = Math.min(90, 50 + 15 * risk);
+      }
+      if (this.rng.random() * 100 < caughtPct) {
         v = (st.variants || []).find((x: any) => x.id === "finale_caught");
       }
     }

@@ -102,7 +102,7 @@ def load_world():
 
 # ---------------------------------------------------------------- 状态
 BASE = dict(money=1800, stamina=100, psyche=70, fame=5, enjou=0, kaibox=0, banzi=0,
-            shiroi=0, shiren=0, relation_A=50, relation_B=50, relation_C=50)
+            shiroi=0, shiren=0, relation_A=50, relation_B=50, relation_C=50, romance_risk=0)
 STATE_KEYS = ["money", "stamina", "psyche", "fame", "stage", "dance", "sing", "mc",
               "enjou", "kaibox", "banzi", "shiroi", "shiren", "relation_A", "relation_B",
               "relation_C"]
@@ -160,7 +160,7 @@ def clamp(s):
     for k in ("dance", "sing", "mc"):
         s[k] = max(0, min(SKILL_CAP, s[k]))     # 练到 82 就上不去了：这行有天花板
     for k in ("bold", "kuyang_count", "heat", "heart", "zhong", "zhongs", "gorshou",
-              "true_talk", "clues_said", "low_income_weeks", "max_single"):
+              "true_talk", "clues_said", "low_income_weeks", "max_single", "romance_risk"):
         if k in s and isinstance(s[k], (int, float)):
             s[k] = max(0, s[k])       # 计数类只保证非负，别被上面的 0~100 截断
     for o in s["ota"]:
@@ -428,6 +428,9 @@ def apply_story_flags(s, option):
     if "refused_promise" in got:
         s["psyche"] = float(s.get("psyche") or 0) - 5
         s["relation_A"] = float(s.get("relation_A") or 0) - 3
+    # 恋爱线风险累积：每踩一次「推进」就 +1，供收场撞破掷骰用
+    if "romance_risk" in got:
+        s["romance_risk"] = int(s.get("romance_risk") or 0) + 1
     clamp(s)
 
 

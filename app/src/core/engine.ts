@@ -222,6 +222,7 @@ export const BASE: Record<string, number> = {
   relation_A: 50,
   relation_B: 50,
   relation_C: 50,
+  romance_risk: 0,
 };
 
 export const STATE_KEYS = [
@@ -327,6 +328,7 @@ export function clamp(s: State): State {
     "clues_said",
     "low_income_weeks",
     "max_single",
+    "romance_risk",
   ]) {
     if (hasOwn(s, k) && typeof s[k] === "number") {
       s[k] = Math.max(0, s[k]);
@@ -569,6 +571,10 @@ export function applyStoryFlags(s: State, option: Option): void {
   if (got.has("refused_promise")) {
     s.psyche = Number(n0(g(s, "psyche", 0))) - 5;
     s.relation_A = Number(n0(g(s, "relation_A", 0))) - 3;
+  }
+  // 恋爱线风险累积：每踩一次「推进」就 +1，供收场撞破掷骰用（0=没动静，越高越容易被撞破）
+  if (got.has("romance_risk")) {
+    s.romance_risk = Number(n0(g(s, "romance_risk", 0))) + 1;
   }
   clamp(s);
 }
