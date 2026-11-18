@@ -366,6 +366,146 @@
           "delayed": []
         }
       ]
+    },
+    {
+      "id": "pos_bring_newbie",
+      "type": "positive",
+      "title": "运营问你要不要带新人",
+      "gate": "人气 ≥ 24 且 周 ≥ 3",
+      "weight": 1.0,
+      "cooldown": 6,
+      "narrative": "运营把我叫到一边，说下个月可能加一个新人进来，问我愿不愿意带。他说得很轻巧，『你带出来的，以后也算你的人』。我知道这话的另一面：多一个人分资源，也多一个可能取代我的人。",
+      "options": [
+        {
+          "id": "take_her",
+          "label": "带，从头教",
+          "desc": "累一点，但队伍会更稳",
+          "immediate": {
+            "stamina": -8,
+            "relation_all": 4,
+            "fame": 2
+          },
+          "note": "新人笨手笨脚，我一遍遍教她走位。看她学会时眼睛亮起来，我想起了一年前的自己。",
+          "delayed": []
+        },
+        {
+          "id": "half_teach",
+          "label": "该教的教，别的不管",
+          "desc": "留一手",
+          "immediate": {
+            "fame": 2,
+            "relation_all": -1
+          },
+          "note": "我把流程跟她过了一遍，就再没多说什么。她后来跟别人说，我有点冷。",
+          "delayed": []
+        },
+        {
+          "id": "refuse",
+          "label": "跟运营说，现在不想要新人",
+          "desc": "先保住自己的位置",
+          "immediate": {
+            "stage": 2,
+            "relation_all": -2
+          },
+          "note": "运营笑了笑说『行』。可我知道，我这句话迟早会传出去。",
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "pos_homepage_feature",
+      "type": "positive",
+      "title": "首页小推荐",
+      "gate": "人气 ≥ 14 且 周 ≥ 2",
+      "weight": 1.0,
+      "cooldown": 5,
+      "narrative": "半夜手机响了一声，是平台的推送——我们被放上了首页的一个小推荐位。截图发到团群里，没人回，过了几分钟小满发了个『哇』，然后露露说『这个位子能挂多久』。我盯着后台那根缓慢上爬的曲线，睡意全没了。",
+      "options": [
+        {
+          "id": "ride_wave",
+          "label": "赶紧趁热多发一条",
+          "desc": "把流量接住",
+          "immediate": {
+            "stamina": -4,
+            "fame": 3,
+            "ota_all": 1
+          },
+          "note": "我熬到三点剪了条新视频。第二天数据不错，可我一整天都在打哈欠。",
+          "delayed": []
+        },
+        {
+          "id": "stick_plan",
+          "label": "按原计划来，不追",
+          "desc": "该干嘛干嘛",
+          "immediate": {
+            "fame": 1,
+            "psyche": 2
+          },
+          "note": "我关了后台，按时睡了。第二天推荐位撤了，但该来的还是来了几个。",
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "fame": -1
+              },
+              "note": "推荐位一撤，那点流量跟着就走了。我不后悔，可后台那几个数字确实掉了回去。"
+            }
+          ]
+        },
+        {
+          "id": "fear_fake",
+          "label": "怕被说是买的数据，什么都没动",
+          "desc": "低调",
+          "immediate": {
+            "psyche": -2,
+            "banzi": 1
+          },
+          "note": "我什么都没发。推荐位挂了半天就没了，可论坛上还是有人阴阳，说我们『突然冒出来』。",
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "stage_accessory_drop",
+      "type": "舞台事故",
+      "title": "借来的耳环掉了一只",
+      "gate": "周 ≥ 2",
+      "weight": 2.0,
+      "cooldown": 4,
+      "narrative": "第二段副歌，右耳那只耳环忽然一轻，掉了。是开演前跟隔壁团借的，说好散场还。我一边跳一边用余光往地上扫，怕它被谁踩进人群，也怕自己下一脚正好踩上去。前排有个女生弯下腰，像是想帮我捡。",
+      "options": [
+        {
+          "id": "finish_then_look",
+          "label": "跳完这段，散场再去找",
+          "desc": "先把眼前这一场跳完",
+          "immediate": {
+            "stage": 2,
+            "psyche": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "pick_it_up",
+          "label": "趁走位空档弯腰捡起来",
+          "desc": "丢了要赔，这副不便宜",
+          "immediate": {
+            "stage": -3,
+            "psyche": 2
+          },
+          "delayed": []
+        },
+        {
+          "id": "wave_her_off",
+          "label": "朝那女生摆手，让她别捡",
+          "desc": "不想让人替我收拾",
+          "immediate": {
+            "ota_all": 2,
+            "stage": -1,
+            "psyche": -1
+          },
+          "delayed": []
+        }
+      ]
     }
   ]
 }

@@ -79,6 +79,7 @@ export interface Delayed {
   slots: Record<string, string>;
   hatch_friend?: any;
   base_stick?: number;
+  card_id?: string | null;
   condition?: string | null;
 }
 

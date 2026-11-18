@@ -695,7 +695,8 @@ def apply_option(s, option, rng, slots=None, card=None):
         rec = {"when": dl.get("when"), "cond": dl.get("condition"),
                "effect": dl.get("effect"), "note": dl.get("note"),
                "slots": {k: v.get("id") for k, v in slots.items() if v and v.get("id")}}
-        for extra_key in ("hatch_friend", "base_stick"):
+        # card_id：这张卡的延迟后果到期时，把一张「兑现卡」排进下周事件位
+        for extra_key in ("hatch_friend", "base_stick", "card_id"):
             if dl.get(extra_key) is not None:
                 rec[extra_key] = dl[extra_key]
         s["delayed"].append(rec)
@@ -964,6 +965,9 @@ def draw(s, world, rng, kind=None, pool_ids=None, kinds=None):
     """三层抽卡：硬闸门 → 权重 → cooldown。kind 过滤单个 type，kinds 过滤一组。"""
     cands = []
     for c in world["cards"]:
+        # 兑现卡（due_）不参与普通抽卡：它们由 loop._draw_week_events 到点插队
+        if c["id"].startswith("due_"):
+            continue
         if kind and c.get("type") != kind:
             continue
         if kinds and c.get("type") not in kinds:
@@ -997,7 +1001,8 @@ def draw(s, world, rng, kind=None, pool_ids=None, kinds=None):
 TYPE_WEIGHT = {"OTA记忆": 0.15, "OTA相处的瞬间": 0.6, "ambient": 0.35,
                "日常": 2.0, "团内": 1.6, "团内关系": 1.3, "外部": 1.4,
                "外部舆论": 1.2, "私生": 0.8, "私生跟踪": 1.0, "private": 1.0,
-               "positive": 0.35, "舞台事故": 1.0, "私联恋爱": 1.0, "OTA互动": 1.0}
+               "positive": 0.35, "舞台事故": 1.0, "私联恋爱": 1.0, "OTA互动": 1.0,
+               "同行": 1.05}
 
 
 OTA_TYPES = ["OTA互动", "OTA记忆", "私联恋爱", "私生"]
@@ -1163,6 +1168,9 @@ def settle_delayed(s, world, rng):
             continue
         if d.get("effect"):
             apply_effect(s, d["effect"])
+        # 兑现卡：这件事下周会回来找你（由 loop._draw_week_events 优先排进事件位）
+        if d.get("card_id"):
+            s.setdefault("_due_cards", []).append(d["card_id"])
         if d.get("hatch_friend"):
             sel = {"any_archetype": True, "notes": "她带来的朋友。"}
             an = hatch(s, world, sel, rng, ignore_cap=True,

@@ -123,14 +123,15 @@ class Game:
         ["外部", "external", "外部舆论"],
         ["OTA互动", "OTA相处的瞬间"],
         ["团内", "团内关系"],
+        ["同行"],
         ["日常", "ambient", "daily"],
-        ["外部", "external", "positive"],
+        ["外部", "external", "positive", "舞台事故"],
         ["OTA互动", "daily", "ambient"],
     ]
     # 某个位置抽空了（池子为空 / 全在冷却），按这个顺序接着往下试，不然一周就少一张卡
     EV_FALLBACK = ["团内", "团内关系", "外部", "external", "外部舆论",
                    "OTA互动", "OTA相处的瞬间", "positive", "日常", "ambient",
-                   "舞台事故", "私生", "私生跟踪", "私联恋爱"]
+                   "同行", "舞台事故", "私生", "私生跟踪", "私联恋爱"]
 
     # 卡面上那行「谁在跟我打交道」：有具体人就写人，没有就写场所
     SCENE = {
@@ -141,6 +142,7 @@ class Game:
         "external": "网上",
         "外部舆论": "网上",
         "positive": "这一季的运气",
+        "同行": "别人的场",
         "舞台事故": "台上",
         "团内": "排练室",
         "团内关系": "排练室",
@@ -525,6 +527,8 @@ class Game:
             if len(names) == 1:
                 return names[0]
             return "、".join(names[:2]) + ("等" if len(names) > 2 else "")
+        if card.get("scene"):
+            return card["scene"]
         return self.SCENE.get(card.get("type", ""), "")
 
     @staticmethod
@@ -1070,6 +1074,29 @@ class Game:
         s = self.state
         spots = list(self.EVENT_SPOTS)
         tries = 0
+        # 兑现卡优先：上周埋下的那件事这周回来找你，先占事件位。
+        # 只给一次机会——这周排不进去（要的人不在场、位子已经满了），
+        # 就当场作废，不再拖到下周；埋下的账不该越滚越久。
+        due_ids = list(s.pop("_due_cards", []) or [])
+        if due_ids:
+            by_id = {c.get("id"): c for c in self.world.get("cards") or []}
+            for cid in due_ids:
+                if len(out) >= self.WEEK_EVENTS:
+                    break
+                card = by_id.get(cid)
+                if not card or not card.get("options") or card["id"] in used:
+                    continue
+                slots = E.cast(s, card, self.rng, self.world)
+                if slots is None:
+                    continue
+                used.add(card["id"])
+                if card.get("type") in self.TEAM_TYPES:
+                    team_n += 1
+                step = self._render_card(card, slots)
+                step["_card"] = card
+                step["_slots"] = slots
+                step["origin"] = "week"
+                out.append(step)
         while len(out) < self.WEEK_EVENTS and tries < len(spots) + self.WEEK_EVENTS:
             idx = int(s.get("_ev_idx") or 0)
             kinds = spots[idx % len(spots)]
@@ -1086,7 +1113,8 @@ class Game:
                 if team_n >= 1 or not any(k in self.TEAM_TYPES for k in kinds):
                     card = E.draw(s, self.world, self.rng,
                                   kinds=["外部", "external", "日常", "daily",
-                                         "OTA互动", "OTA相处的瞬间", "ambient", "positive"])
+                                         "OTA互动", "OTA相处的瞬间", "ambient", "positive",
+                                         "同行"])
             if card and card.get("type") in self.TEAM_TYPES:
                 team_n += 1
             if not card or not card.get("options") or card["id"] in used:

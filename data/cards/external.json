@@ -878,6 +878,268 @@
           "delayed": []
         }
       ]
+    },
+    {
+      "id": "ext_defend_in_comments",
+      "type": "外部",
+      "title": "有人在评论里替你说话",
+      "gate": "人气 ≥ 16 且 炎上 ≥ 8",
+      "weight": 1.0,
+      "cooldown": 4,
+      "narrative": "营业视频下面，一条挑刺的评论被顶得很高，说我这样也配站 C 位。我正想划走，底下已经有人替我回了：一条一条，从我的第一次演出讲到上个月的救场，最后一句是『你要是不喜欢，可以不看，但别装懂』。头像是常连的那几个之一。",
+      "options": [
+        {
+          "id": "like_and_reply",
+          "label": "点个赞，回一句『谢谢你还在』",
+          "desc": "接住这份心意",
+          "immediate": {
+            "ota_all": 2,
+            "psyche": 3,
+            "banzi": 1
+          },
+          "note": "她秒回了一个哭脸，说『我每次都在』。我对着屏幕笑了很久。可这一回，底下多了几个人，开始扒我回话的语气。",
+          "delayed": []
+        },
+        {
+          "id": "stay_silent",
+          "label": "什么都不说，怕被当成炒作",
+          "desc": "让热度自己过去",
+          "immediate": {
+            "banzi": 2,
+            "psyche": -2
+          },
+          "note": "我没露面。后来那条评论被截图到处传，有人说是我自己开的小号。",
+          "delayed": []
+        },
+        {
+          "id": "defend_self",
+          "label": "自己下场，把话说清楚",
+          "desc": "亲自接这一仗",
+          "immediate": {
+            "psyche": 2,
+            "ota_all": -1
+          },
+          "note": "我回了一长段，语气硬了点。有常连私信说『你别理他们』，也有人说我玻璃心。",
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "ext_clip_posted",
+      "type": "外部",
+      "title": "演出被拍了发上网",
+      "gate": "人气 ≥ 18",
+      "weight": 1.0,
+      "cooldown": 4,
+      "narrative": "散场后刷到一段现场视频，是别人拍的。镜头晃得厉害，音也糊，可恰好拍到我一个抬头、一个笑——不是营业的那种。播放量在往上爬，评论里有人说『不知名，但好戳』。",
+      "options": [
+        {
+          "id": "repost_it",
+          "label": "转过来，趁这波让人认识我们",
+          "desc": "抓住这一下",
+          "immediate": {
+            "fame": 3,
+            "ota_all": 1,
+            "enjou": 1
+          },
+          "note": "视频被转了上千次，后台多了不少新留言，也混进来几个专挑刺的。我知道这种运气来得快，去得也快。",
+          "delayed": []
+        },
+        {
+          "id": "let_it_spread",
+          "label": "不主动，让它自然传",
+          "desc": "稳一点",
+          "immediate": {
+            "fame": 1,
+            "psyche": -1
+          },
+          "note": "我没转，只在心里记了一笔。过了两天热度就淡了，像什么都没发生。",
+          "delayed": []
+        },
+        {
+          "id": "ask_take_down",
+          "label": "私信拍的人，请她删掉",
+          "desc": "护住那点私人的东西",
+          "immediate": {
+            "banzi": 1,
+            "fame": -2
+          },
+          "note": "她很意外，说只是想分享。视频删了，可截图还在别处转。",
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "op_sincere_red_list",
+      "type": "外部舆论",
+      "title": "有人认真写了红榜",
+      "gate": "人气 ≥ 12 且 周 ≥ 2",
+      "weight": 1.5,
+      "cooldown": 4,
+      "narrative": "板子上有篇很长的红榜，把我排进这一季「最值得再看一次的场」。没有夸张的形容词，只写了很具体的事：第三首我走位会往左边让半步，给鼓手让出视线；散场后我在门口站到很晚。最后一句是：她好像真的很喜欢这个舞台。我不知道是谁写的。看的时候，手心有点出汗。",
+      "options": [
+        {
+          "id": "repost_thanks",
+          "label": "转发，说一句谢谢",
+          "desc": "让写的人也看见",
+          "immediate": {
+            "ota_all": 3,
+            "fame": 1,
+            "psyche": -1,
+            "banzi": 1
+          },
+          "delayed": []
+        },
+        {
+          "id": "screenshot_only",
+          "label": "截图存起来，不回应",
+          "desc": "这种事不必摆出来",
+          "immediate": {
+            "psyche": 3,
+            "ota_all": -1
+          },
+          "delayed": []
+        },
+        {
+          "id": "mention_onstage",
+          "label": "在台上提一句，不说名字",
+          "desc": "当面说才够真",
+          "immediate": {
+            "ota_all": 2,
+            "stage": 1,
+            "banzi": 2
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "op_regular_year_note",
+      "type": "外部舆论",
+      "title": "常连在年终总结里写了我",
+      "gate": "周 ≥ 5 且 人气 ≥ 16",
+      "weight": 1.5,
+      "cooldown": 6,
+      "narrative": "一个跟了大半年的常连，在年度总结里写了一段关于我的话。他说一开始只是路过，后来不知道为什么就留下来了。他写：她不是最好的那个，可我每次来都能看见她在进步。我认得他的字——每次特典会他都要求在切的边角写日期。",
+      "options": [
+        {
+          "id": "thank_in_person",
+          "label": "下次特典会当面谢他",
+          "desc": "有些话得当面说",
+          "immediate": {
+            "ota_all": 4,
+            "stamina": -1,
+            "psyche": -1
+          },
+          "delayed": []
+        },
+        {
+          "id": "pretend_unseen",
+          "label": "装作没看见",
+          "desc": "怕一开口就露怯",
+          "immediate": {
+            "psyche": -2,
+            "ota_all": 1
+          },
+          "delayed": []
+        },
+        {
+          "id": "save_the_line",
+          "label": "把那句话抄进备忘录",
+          "desc": "留着，难受的时候看",
+          "immediate": {
+            "psyche": 3,
+            "stage": 1,
+            "stamina": -1
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "op_box_office",
+      "type": "外部舆论",
+      "title": "算账帖",
+      "gate": "周 ≥ 2",
+      "weight": 1.5,
+      "cooldown": 4,
+      "narrative": "有人把这场的人数、票价、场地费列成了一张表，发在板子上。最后一行写着：这种团还开着干嘛。数字基本是准的，那天确实没坐满。下面有人回：人家好歹在坚持。也有人说：坚持有什么用。",
+      "options": [
+        {
+          "id": "mild_reply",
+          "label": "用小号回一句谢谢关心",
+          "desc": "不软不硬",
+          "immediate": {
+            "psyche": -2,
+            "banzi": 1,
+            "fame": 1
+          },
+          "delayed": []
+        },
+        {
+          "id": "save_it",
+          "label": "不回，把这张表存下来",
+          "desc": "记着，别忘",
+          "immediate": {
+            "banzi": -1,
+            "psyche": -2
+          },
+          "delayed": []
+        },
+        {
+          "id": "fill_next_show",
+          "label": "憋着劲，下一场把人坐满",
+          "desc": "用票房说话",
+          "immediate": {
+            "stage": 2,
+            "psyche": -3
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "op_red_list_offkey",
+      "type": "外部舆论",
+      "title": "红榜把我唱错的那句也写进去了",
+      "gate": "人气 ≥ 14 且 周 ≥ 3",
+      "weight": 1.5,
+      "cooldown": 5,
+      "narrative": "有篇 repo 把我第二首歌唱错的一句词原原本本写了出来，还写「她唱错的时候愣了一下，然后自己笑了，接着唱下去」。底下有人跟「这段我也记得」。我本以为翻车要挨骂，没想到被人记住的反而是那个笑。我有点说不清是高兴还是别的。",
+      "options": [
+        {
+          "id": "bring_it_up",
+          "label": "下次 live 主动提一句那次唱错",
+          "desc": "自己先笑，就没人笑得过我",
+          "immediate": {
+            "fame": 2,
+            "ota_all": 2,
+            "psyche": -1
+          },
+          "delayed": []
+        },
+        {
+          "id": "pretend_not_seen",
+          "label": "装作没看到，不提",
+          "desc": "提了像在卖惨",
+          "immediate": {
+            "psyche": -2,
+            "stage": 1
+          },
+          "delayed": []
+        },
+        {
+          "id": "drill_song",
+          "label": "把那首歌反复练到不会错",
+          "desc": "下次别再错",
+          "immediate": {
+            "stage": 3,
+            "stamina": -3,
+            "psyche": -1
+          },
+          "delayed": []
+        }
+      ]
     }
   ]
 }

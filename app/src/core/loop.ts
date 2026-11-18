@@ -226,8 +226,9 @@ export class Game {
     ["外部", "external", "外部舆论"],
     ["OTA互动", "OTA相处的瞬间"],
     ["团内", "团内关系"],
+    ["同行"],
     ["日常", "ambient", "daily"],
-    ["外部", "external", "positive"],
+    ["外部", "external", "positive", "舞台事故"],
     ["OTA互动", "daily", "ambient"],
   ];
 
@@ -235,7 +236,7 @@ export class Game {
   static EV_FALLBACK: string[] = [
     "团内", "团内关系", "外部", "external", "外部舆论",
     "OTA互动", "OTA相处的瞬间", "positive", "日常", "ambient",
-    "舞台事故", "私生", "私生跟踪", "私联恋爱",
+    "同行", "舞台事故", "私生", "私生跟踪", "私联恋爱",
   ];
 
   /** 卡面上那行「谁在跟我打交道」：有具体人就写人，没有就写场所。 */
@@ -247,6 +248,7 @@ export class Game {
     external: "网上",
     外部舆论: "网上",
     positive: "这一季的运气",
+    同行: "别人的场",
     舞台事故: "台上",
     团内: "排练室",
     团内关系: "排练室",
@@ -741,6 +743,7 @@ export class Game {
       if (names.length === 1) return names[0];
       return names.slice(0, 2).join("、") + (names.length > 2 ? "等" : "");
     }
+    if (card.scene) return card.scene;
     return Game.SCENE[card.type ?? ""] ?? "";
   }
 
@@ -1345,6 +1348,29 @@ export class Game {
     const s = this.state!;
     const spots = Game.EVENT_SPOTS;
     let tries = 0;
+    // 兑现卡优先：上周埋下的那件事这周回来找你，先占事件位。
+    // 只给一次机会——这周排不进去（要的人不在场、位子已经满了），
+    // 就当场作废，不再拖到下周；埋下的账不该越滚越久。
+    const dueIds: string[] = Array.isArray(s._due_cards) ? s._due_cards : [];
+    s._due_cards = [];
+    if (dueIds.length) {
+      const byId = new Map<string, Card>();
+      for (const c of this.world.cards) byId.set(c.id, c);
+      for (const cid of dueIds) {
+        if (out.length >= Game.WEEK_EVENTS) break;
+        const card = byId.get(cid);
+        if (!card || !card.options || used.has(card.id)) continue;
+        const slots = E.cast(s, card, this.rng, this.world);
+        if (slots === null) continue;
+        used.add(card.id);
+        if (Game.TEAM_TYPES.includes(card.type)) teamN += 1;
+        const step = this._renderCard(card, slots);
+        step._card = card;
+        step._slots = slots;
+        step.origin = "week";
+        out.push(step);
+      }
+    }
     while (out.length < Game.WEEK_EVENTS && tries < spots.length + Game.WEEK_EVENTS) {
       const idx = Math.trunc(n0(gv(s, "_ev_idx", 0)));
       const kinds = spots[idx % spots.length];
@@ -1370,6 +1396,7 @@ export class Game {
           card = E.draw(s, this.world, this.rng, null, null, [
             "外部", "external", "日常", "daily",
             "OTA互动", "OTA相处的瞬间", "ambient", "positive",
+            "同行",
           ]);
         }
       }

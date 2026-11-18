@@ -875,7 +875,7 @@ export function applyOption(
     for (const [k, v] of Object.entries(slots ?? {})) {
       if (v && (v as Ota).id) rec.slots[k] = (v as Ota).id;
     }
-    for (const extra_key of ["hatch_friend", "base_stick"]) {
+    for (const extra_key of ["hatch_friend", "base_stick", "card_id"]) {
       if (g(dl, extra_key) != null) (rec as any)[extra_key] = g(dl, extra_key);
     }
     s.delayed.push(rec);
@@ -1154,6 +1154,7 @@ export function draw(
 ): Card | null {
   const cands: Card[] = [];
   for (const c of world.cards) {
+    if (c.id.startsWith("due_")) continue; // 兑现卡只由 _due_cards 点名，不进常规卡池
     if (kind && c.type !== kind) continue;
     if (kinds && !kinds.includes(c.type)) continue;
     if (pool_ids != null && !pool_ids.has(c.id)) continue;
@@ -1190,6 +1191,7 @@ export const TYPE_WEIGHT: Record<string, number> = {
   舞台事故: 1.0,
   私联恋爱: 1.0,
   OTA互动: 1.0,
+  同行: 1.05,
 };
 
 export const OTA_TYPES = ["OTA互动", "OTA记忆", "私联恋爱", "私生"];
@@ -1348,6 +1350,11 @@ export function settleDelayed(s: State, world: World, rng: PyRandom): string[] {
     }
     if (!fire) continue;
     if (d.effect) applyEffect(s, d.effect);
+    if (d.card_id) {
+      // 兑现卡：把这张卡排进下周的事件位（_draw_week_events 优先出队）
+      if (!Array.isArray(s._due_cards)) s._due_cards = [];
+      s._due_cards.push(d.card_id);
+    }
     if (d.hatch_friend) {
       const sel = { any_archetype: true, notes: "她带来的朋友。" };
       const an = hatch(s, world, sel, rng, true, d.base_stick ?? null);
