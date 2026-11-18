@@ -45,7 +45,7 @@
           "options": [
             {
               "id": "zc_same",
-              "label": "说：那第 20 次，我记住她了",
+              "label": "我记住了 下一次是第20次",
               "desc": "把她当成一个老朋友，而不是一个客人",
               "immediate": {
                 "zhongs": 6,
