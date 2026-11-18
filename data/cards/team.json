@@ -169,67 +169,6 @@
       ]
     },
     {
-      "id": "team_competition",
-      "type": "团内",
-      "title": "你的单推昨天来看我彩排",
-      "gate": "人气 ≥ 18",
-      "weight": 1.0,
-      "cooldown": 3,
-      "narrative": "散场时露露的队比我长，应援色比我的亮。她在化妆镜前补口红，忽然从镜子里看我：『你的单推，昨天来看我彩排了。』语气轻得像随口一提。我手里的粉扑停了一下——她不是随口，她是在试我。",
-      "options": [
-        {
-          "id": "let_go",
-          "label": "装作不在意，说那是人家的自由",
-          "desc": "低头继续卸妆，不接她这茬",
-          "immediate": {
-            "relation_B": 1,
-            "psyche": -5
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "enjou": 3
-              },
-              "note": "她越来越爱在我面前提『你的单推』，像在提醒我谁在赢",
-              "card_id": "due_e_konren"
-            }
-          ]
-        },
-        {
-          "id": "fire_back",
-          "label": "顶回去：那你可得留住他",
-          "desc": "笑着回一句，不软",
-          "immediate": {
-            "psyche": 4,
-            "relation_B": -6,
-            "enjou": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "talk_open",
-          "label": "摊开谈：咱俩到底在争什么",
-          "desc": "把话挑明，哪怕难听",
-          "immediate": {
-            "relation_B": 2,
-            "psyche": -4,
-            "stage": 1
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "露露关系 < 30",
-              "effect": {
-                "relation_B": -8
-              },
-              "note": "摊牌之后，那道裂缝反而再也补不上了"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "team_innocence",
       "type": "团内",
       "title": "是不是真的没人看",

@@ -105,42 +105,6 @@ new_first_leave = {
     ],
 }
 
-new_black_fan = {
-    "id": "ext_black_fan_reversal",
-    "type": "外部舆论",
-    "title": "骂我最凶的黑粉，是当年最支持我的人",
-    "gate": "人气 ≥ 35",
-    "weight": 1.0,
-    "cooldown": 5,
-    "narrative": "我翻一个黑粉的旧帖想找话柄，越翻手越凉——那个这两年把我每条动态都挂出来骂的账号，三年前是我超话的管理，发过『她值得被更多人看到』。中间发生了什么，我不知道。可我忽然意识到，最恨我的那个人，可能是曾经最用力喜欢过我的人。这把刀，是从我自己手里递出去的吗。",
-    "options": [
-        {
-            "id": "ask_what_disappointed",
-            "label": "回一条：是不是我哪里让你失望了",
-            "desc": "把伤口摊开，哪怕被人围观",
-            "immediate": {"psyche": -3, "fame": 2, "banzi": 6},
-            "delayed": [
-                {"when": "条件", "condition": "心理 < 25", "effect": {"psyche": -6},
-                 "note": "TA 没回，底下却涌来一群看热闹的，把你那句话截图传开"}
-            ],
-        },
-        {
-            "id": "block",
-            "label": "拉黑，眼不见为净",
-            "desc": "清净了，也失去一个最真实的反馈",
-            "immediate": {"psyche": 2, "banzi": -3, "fame": -2},
-            "delayed": [],
-        },
-        {
-            "id": "write_into_mc",
-            "label": "翻完 TA 所有的帖，把这段变化写进下一场的 live",
-            "desc": "把痛变成作品，也是把刀往自己身上比",
-            "immediate": {"stage": 5, "psyche": -4, "stamina": -6},
-            "delayed": [],
-        },
-    ],
-}
-
 new_lulu_cry = {
     "id": "team_lulu_cry",
     "type": "团内关系",
@@ -255,7 +219,6 @@ new_shiroi_downstairs = {
 for fn, card in [
     ("ota.json", new_ota),
     ("external.json", new_first_leave),
-    ("external.json", new_black_fan),
     ("team.json", new_lulu_cry),
     ("positive.json", new_cold_stage),
     ("shiroi.json", new_shiroi_downstairs),

@@ -33,11 +33,6 @@ NEW[('ota.json','ota_dd')] = {
  "casting": [{"slot":"drifter","select":{"archetype":"钓师"},"allow_hatch":True}],
  "narrative": "{{drifter}}每个团都追，来找我时语气轻快得刺耳：『下个月我主推隔壁团了，今天是来告别的。』{{drifter.ta}}说着还晃了晃手里的别家周边。我脸上笑着，心里却像被什么东西轻轻抽空了一下——原来我这半年的『单推』，在{{drifter.ta}}那儿只是一个随时能换掉的选项。",
 }
-NEW[('ota.json','ota_denki')] = {
- "gate": "任一 OTA 黏性 ≥ 75 且 体力 < 60",
- "casting": [{"slot":"nightowl","select":{"archetype":"社恐温柔","min_stickiness":75},"allow_hatch":True}],
- "narrative": "深夜十二点，{{nightowl}}买了电切。屏幕里{{nightowl.ta}}背后是空荡荡的加班办公室：『就聊五分钟，听你说说话就行。』我明天六点还要起床排练，这个我知道。可看着{{nightowl.ta}}办公室里那盏孤零零的灯，我又觉得，好像也只有此刻，有人是真的需要我。",
-}
 NEW[('ota.json','ota_shashu')] = {
  "gate": "任一 OTA 黏性 ≥ 70 且 钱 < 1200",
  "casting": [{"slot":"overextended","select":{"fan_type":"妈妈粉","min_stickiness":70},"allow_hatch":True}],

@@ -21,56 +21,6 @@
   },
   "cards": [
     {
-      "id": "pos_cheki_soldout",
-      "type": "positive",
-      "title": "特典券卖光了",
-      "gate": "人气 ≥ 12",
-      "weight": 3.0,
-      "cooldown": 3,
-      "narrative": "staff 过来低声说：今天的券，卖完了，一张不剩。后面还排着没买到的。她问我，加不加一桌。",
-      "options": [
-        {
-          "id": "add_table",
-          "label": "加一桌，趁热打铁",
-          "desc": "「加，能多卖一张是一张。」我笑着应，转身的时候腿已经有点软。",
-          "immediate": {
-            "money": 480,
-            "ota_all": 3,
-            "stamina": -16,
-            "psyche": -2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "stamina": -4
-              },
-              "note": "连着几场加桌，人是真的乏，排练时有点跟不上"
-            }
-          ]
-        },
-        {
-          "id": "hold_line",
-          "label": "不加，让队伍散了吧",
-          "desc": "「今天到这吧，跟大家说声抱歉。」说出口时，我知道有几张脸会失望。",
-          "immediate": {
-            "psyche": 4,
-            "ota_all": 5
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "人气 ≥ 40",
-              "effect": {
-                "fame": -3
-              },
-              "note": "有人嘀咕'正红就端架子'，热度稍退"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "pos_solo_part",
       "type": "positive",
       "title": "这首给我一个人唱",
@@ -167,15 +117,15 @@
     {
       "id": "pos_collab",
       "type": "positive",
-      "title": "隔壁团来请我帮忙演一场",
+      "title": "隔壁团请我去飞行一场",
       "gate": "人气 ≥ 24",
       "weight": 2.1,
       "cooldown": 7,
-      "narrative": "一个更大的团发来消息，说她们某场缺个人，问我愿不愿意顶一下，有出场费。「就是……帮个忙，顺便给你露个脸。」",
+      "narrative": "隔壁团有人找到我，说她们下一场有个位置空着，问我要不要去帮个忙，演完就走，不耽误事。「就是飞一下，露个脸，给你算演出费。」",
       "options": [
         {
           "id": "go_collab",
-          "label": "去。多露一次脸是一次",
+          "label": "去。一场换一笔，还能露脸",
           "desc": "我答应了。那天错过了自己团的排练。",
           "immediate": {
             "money": 600,
@@ -194,7 +144,7 @@
         },
         {
           "id": "decline_stay",
-          "label": "算了，留下来练自己的",
+          "label": "不去，专心自己团的场子",
           "desc": "「谢谢想到我，但这周我们团有安排。」我回得很快，快得像在说服自己。",
           "immediate": {
             "stage": 3,
