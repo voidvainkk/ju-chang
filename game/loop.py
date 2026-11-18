@@ -429,14 +429,7 @@ class Game:
         if self.allow_stance:
             self._build_stance()
         else:
-            self._week_intro()
             self._start_week()
-
-    # ---------- 开局导读：建完角色后第一屏 ----------
-    def _week_intro(self):
-        self.push({"type": "text", "title": "", "body": [
-            "六天不会一分钟一分钟写给你看——只有几个片段，和手机上那几条你回过的。"
-            "它们不是全部，是态度。"]})
 
     # ---------- 二周目：姿态 ----------
     def _build_stance(self):
@@ -472,7 +465,6 @@ class Game:
         else:
             self.push({"type": "text", "title": "",
                        "body": ["这一季，我给自己定的是「%s」。" % st["name"]]})
-        self._week_intro()
         self._start_week()
 
     # ---------- 一周 ----------
@@ -916,6 +908,9 @@ class Game:
         for d in (o.get("delayed") or [])[:1]:
             if d.get("note"):
                 body.append("（%s·%s）" % (d.get("when", ""), self._fill(d["note"], slots)))
+        # 版聊回完一个人，括号里点一句：这条是当着全群的面回出去的。
+        if card.get("type") == "版聊":
+            body.append("（这样回复了大家）")
         self.push({"type": "receipt", "title": self._fill(o.get("label", ""), slots),
                    "body": body, "delta": _delta(before, self.state),
                    "sticks": _sticks(_osnap_before, self.state),

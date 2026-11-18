@@ -618,22 +618,8 @@ export class Game {
     if (this.allow_stance) {
       this._buildStance();
     } else {
-      this._weekIntro();
       this._startWeek();
     }
-  }
-
-  // ---------------- 开局导读：建完角色后第一屏 ----------------
-
-  private _weekIntro(): void {
-    this.push({
-      type: "text",
-      title: "",
-      body: [
-        "六天不会一分钟一分钟写给你看——只有几个片段，和手机上那几条你回过的。" +
-          "它们不是全部，是态度。",
-      ],
-    });
   }
 
   // ---------------- 二周目：姿态 ----------------
@@ -682,7 +668,6 @@ export class Game {
         body: [`这一季，我给自己定的是「${st.name}」。`],
       });
     }
-    this._weekIntro();
     this._startWeek();
   }
 
@@ -1163,6 +1148,8 @@ export class Game {
         body.push(`（${gv(d, "when", "")}·${this._fill(d.note, slots)}）`);
       }
     }
+    // 版聊回完一个人，括号里点一句：这条是当着全群的面回出去的。
+    if (card.type === "版聊") body.push("（这样回复了大家）");
     this.push({
       type: "receipt",
       title: this._fill(gv(o, "label", ""), slots),
