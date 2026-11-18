@@ -243,12 +243,14 @@ const BGM_TRACKS = [
   { src: "bgm_3.mp3", name: "Digital Coma" },
   { src: "bgm_4.mp3", name: "Digital Rot Lullaby (1)" },
   { src: "bgm_5.mp3", name: "Digital Rot Lullaby" },
-  { src: "bgm_6.mp3", name: "Sweet Overdose Lullaby" },
+  { src: "bgm_6.mp3", name: "Sweet Overdose Lullaby", rec: true }, // 第六首：推荐
 ];
+const BGM_MODE_KEY = "ju-chang.bgmmode";   // "order" 顺序播放 / "single" 单曲循环
 let bgmIndex = -1;          // -1 = 还没选过歌
 let bgmAudio = null;
 let bgmMenuOpen = false;
 let bgmSeeking = false;
+let bgmMode = localStorage.getItem(BGM_MODE_KEY) === "single" ? "single" : "order";
 
 const bgmFmt = (s) => {
   if (!isFinite(s) || s < 0) s = 0;
@@ -261,9 +263,19 @@ function bgmEnsureAudio() {
   bgmAudio.loop = false;
   const volEl = $("bgm-volume");
   bgmAudio.volume = volEl ? (+volEl.value) / 100 : 0.7;
-  bgmAudio.addEventListener("ended", () => bgmSelect((bgmIndex + 1) % BGM_TRACKS.length));
+  bgmAudio.addEventListener("ended", bgmOnEnded);
   bgmAudio.addEventListener("loadedmetadata", bgmSyncMeta);
   bgmAudio.addEventListener("timeupdate", bgmSyncProgress);
+}
+// 一首放完后按当前模式走：单曲循环 → 重放这首；顺序播放 → 下一首
+function bgmOnEnded() {
+  if (!bgmAudio) return;
+  if (bgmMode === "single" && bgmIndex >= 0) {
+    bgmAudio.currentTime = 0;
+    bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
+  } else {
+    bgmSelect((bgmIndex + 1) % BGM_TRACKS.length);
+  }
 }
 function bgmSyncMeta() {
   const dur = $("bgm-dur");
@@ -308,11 +320,27 @@ function bgmRenderList() {
     return `<button class="bgm-track${active ? " active" : ""}" data-i="${i}">`
       + `<span class="bgm-n">${String(i + 1).padStart(2, "0")}</span>`
       + `<span>${t.name}</span>`
+      + (t.rec ? `<span class="bgm-rec" title="推荐" aria-label="推荐">★</span>` : "")
       + (playing ? `<span class="bgm-eq">♪</span>` : "")
       + `</button>`;
   }).join("");
   list.querySelectorAll(".bgm-track").forEach(b => { b.onclick = () => bgmSelect(+b.dataset.i); });
 }
+function bgmRenderMode() {
+  document.querySelectorAll(".bgm-mode-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.mode === bgmMode);
+    b.setAttribute("aria-pressed", b.dataset.mode === bgmMode ? "true" : "false");
+  });
+}
+function bgmSetMode(mode) {
+  bgmMode = mode === "single" ? "single" : "order";
+  localStorage.setItem(BGM_MODE_KEY, bgmMode);
+  bgmRenderMode();
+}
+document.querySelectorAll(".bgm-mode-btn").forEach(b => {
+  b.onclick = () => bgmSetMode(b.dataset.mode);
+});
+bgmRenderMode();
 function bgmOpenMenu(open) {
   bgmMenuOpen = open;
   const m = $("bgm-modal");

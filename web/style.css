@@ -85,6 +85,9 @@ body{
   position:relative;width:34px;height:34px;flex:none;
   border:2px solid var(--ink);border-radius:50%;
   background:
+    /* 顶部一层：不对称的蓝色音符（白描边），放中间偏上，
+       转动时能明显看出在转 */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='%230d4a97' stroke='%23ffffff' stroke-width='1.4' paint-order='stroke' stroke-linejoin='round' stroke-linecap='round'%3E%3Cellipse cx='8.5' cy='17' rx='3.6' ry='2.7' transform='rotate(-18 8.5 17)'/%3E%3Crect x='10.8' y='4.6' width='1.9' height='12'/%3E%3Cpath d='M12.7 4.6 Q17.6 6.2 16.4 10.2 Q16.6 7.2 12.7 6.6 Z'/%3E%3C/g%3E%3C/svg%3E") center 44% / 68% 68% no-repeat,
     radial-gradient(circle at center,
       var(--paper) 0 3px,            /* 中心孔 */
       var(--accent) 3px 7px,         /* 蓝标签 */
@@ -633,12 +636,23 @@ body.collapsing #gallery{display:none !important}
 .bgm-track .bgm-n{flex:none;font-size:10px;color:var(--dim);letter-spacing:.08em}
 .bgm-track.active .bgm-n{color:#cfe0f6}
 .bgm-track .bgm-eq{margin-left:auto;font-size:11px;color:#fff;letter-spacing:1px}
+.bgm-track .bgm-rec{flex:none;font-size:13px;line-height:1;color:var(--accent)}
+.bgm-track.active .bgm-rec{color:#ffe24a}
 .bgm-controls{flex:none;padding:10px 14px 14px;border-top:1px solid var(--line);
   display:flex;flex-direction:column;gap:10px}
 .bgm-seek,.bgm-vol{display:flex;align-items:center;gap:8px;
   font-family:var(--px);font-size:10px;color:var(--dim);letter-spacing:.04em}
 .bgm-seek input,.bgm-vol input{flex:1;min-width:0;height:18px;accent-color:var(--accent);cursor:pointer}
 .bgm-seek span,.bgm-vol span:last-child{min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+.bgm-mode{display:flex;align-items:center;gap:8px;
+  font-family:var(--px);font-size:10px;color:var(--dim);letter-spacing:.04em}
+.bgm-mode-switch{flex:1;display:flex;min-width:0}
+.bgm-mode-btn{flex:1;min-width:0;padding:7px 4px;background:transparent;
+  border:1px solid var(--line2);font-family:var(--px);font-size:11px;color:var(--ink);
+  cursor:pointer;clip-path:var(--cut)}
+.bgm-mode-btn+.bgm-mode-btn{margin-left:-1px}
+.bgm-mode-btn:hover{background:var(--line)}
+.bgm-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent-d)}
 .muted{color:var(--dim)}
 
 /* ══ 移动端（主要游玩场景）══════════════════════════════════
