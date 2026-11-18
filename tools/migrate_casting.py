@@ -31,7 +31,7 @@ NEW[('ota.json','ota_shukudai')] = {
 NEW[('ota.json','ota_dd')] = {
  "gate": "任一 OTA 黏性 ≥ 40",
  "casting": [{"slot":"drifter","select":{"archetype":"钓师"},"allow_hatch":True}],
- "narrative": "{{drifter}}每个团都追，来找我时语气轻快得刺耳：『下个月我主推隔壁团了，今天是来告别的。』{{drifter.ta}}说着还晃了晃手里的别家周边。我脸上笑着，心里却像被什么东西轻轻抽空了一下——原来我这半年的『常连』，在{{drifter.ta}}那儿只是一个随时能换掉的选项。",
+ "narrative": "{{drifter}}每个团都追，来找我时语气轻快得刺耳：『下个月我主推隔壁团了，今天是来告别的。』{{drifter.ta}}说着还晃了晃手里的别家周边。我脸上笑着，心里却像被什么东西轻轻抽空了一下——原来我这半年的『单推』，在{{drifter.ta}}那儿只是一个随时能换掉的选项。",
 }
 NEW[('ota.json','ota_denki')] = {
  "gate": "任一 OTA 黏性 ≥ 75 且 体力 < 60",

@@ -1,444 +1,388 @@
 {
- "_meta": {
-  "类型": "日常",
-  "说明": "钱/体力/心理/生活压力的卡。卡面只给情景和选项；effects 在玩家选后才『跳』出来当回执。",
-  "数值键约定": "money 钱 / stamina 体力 / psyche 心理 / fame 人气 / enjou 炎上 / stage 舞台稳定 / relation_all 全体队友关系 / relation_A·B·C 单个队友 / ota_all 全体OTA黏性",
-  "延迟格式": "[{when:'下周'|'条件', condition:'触发条件(条件型才写)', effect:{...}, note:'伏笔文案'}]",
-  "尺度": "6周单季；钱初始1800、周支出900；舞台实用上限≈66。所有数值须过 tools/economy_sandbox.py"
- },
- "cards": [
-  {
-   "id": "daily_body_warning",
-   "type": "日常",
-   "title": "眼前黑了一下",
-   "gate": "体力 < 30",
-   "weight": 1.5,
-   "cooldown": 3,
-   "narrative": "早课拉伸时眼前发黑了一下，扶住把杆才没栽下去。镜子里的自己，嘴唇是白的。",
-   "options": [
-    {
-     "id": "rest_half",
-     "label": "请半天假去睡",
-     "desc": "身体先放第一位，其余的往后排",
-     "immediate": {
-      "stamina": 25,
-      "psyche": 5,
-      "stage": -2
-     },
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "relation_B": -4
-       },
-       "note": "你的站位，别人顶了一场——她没说什么，但记住了"
-      }
-     ]
-    },
-    {
-     "id": "push_through",
-     "label": "咬牙撑完",
-     "desc": "就这一场，撑过去就好了",
-     "immediate": {
-      "stamina": -5,
-      "psyche": -6,
-      "stage": 2
-     },
-     "delayed": [
-      {
-       "when": "条件",
-       "condition": "体力<20",
-       "effect": {
-        "psyche": -12
-       },
-       "note": "身体开始记账了"
-      }
-     ]
-    },
-    {
-     "id": "say_fine",
-     "label": "说没事，照常上",
-     "desc": "笑着摆手，谁也没看出不对",
-     "immediate": {
-      "stamina": -2,
-      "fame": 1
-     },
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "stamina": -15
-       },
-       "note": "透支的账，下周一起算"
-      }
-     ]
-    }
-   ]
+  "_meta": {
+    "类型": "日常",
+    "说明": "钱/体力/心理/生活压力的卡。卡面只给情景和选项；effects 在玩家选后才『跳』出来当回执。",
+    "数值键约定": "money 钱 / stamina 体力 / psyche 心理 / fame 人气 / enjou 炎上 / stage 舞台稳定 / relation_all 全体队友关系 / relation_A·B·C 单个队友 / ota_all 全体OTA黏性",
+    "延迟格式": "[{when:'下周'|'条件', condition:'触发条件(条件型才写)', effect:{...}, note:'伏笔文案'}]",
+    "尺度": "6周单季；钱初始1800、周支出900；舞台实用上限≈66。所有数值须过 tools/economy_sandbox.py"
   },
-  {
-   "id": "daily_insomnia",
-   "type": "日常",
-   "title": "凌晨两点",
-   "gate": "心理 < 40",
-   "weight": 1.3,
-   "cooldown": 3,
-   "narrative": "凌晨两点。手机屏幕的光照着天花板。我翻了个身，脑子里全是下周 营业 的走位，一直到闹钟响。",
-   "options": [
+  "cards": [
     {
-     "id": "put_down",
-     "label": "放下手机，逼自己睡",
-     "desc": "关屏，数呼吸，什么都不想",
-     "immediate": {
-      "psyche": 8,
-      "stamina": 10
-     },
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "ota_all": -2
-       },
-       "note": "有个常连深夜发来一大段话，等到后半夜没等到回音，第二天语气就淡了"
-      }
-     ]
+      "id": "daily_body_warning",
+      "type": "日常",
+      "title": "眼前黑了一下",
+      "gate": "体力 < 30",
+      "weight": 1.5,
+      "cooldown": 3,
+      "narrative": "早课拉伸时眼前发黑了一下，扶住把杆才没栽下去。镜子里的自己，嘴唇是白的。",
+      "options": [
+        {
+          "id": "rest_half",
+          "label": "请半天假去睡",
+          "desc": "身体先放第一位，其余的往后排",
+          "immediate": {
+            "stamina": 25,
+            "psyche": 5,
+            "stage": -2
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "relation_B": -4
+              },
+              "note": "你的站位，别人顶了一场——她没说什么，但记住了"
+            }
+          ]
+        },
+        {
+          "id": "push_through",
+          "label": "咬牙撑完",
+          "desc": "就这一场，撑过去就好了",
+          "immediate": {
+            "stamina": -5,
+            "psyche": -6,
+            "stage": 2
+          },
+          "delayed": [
+            {
+              "when": "条件",
+              "condition": "体力<20",
+              "effect": {
+                "psyche": -12
+              },
+              "note": "身体开始记账了"
+            }
+          ]
+        },
+        {
+          "id": "say_fine",
+          "label": "说没事，照常上",
+          "desc": "笑着摆手，谁也没看出不对",
+          "immediate": {
+            "stamina": -2,
+            "fame": 1
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "stamina": -15
+              },
+              "note": "透支的账，下周一起算"
+            }
+          ]
+        }
+      ]
     },
     {
-     "id": "doomscroll",
-     "label": "刷评论区到天亮",
-     "desc": "一条条看下去，好的坏的都看",
-     "immediate": {
-      "psyche": -4,
-      "fame": 1
-     },
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "stamina": -8
-       },
-       "note": "黑眼圈，遮瑕都盖不住了"
-      }
-     ]
+      "id": "daily_insomnia",
+      "type": "日常",
+      "title": "凌晨两点",
+      "gate": "心理 < 40",
+      "weight": 1.3,
+      "cooldown": 3,
+      "narrative": "凌晨两点。手机屏幕的光照着天花板。我翻了个身，脑子里全是下周 live 的走位，一直到闹钟响。",
+      "options": [
+        {
+          "id": "put_down",
+          "label": "放下手机，逼自己睡",
+          "desc": "关屏，数呼吸，什么都不想",
+          "immediate": {
+            "psyche": 8,
+            "stamina": 10
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "ota_all": -2
+              },
+              "note": "有个单推深夜发来一大段话，等到后半夜没等到回音，第二天语气就淡了"
+            }
+          ]
+        },
+        {
+          "id": "doomscroll",
+          "label": "刷评论区到天亮",
+          "desc": "一条条看下去，好的坏的都看",
+          "immediate": {
+            "psyche": -4,
+            "fame": 1
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "stamina": -8
+              },
+              "note": "黑眼圈，遮瑕都盖不住了"
+            }
+          ]
+        },
+        {
+          "id": "call_home",
+          "label": "给家里打个电话",
+          "desc": "走到阳台，拨那个熟悉的号码",
+          "immediate": {
+            "psyche": 12,
+            "stamina": -6
+          },
+          "delayed": [
+            {
+              "when": "条件",
+              "condition": "钱<800",
+              "effect": {
+                "psyche": -5
+              },
+              "note": "她问“钱够不够花”，你说够。挂了电话，鼻子有点酸"
+            }
+          ],
+          "flag": "homesick"
+        }
+      ]
     },
     {
-     "id": "call_home",
-     "label": "给家里打个电话",
-     "desc": "走到阳台，拨那个熟悉的号码",
-     "immediate": {
-      "psyche": 12,
-      "stamina": -6
-     },
-     "delayed": [
-      {
-       "when": "条件",
-       "condition": "钱<800",
-       "effect": {
-        "psyche": -5
-       },
-       "note": "她问“钱够不够花”，你说够。挂了电话，鼻子有点酸"
-      }
-     ],
-     "flag": "homesick"
+      "id": "daily_outfit",
+      "type": "日常",
+      "title": "那件演出服",
+      "gate": "钱 ≥ 500（有一点余钱）",
+      "weight": 0.9,
+      "cooldown": 4,
+      "narrative": "逛街时看到一件演出服，剪裁正好。价格标签让我咽了下口水——够交半个月房租。",
+      "options": [
+        {
+          "id": "buy_it",
+          "label": "买下它",
+          "desc": "舞台上的自己，值得一次好看",
+          "immediate": {
+            "money": -500,
+            "fame": 4,
+            "stage": 2
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "psyche": -6
+              },
+              "note": "房租的窟窿，被这件衣服撑大了"
+            }
+          ]
+        },
+        {
+          "id": "skip_it",
+          "label": "放下，走开",
+          "desc": "镜子前站了两秒，还是挂回去了",
+          "immediate": {
+            "psyche": -3
+          },
+          "delayed": [
+            {
+              "when": "条件",
+              "condition": "舞台翻车",
+              "effect": {
+                "psyche": -8
+              },
+              "note": "翻车那天，你莫名想起这件没买的衣服"
+            }
+          ]
+        },
+        {
+          "id": "thrift_find",
+          "label": "找件平替",
+          "desc": "转去二手店和网店，比了三个晚上",
+          "immediate": {
+            "money": -120,
+            "stage": 1,
+            "stamina": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "truth_before_live",
+      "type": "日常",
+      "title": "开场前，stf 问了一句",
+      "gate": "周 ≥ 2",
+      "weight": 2.0,
+      "cooldown": 2,
+      "narrative": "上台前在侧幕，stf 把耳返递过来，看了我一眼：「今晚行吗？」后面已经有人在喊集合了。",
+      "options": [
+        {
+          "id": "say_not_really",
+          "label": "「不太行，腿还在抖」",
+          "desc": "说出来的那一刻，自己先信了",
+          "tone": "truth",
+          "immediate": {
+            "psyche": 3,
+            "stage": -2,
+            "stamina": -2
+          },
+          "delayed": [],
+          "note": "她没再问，只把耳返往我手里按了按"
+        },
+        {
+          "id": "say_fine",
+          "label": "「没问题」",
+          "desc": "这句话说出来，不用过脑子",
+          "tone": "safe",
+          "immediate": {
+            "template": 0.015,
+            "stage": 1,
+            "stamina": -2
+          },
+          "delayed": [],
+          "note": "她点点头，去喊下一个人了"
+        }
+      ]
+    },
+    {
+      "id": "truth_weibo_dm",
+      "type": "日常",
+      "title": "私信里那句「你哪天会不会不干了」",
+      "gate": "周 ≥ 2",
+      "weight": 2.0,
+      "cooldown": 2,
+      "narrative": "收工后刷微博，一个单推的私信停在最上面：「你哪天会不会突然就不干了？」输入框的光标跳了很久。",
+      "options": [
+        {
+          "id": "say_do_not_know",
+          "label": "「我不知道还能撑多久」",
+          "desc": "把这句话发出去，明天可能就有人截图",
+          "tone": "truth",
+          "immediate": {
+            "psyche": 4,
+            "enjou": 4,
+            "fame": -1
+          },
+          "delayed": [],
+          "note": "她回得很快：『那我陪你到那天。』"
+        },
+        {
+          "id": "say_always_here",
+          "label": "「不会的，我一直在」",
+          "desc": "她需要这句话，我也需要它看起来是真的",
+          "tone": "safe",
+          "immediate": {
+            "template": 0.02,
+            "ota_all": 2,
+            "psyche": -1
+          },
+          "delayed": [],
+          "note": "她发来一个很长的表情包"
+        }
+      ]
+    },
+    {
+      "id": "daily_oden",
+      "type": "日常",
+      "title": "便利店的关东煮",
+      "gate": "体力 < 45",
+      "weight": 1.1,
+      "cooldown": 4,
+      "narrative": "排练到十一点，胃里空得发慌。拐进便利店，关东煮的锅在冒热气，萝卜煮得发透，竹轮胀起来。店员问要不要，我盯着那锅看了很久——很久没人问过我想吃什么了。",
+      "options": [
+        {
+          "id": "buy_bowl",
+          "label": "来一碗，热的都来一份",
+          "desc": "对自己好一点",
+          "immediate": {
+            "money": -30,
+            "stamina": 10,
+            "psyche": 3
+          },
+          "note": "我端着纸碗蹲在店门口吃完，汤都喝了。那点热乎气从胃一直暖到眼睛。",
+          "delayed": []
+        },
+        {
+          "id": "just_soup",
+          "label": "只要一杯汤，垫垫就行",
+          "desc": "省钱，也够暖",
+          "immediate": {
+            "money": -5,
+            "stamina": 2
+          },
+          "note": "店员多给了我一根竹轮，说『这个快不行了』。我道了谢，捧着杯子走回去。",
+          "delayed": []
+        },
+        {
+          "id": "skip_eat",
+          "label": "算了，回去睡",
+          "desc": "省下时间",
+          "immediate": {
+            "stamina": -3,
+            "stage": 1
+          },
+          "note": "我空着肚子回去接着抠动作。夜里饿得睡不着，可那段舞确实顺了。",
+          "delayed": []
+        }
+      ]
+    },
+    {
+      "id": "daily_street_cat",
+      "type": "日常",
+      "title": "楼下的猫认得我了",
+      "gate": "心理 < 55",
+      "weight": 1.1,
+      "cooldown": 4,
+      "narrative": "楼下那只橘猫以前见我就跑，这两个月不知怎么，肯在门口等我了。今晚它蹲在台阶上，见我回来，尾巴绕了绕。我蹲下去，它没躲，还把脑袋往我手心蹭。手心那点重量，忽然让我鼻子一酸。",
+      "options": [
+        {
+          "id": "feed_sausage",
+          "label": "蹲下喂它点火腿",
+          "desc": "花点小钱",
+          "immediate": {
+            "money": -20,
+            "psyche": 6
+          },
+          "note": "它吃得很急，吃完还舔我手指。我笑出声来——好久没在没人看的时候笑过了。",
+          "delayed": []
+        },
+        {
+          "id": "watch_a_while",
+          "label": "站着看它一会儿就走",
+          "desc": "不投入太多",
+          "immediate": {
+            "psyche": 3,
+            "stamina": 1
+          },
+          "note": "看了一会儿，我上楼了。走到二楼回头，它还蹲在原地看我。",
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "psyche": -2
+              },
+              "note": "过了一周我又路过那儿，它不在。我在原地站了很久，说不出是失落还是松了口气。"
+            }
+          ]
+        },
+        {
+          "id": "take_home",
+          "label": "犹豫很久，还是把它抱回了家",
+          "desc": "对自己多点责任，也多点牵挂",
+          "immediate": {
+            "money": -150,
+            "psyche": 8,
+            "stamina": -3
+          },
+          "note": "它在我怀里很轻，一路没叫。进门那一刻，我才发现自己很久没觉得『家里有人等』了。",
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "psyche": 2,
+                "ota_all": 1
+              },
+              "note": "我发了条微博，配图是猫睡在我腿上。评论区有人问：这是你养的？我说是，我养的。"
+            }
+          ],
+          "flags": [
+            "has_cat"
+          ]
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "daily_extra_shift",
-   "type": "日常",
-   "title": "店长又问你",
-   "gate": "钱 < 2400（手头有点紧）",
-   "weight": 1.2,
-   "cooldown": 2,
-   "narrative": "店长问我晚上还能不能再顶一班：“年轻人多干点，钱不就有了。”我算了算，这周的排练已经排满。",
-   "options": [
-    {
-     "id": "take_shift",
-     "label": "接",
-     "desc": "钱要紧，排练挤一挤总能挤出来",
-     "immediate": {
-      "money": 300,
-      "stamina": -22,
-      "psyche": -4
-     },
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "stage": -5
-       },
-       "note": "少练的那几场，营业 上露了怯"
-      }
-     ]
-    },
-    {
-     "id": "decline_shift",
-     "label": "拒绝",
-     "desc": "排练不能丢，这次只能对不起店长",
-     "immediate": {
-      "psyche": 3
-     },
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "money": -80
-       },
-       "note": "店里给你脸色看，班次往后排得更少"
-      }
-     ]
-    },
-    {
-     "id": "half_shift",
-     "label": "只接半班",
-     "desc": "两边都顾一点，两头都不讨好",
-     "immediate": {
-      "money": 150,
-      "stamina": -10
-     }
-    }
-   ]
-  },
-  {
-   "id": "daily_outfit",
-   "type": "日常",
-   "title": "那件演出服",
-   "gate": "钱 ≥ 500（有一点余钱）",
-   "weight": 0.9,
-   "cooldown": 4,
-   "narrative": "逛街时看到一件演出服，剪裁正好。价格标签让我咽了下口水——够交半个月房租。",
-   "options": [
-    {
-     "id": "buy_it",
-     "label": "买下它",
-     "desc": "舞台上的自己，值得一次好看",
-     "immediate": {
-      "money": -500,
-      "fame": 4,
-      "stage": 2
-     },
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "psyche": -6
-       },
-       "note": "房租的窟窿，被这件衣服撑大了"
-      }
-     ]
-    },
-    {
-     "id": "skip_it",
-     "label": "放下，走开",
-     "desc": "镜子前站了两秒，还是挂回去了",
-     "immediate": {
-      "psyche": -3
-     },
-     "delayed": [
-      {
-       "when": "条件",
-       "condition": "舞台翻车",
-       "effect": {
-        "psyche": -8
-       },
-       "note": "翻车那天，你莫名想起这件没买的衣服"
-      }
-     ]
-    },
-    {
-     "id": "thrift_find",
-     "label": "找件平替",
-     "desc": "转去二手店和网店，比了三个晚上",
-     "immediate": {
-      "money": -120,
-      "stage": 1,
-      "stamina": -4
-     }
-    }
-   ]
-  },
-  {
-   "id": "truth_before_live",
-   "type": "日常",
-   "title": "开场前，stf 问了一句",
-   "gate": "周 ≥ 2",
-   "weight": 2.0,
-   "cooldown": 2,
-   "narrative": "上台前在侧幕，stf 把耳返递过来，看了我一眼：「今晚行吗？」后面已经有人在喊集合了。",
-   "options": [
-    {
-     "id": "say_not_really",
-     "label": "「不太行，腿还在抖」",
-     "desc": "说出来的那一刻，自己先信了",
-     "tone": "truth",
-     "immediate": {
-      "psyche": 3,
-      "stage": -2,
-      "stamina": -2
-     },
-     "delayed": [],
-     "note": "她没再问，只把耳返往我手里按了按"
-    },
-    {
-     "id": "say_fine",
-     "label": "「没问题」",
-     "desc": "这句话说出来，不用过脑子",
-     "tone": "safe",
-     "immediate": {
-      "template": 0.015,
-      "stage": 1,
-      "stamina": -2
-     },
-     "delayed": [],
-     "note": "她点点头，去喊下一个人了"
-    }
-   ]
-  },
-  {
-   "id": "truth_weibo_dm",
-   "type": "日常",
-   "title": "私信里那句「你哪天会不会不干了」",
-   "gate": "周 ≥ 2",
-   "weight": 2.0,
-   "cooldown": 2,
-   "narrative": "收工后刷微博，一个常连的私信停在最上面：「你哪天会不会突然就不干了？」输入框的光标跳了很久。",
-   "options": [
-    {
-     "id": "say_do_not_know",
-     "label": "「我不知道还能撑多久」",
-     "desc": "把这句话发出去，明天可能就有人截图",
-     "tone": "truth",
-     "immediate": {
-      "psyche": 4,
-      "enjou": 4,
-      "fame": -1
-     },
-     "delayed": [],
-     "note": "她回得很快：『那我陪你到那天。』"
-    },
-    {
-     "id": "say_always_here",
-     "label": "「不会的，我一直在」",
-     "desc": "她需要这句话，我也需要它看起来是真的",
-     "tone": "safe",
-     "immediate": {
-      "template": 0.02,
-      "ota_all": 2,
-      "psyche": -1
-     },
-     "delayed": [],
-     "note": "她发来一个很长的表情包"
-    }
-   ]
-  },
-  {
-   "id": "daily_oden",
-   "type": "日常",
-   "title": "便利店的关东煮",
-   "gate": "体力 < 45",
-   "weight": 1.1,
-   "cooldown": 4,
-   "narrative": "排练到十一点，胃里空得发慌。拐进便利店，关东煮的锅在冒热气，萝卜煮得发透，竹轮胀起来。店员问要不要，我盯着那锅看了很久——很久没人问过我想吃什么了。",
-   "options": [
-    {
-     "id": "buy_bowl",
-     "label": "来一碗，热的都来一份",
-     "desc": "对自己好一点",
-     "immediate": {
-      "money": -30,
-      "stamina": 10,
-      "psyche": 3
-     },
-     "note": "我端着纸碗蹲在店门口吃完，汤都喝了。那点热乎气从胃一直暖到眼睛。",
-     "delayed": []
-    },
-    {
-     "id": "just_soup",
-     "label": "只要一杯汤，垫垫就行",
-     "desc": "省钱，也够暖",
-     "immediate": {
-      "money": -5,
-      "stamina": 2
-     },
-     "note": "店员多给了我一根竹轮，说『这个快不行了』。我道了谢，捧着杯子走回去。",
-     "delayed": []
-    },
-    {
-     "id": "skip_eat",
-     "label": "算了，回去睡",
-     "desc": "省下时间",
-     "immediate": {
-      "stamina": -3,
-      "stage": 1
-     },
-     "note": "我空着肚子回去接着抠动作。夜里饿得睡不着，可那段舞确实顺了。",
-     "delayed": []
-    }
-   ]
-  },
-  {
-   "id": "daily_street_cat",
-   "type": "日常",
-   "title": "楼下的猫认得我了",
-   "gate": "心理 < 55",
-   "weight": 1.1,
-   "cooldown": 4,
-   "narrative": "楼下那只橘猫以前见我就跑，这两个月不知怎么，肯在门口等我了。今晚它蹲在台阶上，见我回来，尾巴绕了绕。我蹲下去，它没躲，还把脑袋往我手心蹭。手心那点重量，忽然让我鼻子一酸。",
-   "options": [
-    {
-     "id": "feed_sausage",
-     "label": "蹲下喂它点火腿",
-     "desc": "花点小钱",
-     "immediate": {
-      "money": -20,
-      "psyche": 6
-     },
-     "note": "它吃得很急，吃完还舔我手指。我笑出声来——好久没在没人看的时候笑过了。",
-     "delayed": []
-    },
-    {
-     "id": "watch_a_while",
-     "label": "站着看它一会儿就走",
-     "desc": "不投入太多",
-     "immediate": {
-      "psyche": 3,
-      "stamina": 1
-     },
-     "note": "看了一会儿，我上楼了。走到二楼回头，它还蹲在原地看我。",
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "psyche": -2
-       },
-       "note": "过了一周我又路过那儿，它不在。我在原地站了很久，说不出是失落还是松了口气。"
-      }
-     ]
-    },
-    {
-     "id": "take_home",
-     "label": "犹豫很久，还是把它抱回了家",
-     "desc": "对自己多点责任，也多点牵挂",
-     "immediate": {
-      "money": -150,
-      "psyche": 8,
-      "stamina": -3
-     },
-     "note": "它在我怀里很轻，一路没叫。进门那一刻，我才发现自己很久没觉得『家里有人等』了。",
-     "delayed": [
-      {
-       "when": "下周",
-       "effect": {
-        "psyche": 2,
-        "ota_all": 1
-       },
-       "note": "我发了条微博，配图是猫睡在我腿上。评论区有人问：这是你养的？我说是，我养的。"
-      }
-     ],
-     "flags": [
-      "has_cat"
-     ]
-    }
-   ]
-  }
- ]
+  ]
 }

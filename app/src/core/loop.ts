@@ -891,6 +891,7 @@ export class Game {
       title: gv(card, "title", "版聊"),
       label: "版聊",
       time: gv(card, "time", ""),
+      no: card.no, // 全池序号（卡角标）
       messages: msgs,
       options: (card.options || []).map((o: Option) => ({
         id: o.id,
@@ -992,6 +993,7 @@ export class Game {
       recall: rq === "ask",
       compact: !["OTA记忆"].includes(card.type),
       body,
+      no: card.no, // 全池序号（卡角标）
       options: opts.map((o: Option) => ({
         id: o.id,
         label: this._fill(gv(o, "label", ""), slots),
@@ -1547,6 +1549,7 @@ export class Game {
       recall: rq === "ask",
       compact: !["OTA记忆"].includes(card.type),
       body,
+      no: card.no, // 全池序号（卡角标）
       options: opts.map((o: Option) => ({
         id: o.id,
         label: this._fill(o.label, slots),
@@ -1715,7 +1718,7 @@ export class Game {
     // 「本周已推」，`lineStage` 直接返回 null——私联从此再也轮不到，8 周只走一拍。
     s._line_tick = s.week;
     const rent = s.week % 2 === 1 ? `，这周还要交 ${E.RENT} 块房租` : "";
-    const body = [`六天晚上，周五、周六各一场营业。手里还剩 ${pyRound(s.money)} 块${rent}。`];
+    const body = [`六天晚上，周五、周六各一场 live。手里还剩 ${pyRound(s.money)} 块${rent}。`];
     this.push({ type: "text", title: `第 ${s.week} 周`, body });
     if (s.week % 2 === 1 && s.money < E.RENT) {
       s.psyche -= 18;

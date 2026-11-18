@@ -115,56 +115,6 @@
       ]
     },
     {
-      "id": "pos_ops_attention",
-      "type": "positive",
-      "title": "运营想多给我镜头",
-      "gate": "人气 ≥ 20",
-      "weight": 2.4,
-      "cooldown": 6,
-      "narrative": "运营把我叫到一边，说下季的资源想往我身上斜一点。「镜头多给你，宣传也带你。」我还没来得及应声，就看见露露从走廊那头过来，脚步停了一下。",
-      "options": [
-        {
-          "id": "accept_spotlight",
-          "label": "要。机会不等人",
-          "desc": "「谢谢，我接。」我知道这会让某些人怎么想。",
-          "immediate": {
-            "fame": 6,
-            "stage": 2,
-            "relation_B": -8
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "露露关系 < 40",
-              "effect": {
-                "enjou": 10
-              },
-              "note": "队内不和的风言风语，被人截了图传出去"
-            }
-          ]
-        },
-        {
-          "id": "ask_for_all",
-          "label": "能不能带着大家一起",
-          "desc": "「我一个人多镜头没用，团好了才有人来。」运营愣了一下。",
-          "immediate": {
-            "relation_all": 6,
-            "fame": 2,
-            "psyche": 3
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "fame": -2
-              },
-              "note": "资源没倾斜，热度涨得慢，运营那边脸色一般"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "pos_letter",
       "type": "positive",
       "title": "一封很长的信",

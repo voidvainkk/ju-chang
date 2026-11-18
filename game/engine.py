@@ -92,7 +92,9 @@ def load_world():
     cdir = os.path.join(DATA, "cards")
     for fn in sorted(os.listdir(cdir)):
         if fn.endswith(".json"):
-            world["cards"].extend(_load(os.path.join("cards", fn)).get("cards", []))
+            for c in _load(os.path.join("cards", fn)).get("cards", []):
+                c["no"] = len(world["cards"]) + 1  # 全池全局序号（文件名码点序 + 文件内顺序）
+                world["cards"].append(c)
     sdir = os.path.join(DATA, "storylines")
     for fn in sorted(os.listdir(sdir)):
         if fn.endswith(".json"):
@@ -1945,7 +1947,7 @@ def do_week(s, world, rng, policy=None):
         s["offer_kind"] = _offers[(s["week"] - 3) % 3]
         report.append(("offer", "运营：%s 这条能火，做不做？" % s["offer_kind"]))
     # 延迟队列：本场结束的先结，本周末发生的全部结
-    # （「下周」是相对**下一场营业**说的，不是「下个月」——
+    # （「下周」是相对**下一场 live**说的，不是「下个月」——
     #   以前只结「下周」，一季下来能积压 30 条没兑现的效果）
     settle_delayed(s, world, rng)
     cool_down(s)

@@ -41,6 +41,7 @@ def is_pure_profit(immediate, delayed):
 
 problems = []
 total_cards = 0
+_seen_ids = {}
 for fn in sorted(glob.glob(os.path.join(CARDS, "*.json"))):
     try:
         d = json.load(open(fn, encoding="utf-8"))
@@ -49,6 +50,10 @@ for fn in sorted(glob.glob(os.path.join(CARDS, "*.json"))):
     for c in d.get("cards", []):
         total_cards += 1
         cid = c.get("id", "?")
+        # 全池 id 唯一（导出/编号清单都以 id 为准，重了就串号）
+        if cid in _seen_ids:
+            problems.append(("DUPID", fn, cid, _seen_ids[cid]))
+        _seen_ids[cid] = fn
         nar = c.get("narrative", "")
         if check_pov(nar):
             problems.append(("POV", fn, cid))

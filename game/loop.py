@@ -674,6 +674,7 @@ class Game:
             "type": "chat",
             "title": card.get("title", "版聊"),
             "label": "版聊",
+            "no": card.get("no"),  # 全池序号（卡角标）
             "time": card.get("time", ""),
             "messages": msgs,
             "options": [{"id": o["id"], "label": self._fill(o.get("label", ""), slots),
@@ -771,6 +772,7 @@ class Game:
             "recall": rq == "ask",
             "compact": card.get("type") not in ("OTA记忆",),
             "body": body,
+            "no": card.get("no"),  # 全池序号（卡角标）
             "options": [{"id": o["id"], "label": self._fill(o.get("label", ""), slots),
                          "desc": "" if rq == "ask"
                                  else self._fill(o.get("desc", ""), slots)}
@@ -1263,6 +1265,7 @@ class Game:
             "recall": rq == "ask",
             "compact": card.get("type") not in ("OTA记忆",),
             "body": body,
+            "no": card.get("no"),  # 全池序号（卡角标）
             "options": [{"id": o["id"], "label": self._fill(o["label"], slots),
                          "desc": "" if rq == "ask"
                                  else self._fill(o.get("desc", ""), slots)}
@@ -1387,7 +1390,7 @@ class Game:
         s["_gap_done"] = -1
         s["_mid_done"] = False
         rent = "，这周还要交 %d 块房租" % E.RENT if s["week"] % 2 == 1 else ""
-        body = ["六天晚上，周五、周六各一场营业。手里还剩 %d 块%s。"
+        body = ["六天晚上，周五、周六各一场 live。手里还剩 %d 块%s。"
                 % (round(s["money"]), rent)]
         self.push({"type": "text", "title": "第 %d 周" % s["week"], "body": body})
         if s["week"] % 2 == 1 and s["money"] < E.RENT:
@@ -1419,7 +1422,7 @@ class Game:
         # 「本周已推」，`line_stage` 直接返回 None——私联从此再也轮不到，8 周只走一拍。
         s["_line_tick"] = s["week"]
         rent = "，这周还要交 %d 块房租" % E.RENT if s["week"] % 2 == 1 else ""
-        body = ["六天晚上，周五、周六各一场营业。手里还剩 %d 块%s。"
+        body = ["六天晚上，周五、周六各一场 live。手里还剩 %d 块%s。"
                 % (round(s["money"]), rent)]
         self.push({"type": "text", "title": "第 %d 周" % s["week"], "body": body})
         if s["week"] % 2 == 1 and s["money"] < E.RENT:

@@ -250,7 +250,7 @@ let bgmIndex = -1;          // -1 = 还没选过歌
 let bgmAudio = null;
 let bgmMenuOpen = false;
 let bgmSeeking = false;
-let bgmMode = localStorage.getItem(BGM_MODE_KEY) === "single" ? "single" : "order";
+let bgmMode = localStorage.getItem(BGM_MODE_KEY) === "order" ? "order" : "single";
 
 const bgmFmt = (s) => {
   if (!isFinite(s) || s < 0) s = 0;
@@ -349,6 +349,24 @@ function bgmOpenMenu(open) {
 }
 if ($("bgm-disc")) $("bgm-disc").onclick = () => bgmOpenMenu(!bgmMenuOpen);
 if ($("bgm-close")) $("bgm-close").onclick = () => bgmOpenMenu(false);
+
+/* 启动默认：预选打星那首（rec），模式已默认 single；自动播放被浏览器拦就静默，首次交互再试 */
+(function tryAutoBGM() {
+  const recIdx = BGM_TRACKS.findIndex((t) => t.rec);
+  if (recIdx >= 0) {
+    bgmIndex = recIdx;
+    bgmPlay(recIdx);
+  }
+  const resume = () => {
+    if (bgmIndex >= 0 && bgmAudio && bgmAudio.paused) {
+      bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => {});
+    }
+    document.removeEventListener("pointerdown", resume);
+    document.removeEventListener("keydown", resume);
+  };
+  document.addEventListener("pointerdown", resume);
+  document.addEventListener("keydown", resume);
+})();
 
 /* 进度条：拖动时暂停同步，松手后 seek */
 if ($("bgm-progress")) {
@@ -711,6 +729,8 @@ function renderStep(step, snap) {
     void titleEl.offsetWidth;
     titleEl.classList.add("title-in");
   }
+  // 事件卡角标：全池序号（对话/回考/剧情线等非卡池屏不带 no）
+  if (step.no) titleEl.insertAdjacentHTML("beforeend", ` <span class="card-no">No.${step.no}</span>`);
   // 右上角的小标签：版聊 / 回考 / 剧情线
   $("stage").querySelectorAll(".corner-tag").forEach((n) => n.remove());
   const lineTag = step.line && step.line_name ? step.line_name : "";

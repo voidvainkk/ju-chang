@@ -160,6 +160,15 @@ body{
 .corner-tag.line-zhong{color:#fff;border-color:#3b1f52;background:#5a3080}
 .corner-tag.line-romance{color:#5a2438;border-color:#c06a8a;background:#f6d9e3}
 
+/* 事件卡全池序号角标（贴在标题后） */
+.card-no{
+  font-family:var(--px);font-size:10.5px;letter-spacing:.1em;
+  color:var(--dim);border:1.5px solid var(--line2);
+  padding:1px 6px;margin-left:8px;vertical-align:2px;
+  border-radius:2px;white-space:nowrap;
+}
+body.live-stage .card-no{border-color:#26564f;color:#71968f}
+
 /* ── 版聊：一条条聊天记录 ───────────────────────────────── */
 .chat-log{display:flex;flex-direction:column;gap:12px;margin:2px 0 4px}
 .chat-day{text-align:center;font-family:var(--px);font-size:10.5px;color:var(--dim);letter-spacing:.1em}

@@ -29,6 +29,18 @@ NICE = {
 
 buckets = collections.OrderedDict((t, []) for t in ORDER)
 other = []
+
+# 先按引擎编号顺序（文件名码点序 + 文件内数组序）给全池卡发全局角标号
+no_map = {}
+_seq = 0
+for f in sorted(os.listdir(DATA)):
+    if not f.endswith(".json"):
+        continue
+    doc = json.load(io.open(os.path.join(DATA, f), encoding="utf-8"))
+    for c in doc.get("cards") or []:
+        _seq += 1
+        no_map[c.get("id", "?")] = _seq
+
 for f in sorted(os.listdir(DATA)):
     if not f.endswith(".json"):
         continue
@@ -41,7 +53,7 @@ lines = []
 lines.append("# 卡库审核清单")
 lines.append("")
 total = sum(len(v) for v in buckets.values()) + len(other)
-lines.append("共 %d 张。按类型分组，同组内按 id 排序。" % total)
+lines.append("共 %d 张。No.=游戏内卡角标（引擎按文件名顺序+文件内顺序编号，对应 No.%d–No.%d）。按类型分组，同组内按 id 排序。" % (total, 1, _seq))
 lines.append("")
 lines.append("> 每张卡只写「卡面会看到的东西」：标题、触发条件、正文、每个选项。")
 lines.append("> 触发条件里的数值就是这一周开始时的门槛，达不到这张卡就不会出现。")
@@ -54,7 +66,7 @@ for t, items in buckets.items():
     lines.append("")
     for f, c in sorted(items, key=lambda x: x[1]["id"]):
         opts = c.get("options") or []
-        lines.append("### %s　`%s`" % (c.get("title", ""), c["id"]))
+        lines.append("### No.%d. %s　`%s`" % (no_map.get(c.get("id", "?"), 0), c.get("title", ""), c["id"]))
         meta = []
         if c.get("gate"):
             meta.append("触发：%s" % c["gate"])
@@ -94,7 +106,7 @@ if other:
     lines.append("## 其它类型（%d 张）" % len(other))
     lines.append("")
     for f, c in other:
-        lines.append("- `%s` %s（%s）" % (c["id"], c.get("title", ""), c.get("type")))
+        lines.append("- No.%d. `%s` %s（%s）" % (no_map.get(c.get("id", "?"), 0), c["id"], c.get("title", ""), c.get("type")))
 
 io.open(OUT, "w", encoding="utf-8").write("\n".join(lines))
 print("wrote", OUT, "cards:", total)

@@ -200,7 +200,10 @@ export function loadWorld(files?: RawFiles): World {
   const cardFiles = all.filter((n) => n.startsWith("cards/") && n.endsWith(".json")).sort(cmpCodepoint);
   for (const fn of cardFiles) {
     const j = _load(fn);
-    for (const c of j.cards ?? []) world.cards.push(c);
+    for (const c of j.cards ?? []) {
+      c.no = world.cards.length + 1; // 全池全局序号（按文件名码点序 + 文件内顺序）
+      world.cards.push(c);
+    }
   }
   const lineFiles = all.filter((n) => n.startsWith("storylines/") && n.endsWith(".json")).sort(cmpCodepoint);
   for (const fn of lineFiles) world.lines.push(_load(fn));
