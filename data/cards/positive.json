@@ -166,7 +166,7 @@
       "options": [
         {
           "id": "let_it_land",
-          "label": "让他这句话落进心里",
+          "label": "让ta这句话落进心里",
           "desc": "我没追上去问，就站在原地，把它收好。",
           "immediate": {
             "psyche": 6,
@@ -178,7 +178,7 @@
         {
           "id": "turn_to_team",
           "label": "把这句话说给全队听",
-          "desc": "「他说今晚最亮的是我们。」我加了个'们'。",
+          "desc": "「ta说今晚最亮的是我们。」我加了个『们』。",
           "immediate": {
             "relation_all": 6,
             "psyche": 4,

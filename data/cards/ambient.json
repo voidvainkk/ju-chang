@@ -1,187 +1,187 @@
 {
-  "_meta": {
-    "category": "ambient",
-    "desc": "无选项的境遇卡（ambient）：触发即生效，只跳一行数值，不要求玩家做选择。整体以正向/中性为主，偶尔插入生活里躲不开的小意外——用来给卡池降火，别让整季全是坏消息。",
-    "schema": "card = {id,type:'ambient',title,gate,weight,cooldown,narrative,effect,delayed?,note}。没有 options；effect 是触发即生效的即时变动，note 是给玩家看的那行回执。",
-    "resource_keys": {
-      "fame": "人气",
-      "money": "钱",
-      "stage": "舞台稳定",
-      "stamina": "体力",
-      "psyche": "心理",
-      "ota_all": "全体OTA黏性",
-      "enjou": "炎上（越高越糟）",
-      "banzi": "板子关注度",
-      "kaibox": "开盒风险（越高越糟）",
-      "shiroi": "私生跟踪值（越高越糟）"
-    },
-    "casting_schema": "card.casting = [ {slot, select:{gender?/fan_type?/archetype?/min_stickiness?/private_contact?}, allow_hatch} ]；narrative/label/desc 用 {{slot}} 显示名字、{{slot.ta}} 显示他/她；effect 键 @<slot> = 投给该槽位选中 OTA 的黏性增减，ota_all 仍为全体；无符合条件者且 allow_hatch 时按原型孵化新人填入。"
+ "_meta": {
+  "category": "ambient",
+  "desc": "无选项的境遇卡（ambient）：触发即生效，只跳一行数值，不要求玩家做选择。整体以正向/中性为主，偶尔插入生活里躲不开的小意外——用来给卡池降火，别让整季全是坏消息。",
+  "schema": "card = {id,type:'ambient',title,gate,weight,cooldown,narrative,effect,delayed?,note}。没有 options；effect 是触发即生效的即时变动，note 是给玩家看的那行回执。",
+  "resource_keys": {
+   "fame": "人气",
+   "money": "钱",
+   "stage": "舞台稳定",
+   "stamina": "体力",
+   "psyche": "心理",
+   "ota_all": "全体OTA黏性",
+   "enjou": "炎上（越高越糟）",
+   "banzi": "板子关注度",
+   "kaibox": "开盒风险（越高越糟）",
+   "shiroi": "私生跟踪值（越高越糟）"
   },
-  "cards": [
+  "casting_schema": "card.casting = [ {slot, select:{gender?/fan_type?/archetype?/min_stickiness?/private_contact?}, allow_hatch} ]；narrative/label/desc 用 {{slot}} 显示名字、{{slot.ta}} 显示他/她；effect 键 @<slot> = 投给该槽位选中 OTA 的黏性增减，ota_all 仍为全体；无符合条件者且 allow_hatch 时按原型孵化新人填入。"
+ },
+ "cards": [
+  {
+   "id": "amb_red_board",
+   "type": "ambient",
+   "title": "被投红板子了",
+   "gate": "人气 ≥ 15",
+   "weight": 12,
+   "cooldown": 4,
+   "narrative": "凌晨，手机在枕头边震了一下。板子上有人发了张今晚的抓拍，标题是《今晚站左边那个，把整场救回来了》。底下跟了二十来层，居然没人吵架，都在问我是谁。我把那条帖子翻来覆去看到天亮。",
+   "effect": {
+    "fame": 4,
+    "psyche": 4
+   },
+   "note": "板子上的红帖：人气 +4，心理 +4"
+  },
+  {
+   "id": "amb_viral_clip",
+   "type": "ambient",
+   "title": "那段视频被路人拍了",
+   "gate": "人气 ≥ 18",
+   "weight": 9,
+   "cooldown": 6,
+   "narrative": "散场时一个路人举着手机，说他随手拍了段，问能不能发。我点了头。第二天醒来，播放量后面多了个我从没见过的零头。",
+   "effect": {
+    "fame": 9,
+    "ota_all": 2,
+    "psyche": 3
+   },
+   "delayed": [
     {
-      "id": "amb_red_board",
-      "type": "ambient",
-      "title": "被投红板子了",
-      "gate": "人气 ≥ 15",
-      "weight": 12,
-      "cooldown": 4,
-      "narrative": "凌晨，手机在枕头边震了一下。板子上有人发了张今晚的抓拍，标题是《今晚站左边那个，把整场救回来了》。底下跟了二十来层，居然没人吵架，都在问我是谁。我把那条帖子翻来覆去看到天亮。",
-      "effect": {
-        "fame": 4,
-        "psyche": 4
-      },
-      "note": "板子上的红帖：人气 +4，心理 +4"
-    },
-    {
-      "id": "amb_viral_clip",
-      "type": "ambient",
-      "title": "那段视频被路人拍了",
-      "gate": "人气 ≥ 18",
-      "weight": 9,
-      "cooldown": 6,
-      "narrative": "散场时一个路人举着手机，说他随手拍了段，问能不能发。我点了头。第二天醒来，播放量后面多了个我从没见过的零头。",
-      "effect": {
-        "fame": 9,
-        "ota_all": 2,
-        "psyche": 3
-      },
-      "delayed": [
-        {
-          "when": "下周",
-          "effect": {
-            "fame": -4
-          },
-          "note": "热度像退潮，来得快去得也快，那点落差砸在心口"
-        }
-      ],
-      "note": "出圈了：人气 +9，黏性 +2，心理 +3"
-    },
-    {
-      "id": "amb_fan_brings_friend",
-      "type": "ambient",
-      "title": "单推带了个朋友来",
-      "gate": "私联人数 ≥ 0",
-      "weight": 10,
-      "cooldown": 3,
-      "narrative": "{{bringer}}走到特典桌前，身后还跟着个一脸局促的女生。「我室友，被我念叨了仨月，今天非要来看看。」{{bringer.ta}}把券递过来的时候，比我还高兴。",
-      "effect": {
-        "money": 160,
-        "ota_all": 4,
-        "psyche": 3,
-        "@bringer": 4
-      },
-      "note": "多了两张券的钱：钱 +160，黏性 +4，心理 +3",
-      "casting": [
-        {
-          "slot": "bringer",
-          "select": {
-            "min_stickiness": 60
-          },
-          "allow_hatch": true,
-          "force_hatch": true
-        }
-      ]
-    },
-    {
-      "id": "amb_good_rehearsal",
-      "type": "ambient",
-      "title": "今天排练顺得不像话",
-      "gate": "",
-      "weight": 10,
-      "cooldown": 3,
-      "narrative": "同一个八拍，昨天怎么都卡，今天一遍就过了。小满在旁边喊「再来一次」，露露没说话，但也没走。收工的时候，我少见地没觉得累。",
-      "effect": {
-        "stage": 5,
-        "psyche": 4,
-        "stamina": -3
-      },
-      "note": "手感来了：舞台 +5，心理 +4，体力 -3"
-    },
-    {
-      "id": "amb_support_box",
-      "type": "ambient",
-      "title": "前台转来一个箱子",
-      "gate": "人气 ≥ 10",
-      "weight": 8,
-      "cooldown": 5,
-      "narrative": "staff 说有个粉丝托前台转交。拆开是几盒润喉糖、一沓暖宝宝，最底下压着张便签：「别硬撑，唱不动的时候我们也在。」没署名。",
-      "effect": {
-        "psyche": 7,
-        "ota_all": 2
-      },
-      "note": "有人记着你：心理 +7，黏性 +2"
-    },
-    {
-      "id": "amb_landlord_kind",
-      "type": "ambient",
-      "title": "房东把零头抹了",
-      "gate": "钱 < 2600",
-      "weight": 9,
-      "cooldown": 8,
-      "narrative": "交房租那天，我把钱数了两遍，还是差一点。房东在门口抽烟，看了我一眼，说「这个月就算了，剩下的下个月一块儿给」。我没敢问他为什么。回屋坐在床沿，突然很想给我妈打个电话。",
-      "effect": {
-        "money": 150,
-        "psyche": 6
-      },
-      "note": "这一关松了松：钱 +150，心理 +6"
-    },
-    {
-      "id": "amb_late_night_song",
-      "type": "ambient",
-      "title": "深夜哼出半首歌",
-      "gate": "体力 ≥ 30",
-      "weight": 7,
-      "cooldown": 5,
-      "narrative": "三点多，脑子里突然冒出一段旋律。我裹着被子用手机录下来，怕吵到隔壁，声音压得很低。录完听了一遍，居然还行。",
-      "effect": {
-        "sing": 5,
-        "psyche": 3,
-        "stamina": -6
-      },
-      "note": "灵感要用觉来换：唱功 +5，心理 +3，体力 -6"
-    },
-    {
-      "id": "amb_rival_disband",
-      "type": "ambient",
-      "title": "隔壁团散了",
-      "gate": "人气 ≥ 12",
-      "weight": 6,
-      "cooldown": 9,
-      "narrative": "刷到隔壁团宣布解散的消息。评论区里几个眼熟的 ID 在问「以后追谁」。第二天，她们中有人出现在我们的场子，站在最后一排，还没学会跟我们的 call。我该替她们高兴吗。",
-      "effect": {
-        "ota_all": 5,
-        "fame": 4,
-        "psyche": -2
-      },
-      "note": "有人流了过来，也有人刚失去过什么：黏性 +5，人气 +4，心理 -2"
-    },
-    {
-      "id": "amb_caught_cold",
-      "type": "ambient",
-      "title": "感冒了",
-      "gate": "体力 < 45",
-      "weight": 8,
-      "cooldown": 4,
-      "narrative": "早上起来嗓子像被人拿砂纸打磨过。量了体温，三十七度八。今天还有排练——我没跟任何人说。",
-      "effect": {
-        "stamina": -14,
-        "psyche": -3
-      },
-      "note": "身体先撑不住了：体力 -14，心理 -3"
-    },
-    {
-      "id": "amb_black_board",
-      "type": "ambient",
-      "title": "板子上有人开帖骂我",
-      "gate": "人气 ≥ 20",
-      "weight": 7,
-      "cooldown": 4,
-      "narrative": "又是一条板帖，这次是冲我来的。「这种水平也敢上台」「靠脸吃饭」。我一条条看下去，看到手指发凉，还是没关。",
-      "effect": {
-        "enjou": 3,
-        "psyche": -5
-      },
-      "note": "板子上有人开帖骂我：炎上 +3，心理 −5"
+     "when": "下周",
+     "effect": {
+      "fame": -4
+     },
+     "note": "热度像退潮，来得快去得也快，那点落差砸在心口"
     }
-  ]
+   ],
+   "note": "出圈了：人气 +9，黏性 +2，心理 +3"
+  },
+  {
+   "id": "amb_fan_brings_friend",
+   "type": "ambient",
+   "title": "单推带了个朋友来",
+   "gate": "私联人数 ≥ 0",
+   "weight": 10,
+   "cooldown": 3,
+   "narrative": "{{bringer}}走到特典桌前，身后还跟着个一脸局促的女生。「我室友，被我念叨了仨月，今天非要来看看。」{{bringer.ta}}把券递过来的时候，比我还高兴。",
+   "effect": {
+    "money": 160,
+    "ota_all": 4,
+    "psyche": 3,
+    "@bringer": 4
+   },
+   "note": "多了两张券的钱：钱 +160，黏性 +4，心理 +3",
+   "casting": [
+    {
+     "slot": "bringer",
+     "select": {
+      "min_stickiness": 60
+     },
+     "allow_hatch": true,
+     "force_hatch": true
+    }
+   ]
+  },
+  {
+   "id": "amb_good_rehearsal",
+   "type": "ambient",
+   "title": "今天排练顺得不像话",
+   "gate": "",
+   "weight": 10,
+   "cooldown": 3,
+   "narrative": "同一个八拍，昨天怎么都卡，今天一遍就过了。小满在旁边喊「再来一次」，露露没说话，但也没走。收工的时候，我少见地没觉得累。",
+   "effect": {
+    "stage": 5,
+    "psyche": 4,
+    "stamina": -3
+   },
+   "note": "手感来了：舞台 +5，心理 +4，体力 -3"
+  },
+  {
+   "id": "amb_support_box",
+   "type": "ambient",
+   "title": "前台转来一个箱子",
+   "gate": "人气 ≥ 10",
+   "weight": 8,
+   "cooldown": 5,
+   "narrative": "staff 说有个粉丝托前台转交。拆开是几盒润喉糖、一沓暖宝宝，最底下压着张便签：「别硬撑，唱不动的时候我们也在。」没署名。",
+   "effect": {
+    "psyche": 7,
+    "ota_all": 2
+   },
+   "note": "有人记着我：心理 +7，黏性 +2"
+  },
+  {
+   "id": "amb_landlord_kind",
+   "type": "ambient",
+   "title": "房东把零头抹了",
+   "gate": "钱 < 2600",
+   "weight": 9,
+   "cooldown": 8,
+   "narrative": "交房租那天，我把钱数了两遍，还是差一点。房东在门口抽烟，看了我一眼，说「这个月就算了，剩下的下个月一块儿给」。我没敢问他为什么。回屋坐在床沿，突然很想给我妈打个电话。",
+   "effect": {
+    "money": 150,
+    "psyche": 6
+   },
+   "note": "这一关松了松：钱 +150，心理 +6"
+  },
+  {
+   "id": "amb_late_night_song",
+   "type": "ambient",
+   "title": "深夜哼出半首歌",
+   "gate": "体力 ≥ 30",
+   "weight": 7,
+   "cooldown": 5,
+   "narrative": "三点多，脑子里突然冒出一段旋律。我裹着被子用手机录下来，怕吵到隔壁，声音压得很低。录完听了一遍，居然还行。",
+   "effect": {
+    "sing": 5,
+    "psyche": 3,
+    "stamina": -6
+   },
+   "note": "灵感要用觉来换：唱功 +5，心理 +3，体力 -6"
+  },
+  {
+   "id": "amb_rival_disband",
+   "type": "ambient",
+   "title": "隔壁团散了",
+   "gate": "人气 ≥ 12",
+   "weight": 6,
+   "cooldown": 9,
+   "narrative": "刷到隔壁团宣布解散的消息。评论区里几个眼熟的 ID 在问「以后追谁」。第二天，她们中有人出现在我们的场子，站在最后一排，还没学会跟我们的 call。我该替她们高兴吗。",
+   "effect": {
+    "ota_all": 5,
+    "fame": 4,
+    "psyche": -2
+   },
+   "note": "有人流了过来，也有人刚失去过什么：黏性 +5，人气 +4，心理 -2"
+  },
+  {
+   "id": "amb_caught_cold",
+   "type": "ambient",
+   "title": "感冒了",
+   "gate": "体力 < 45",
+   "weight": 8,
+   "cooldown": 4,
+   "narrative": "早上起来嗓子像被人拿砂纸打磨过。量了体温，三十七度八。今天还有排练——我没跟任何人说。",
+   "effect": {
+    "stamina": -14,
+    "psyche": -3
+   },
+   "note": "身体先撑不住了：体力 -14，心理 -3"
+  },
+  {
+   "id": "amb_black_board",
+   "type": "ambient",
+   "title": "板子上有人开帖骂我",
+   "gate": "人气 ≥ 20",
+   "weight": 7,
+   "cooldown": 4,
+   "narrative": "又是一条板帖，这次是冲我来的。「这种水平也敢上台」「靠脸吃饭」。我一条条看下去，看到手指发凉，还是没关。",
+   "effect": {
+    "enjou": 3,
+    "psyche": -5
+   },
+   "note": "板子上有人开帖骂我：炎上 +3，心理 −5"
+  }
+ ]
 }

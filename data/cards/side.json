@@ -1,173 +1,173 @@
 {
-  "_meta": {
-    "category": "同行",
-    "design_note": "别的团、别的地下偶像。不带交易的纯粹喜欢：生日 sp、后台盒饭、素人翻跳。选项在'把这份喜欢接住 / 省下自己的力气'之间付代价，没有纯赚。",
-    "resource_keys": {
-      "money": "钱",
-      "stamina": "体力",
-      "psyche": "心理",
-      "fame": "人气",
-      "stage": "舞台稳定",
-      "ota_all": "全体OTA黏性",
-      "relation_A": "队友A(真面·阿棠)",
-      "relation_B": "队友B(竞争·露露)",
-      "relation_C": "队友C(天真·小满)",
-      "relation_all": "团内关系整体",
-      "shiren": "私联人数",
-      "enjou": "炎上",
-      "kaibox": "开盒风险",
-      "shiroi": "私生跟踪",
-      "banzi": "板子关注度"
+ "_meta": {
+  "category": "同行",
+  "design_note": "别的团、别的地下偶像。不带交易的纯粹喜欢：生日 sp、后台盒饭、素人翻跳。选项在'把这份喜欢接住 / 省下自己的力气'之间付代价，没有纯赚。",
+  "resource_keys": {
+   "money": "钱",
+   "stamina": "体力",
+   "psyche": "心理",
+   "fame": "人气",
+   "stage": "舞台稳定",
+   "ota_all": "全体OTA黏性",
+   "relation_A": "队友A(真面·阿棠)",
+   "relation_B": "队友B(竞争·露露)",
+   "relation_C": "队友C(天真·小满)",
+   "relation_all": "团内关系整体",
+   "shiren": "私联人数",
+   "enjou": "炎上",
+   "kaibox": "开盒风险",
+   "shiroi": "私生跟踪",
+   "banzi": "板子关注度"
+  }
+ },
+ "cards": [
+  {
+   "id": "side_birthday_sp",
+   "type": "同行",
+   "title": "隔壁团的生日 sp",
+   "gate": "人气 ≥ 10 且 周 ≥ 2",
+   "weight": 1.2,
+   "cooldown": 5,
+   "narrative": "小葵——隔壁团那个每次拼盘都在后台帮我别麦克风的女孩——发消息说，她生日有场特别公演，想请我去跳一支。她说得很随意：『你要是有空就来玩啊。』可我盯着那行字看了很久。上一个不是工作要求、不是 live、单纯想要我在场的人，我快想不起来了。",
+   "options": [
+    {
+     "id": "go_dance",
+     "label": "去，跳我自己最喜欢的那支",
+     "desc": "为自己跳一次",
+     "immediate": {
+      "stamina": -8,
+      "stage": 3,
+      "psyche": 8,
+      "fame": 2
+     },
+     "note": "台下没有一个是我的观众，可我跳得比任何一场都用力。散场她抱着我说，谢谢我来了。",
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "psyche": 2
+       },
+       "note": "她把那段编舞发上网，配文：我朋友超厉害"
+      }
+     ]
+    },
+    {
+     "id": "go_watch",
+     "label": "去，坐在台下看完",
+     "desc": "光是当观众就很好",
+     "immediate": {
+      "stamina": -3,
+      "psyche": 6,
+      "ota_all": 1
+     },
+     "note": "我坐在最后一排，跟着一群陌生人一起喊安可。原来当观众是这么轻松又快乐的事。",
+     "delayed": []
+    },
+    {
+     "id": "skip_rehearsal",
+     "label": "推掉，那天要排练",
+     "desc": "把团放在前面",
+     "immediate": {
+      "psyche": -4,
+      "relation_all": 2
+     },
+     "note": "我回了句『那天有排练，下次一定』。发出去以后，我盯着对话框，心里空了一块。",
+     "delayed": []
     }
+   ]
   },
-  "cards": [
+  {
+   "id": "side_bento",
+   "type": "同行",
+   "title": "拼盘后台的盒饭",
+   "gate": "体力 ≥ 35",
+   "weight": 1.1,
+   "cooldown": 4,
+   "narrative": "五个团挤一个后台，盒饭只有二十份，来晚了就没有。我最后一个进化妆间，长桌已经空了，正要退出去，斜对面那个团的鼓手朝我晃晃筷子：『这盒没人领，是你的吧？』饭是凉的，可她把自己那份的卤蛋夹给了我。",
+   "options": [
     {
-      "id": "side_birthday_sp",
-      "type": "同行",
-      "title": "隔壁团的生日 sp",
-      "gate": "人气 ≥ 10 且 周 ≥ 2",
-      "weight": 1.2,
-      "cooldown": 5,
-      "narrative": "小葵——隔壁团那个每次对盘都在后台帮我别麦克风的女孩——发消息说，她生日有场特别公演，想请我去跳一支。她说得很随意：『你要是有空就来玩啊。』可我盯着那行字看了很久。上一个不是工作要求、不是 live、单纯想要我在场的人，我快想不起来了。",
-      "options": [
-        {
-          "id": "go_dance",
-          "label": "去，跳我自己最喜欢的那支",
-          "desc": "为自己跳一次",
-          "immediate": {
-            "stamina": -8,
-            "stage": 3,
-            "psyche": 8,
-            "fame": 2
-          },
-          "note": "台下没有一个是我的观众，可我跳得比任何一场都用力。散场她抱着我说，谢谢你来了。",
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "psyche": 2
-              },
-              "note": "她把那段编舞发上网，配文：我朋友超厉害"
-            }
-          ]
-        },
-        {
-          "id": "go_watch",
-          "label": "去，坐在台下看完",
-          "desc": "光是当观众就很好",
-          "immediate": {
-            "stamina": -3,
-            "psyche": 6,
-            "ota_all": 1
-          },
-          "note": "我坐在最后一排，跟着一群陌生人一起喊安可。原来当观众是这么轻松又快乐的事。",
-          "delayed": []
-        },
-        {
-          "id": "skip_rehearsal",
-          "label": "推掉，那天要排练",
-          "desc": "把团放在前面",
-          "immediate": {
-            "psyche": -4,
-            "relation_all": 2
-          },
-          "note": "我回了句『那天有排练，下次一定』。发出去以后，我盯着对话框，心里空了一块。",
-          "delayed": []
-        }
-      ]
+     "id": "eat_together",
+     "label": "坐下跟她们一起吃完",
+     "desc": "不急着走",
+     "immediate": {
+      "stamina": 6,
+      "psyche": 5,
+      "ota_all": 1,
+      "relation_all": -1
+     },
+     "note": "我们挤在化妆镜前扒饭，聊的都是些没用的八卦。那半小时我一点都不累。回到自己那边，合练已经开始了，小满看了我一眼，没说话。",
+     "delayed": []
     },
     {
-      "id": "side_bento",
-      "type": "同行",
-      "title": "拼盘后台的盒饭",
-      "gate": "体力 ≥ 35",
-      "weight": 1.1,
-      "cooldown": 4,
-      "narrative": "五个团挤一个后台，盒饭只有二十份，来晚了就没有。我最后一个进化妆间，长桌已经空了，正要退出去，斜对面那个团的鼓手朝我晃晃筷子：『这盒没人领，是你的吧？』饭是凉的，可她把自己那份的卤蛋夹给了我。",
-      "options": [
-        {
-          "id": "eat_together",
-          "label": "坐下跟她们一起吃完",
-          "desc": "不急着走",
-          "immediate": {
-            "stamina": 6,
-            "psyche": 5,
-            "ota_all": 1,
-            "relation_all": -1
-          },
-          "note": "我们挤在化妆镜前扒饭，聊的都是些没用的八卦。那半小时我一点都不累。回到自己那边，合练已经开始了，小满看了我一眼，没说话。",
-          "delayed": []
-        },
-        {
-          "id": "bring_back",
-          "label": "道谢，端回去分给我们团的人",
-          "desc": "想着自己人",
-          "immediate": {
-            "psyche": 3,
-            "relation_all": 2,
-            "stamina": -2
-          },
-          "note": "我把盒饭端回去，四个人分一份，抢着吃。小满说，姐你怎么这么好。我自己那份一口没动。",
-          "delayed": []
-        },
-        {
-          "id": "skip_eat",
-          "label": "说不饿，赶去调音",
-          "desc": "工作优先",
-          "immediate": {
-            "psyche": -2,
-            "stage": 2
-          },
-          "note": "我摆摆手走了。调音很顺，可胃一直空着，台上那口气有点虚。",
-          "delayed": []
-        }
-      ]
+     "id": "bring_back",
+     "label": "道谢，端回去分给我们团的人",
+     "desc": "想着自己人",
+     "immediate": {
+      "psyche": 3,
+      "relation_all": 2,
+      "stamina": -2
+     },
+     "note": "我把盒饭端回去，四个人分一份，抢着吃。小满说，姐我怎么这么好。我自己那份一口没动。",
+     "delayed": []
     },
     {
-      "id": "side_cover_dance",
-      "type": "同行",
-      "title": "有人在学我跳的那支",
-      "gate": "人气 ≥ 8",
-      "weight": 1.1,
-      "cooldown": 5,
-      "narrative": "刷到一个素人翻跳，跳的是我们那首根本没几个人听过的原创。她动作错了好几个地方，可认真得不行，跳到副歌还自己加了个笑。评论区才七条，我一条条看完，把手机扣在腿上，忽然有点想哭——原来真的有人在某个我不知道的地方，跟着我们跳过。",
-      "options": [
-        {
-          "id": "like_secret",
-          "label": "用小号点个赞，留一句『跳得很好』",
-          "desc": "悄悄地",
-          "immediate": {
-            "psyche": 7,
-            "stamina": -1
-          },
-          "note": "我犹豫了半天才发出去。她回了个『谢谢！！』，后面跟了三个感叹号。我笑了。",
-          "delayed": []
-        },
-        {
-          "id": "repost_teach",
-          "label": "转发，说下次教你这个走位",
-          "desc": "把这份喜欢接住",
-          "immediate": {
-            "fame": 2,
-            "psyche": 5,
-            "banzi": 1
-          },
-          "note": "转发出去以后，底下有人问这是哪个团。我第一次觉得，被看见也许没那么可怕。",
-          "delayed": []
-        },
-        {
-          "id": "learn_it",
-          "label": "记下来，下次演出把这段编进去",
-          "desc": "把感动变成动作",
-          "immediate": {
-            "stage": 3,
-            "psyche": 4,
-            "stamina": -3
-          },
-          "note": "我对着视频一帧一帧学她的错法，然后改对了。下次舞台上，我把这段加了进去。",
-          "delayed": []
-        }
-      ]
+     "id": "skip_eat",
+     "label": "说不饿，赶去调音",
+     "desc": "工作优先",
+     "immediate": {
+      "psyche": -2,
+      "stage": 2
+     },
+     "note": "我摆摆手走了。调音很顺，可胃一直空着，台上那口气有点虚。",
+     "delayed": []
     }
-  ]
+   ]
+  },
+  {
+   "id": "side_cover_dance",
+   "type": "同行",
+   "title": "有人在学我跳的那支",
+   "gate": "人气 ≥ 8",
+   "weight": 1.1,
+   "cooldown": 5,
+   "narrative": "刷到一个素人翻跳，跳的是我们那首根本没几个人听过的原创。她动作错了好几个地方，可认真得不行，跳到副歌还自己加了个笑。评论区才七条，我一条条看完，把手机扣在腿上，忽然有点想哭——原来真的有人在某个我不知道的地方，跟着我们跳过。",
+   "options": [
+    {
+     "id": "like_secret",
+     "label": "用小号点个赞，留一句『跳得很好』",
+     "desc": "悄悄地",
+     "immediate": {
+      "psyche": 7,
+      "stamina": -1
+     },
+     "note": "我犹豫了半天才发出去。她回了个『谢谢！！』，后面跟了三个感叹号。我笑了。",
+     "delayed": []
+    },
+    {
+     "id": "repost_teach",
+     "label": "转发，说下次教你这个走位",
+     "desc": "把这份喜欢接住",
+     "immediate": {
+      "fame": 2,
+      "psyche": 5,
+      "banzi": 1
+     },
+     "note": "转发出去以后，底下有人问这是哪个团。我第一次觉得，被看见也许没那么可怕。",
+     "delayed": []
+    },
+    {
+     "id": "learn_it",
+     "label": "记下来，下次演出把这段编进去",
+     "desc": "把感动变成动作",
+     "immediate": {
+      "stage": 3,
+      "psyche": 4,
+      "stamina": -3
+     },
+     "note": "我对着视频一帧一帧学她的错法，然后改对了。下次舞台上，我把这段加了进去。",
+     "delayed": []
+    }
+   ]
+  }
+ ]
 }

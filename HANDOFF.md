@@ -1156,3 +1156,37 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 
 ### 改动文件
 `web/index.html`、`web/style.css`、`app/src/ui.js`、`web/sprites/bgm_1.mp3`..`bgm_6.mp3`（6 首新增）、`HANDOFF.md`。
+
+## 6.30 · 2026-11-19 机制修复一轮 + 删周五 + 回执/文案批次（AutoClaw 会话）
+
+机制（Python/TS 双侧同步，trace/loop 基线已重生成）：
+- 房租真扣款：隔周 900 交得起真扣（周初屏「房租已经交了」），交不上走原惩罚（心理 −18 / 体力 −10 / rent_missed）。全库此前无任何扣款行。
+- 券账按场累加：每场各自 warm 记账，state 累加 `_week_tickets`/`_week_income`，结算加总——此前每场覆盖 `self._bill`、结算只入最后一场，周五/周六屏上的钱从来没进过钱包。
+- 删周五偶活+特典：一周 = 6 晚行动 → 周六场/券/特典 → 周日场/券/特典 → 一次性提问 → 三张周卡 → 结算。
+- 删周日「还是这几个人」过场（`_sun_talk_step`/`_sunTalkStep` 移除；`wk.sun_talk` 键保留作「本周卡已排」守卫）。
+- 卡回复插队首：choose_card/choose_talk 回执 `queue.insert(0)`/`unshift`——选完哪张卡回复立刻跟上；同时删掉版聊回执的「（这样回复了大家）」后缀。
+- 修「每周双重开局」：`_week_started` 在 `_start_week`/`_startWeek` 本体落库（set_name/startWeekNext 直调绕过 after_step 守卫，此前每周都开两次周、剧情骰翻倍；房租扣款后第二次还会误判「房租没交上」）。
+- 连做真减半：ACT_REPEAT dance/sing/mc 2.0→0.5（原来代码 ×2、文案说减半）；「（连着做，减半）」提示只在真减半的动作上显示。
+- 彗星可达：线上 `_finish` 补置位 `last_live_choice`（选了离开的不算）；离线 do_week 同步加 not chose_leave。
+- truth_team_doubt 死卡救活：eval_clause 新增「任一队友关系」谓词。
+- rq_drop 收敛：只作废本卡线索（取 rq_lock.clue）；解除 rq_drop→line_cool("zhong") 耦合；dropped 不进 finale_clue_pool。
+- 私联拷问公平性：loop._fill 登记 `s["_prota_revealed"]`，shiren_finale_quiz_cards 让「说出口过的细节」优先出题（以前全凭 6 项随机，认真玩也会被错判「用完」）。
+- 特典 rest 桶查卡冷却；「认识周数」按同闸门「任一OTA黏性 ≥ X」的门槛取人（eval_gate/_gate_stick_floor，孵化新人不再锁死重档回考）。
+- 休息回复 `ACT_TEXT.rest` 六条轮换（rng.choice，双侧）。
+
+文案批次（用户逐条拍板，全部前后文本见《文案改动对照.md》）：
+- 术语：私信→版聊 9 处；熟客→单推 1 处；拉黑→出禁（shiroi ask_ops_ban；block_number 的「拉黑」指手机拉黑，保留）。
+- react 修正层重写：`_ota_memory_react.py` 的 FIX_BOLD/FIX_SHY/FIX_JOKER 三张表 react_good 全部重写（63 条——原来与 react_bad 全同文，答对时台词在否定玩家没说过的 {wrong}）。
+- POV 机械批改：cards+storylines 的 note/delayed.note 引号外「你」→「我」，两轮共 81 处（49+32）。
+- 结局.md：19 处 POV 修正 + 「不是X是Y」句式降到每篇≤1 + 唯一篇病句/半月形掐痕、毕业日/散场/后来/控制不了逐句修。
+- endings_lore 六条更新（用完方向写反、毕业日旧版、太爱你引已删选项、恶劣 money_kept 反向、彗星 not_baoshou 口径、散场兜底口径）。
+- 五句硬伤：shiren meet_noodle 的 {{drink}}/{{food_hate}} 两个口径、zhong 门票第一/镜子/七个字——改在 build 脚本后重生成。
+- 小刺：小票背面→券的背面、更衣室→后台化妆间（due scene+narrative、team bo_apologize_later）、对盘→拼盘（side）、恋爱线 finale_manager 补截图来处、{{hometown}} 改「老家在…」。
+- 攻略口径同步（行动名/回考数值/姿态名/chose_leave 说明）+ 微博文案补圈内钩子。
+
+工具链坑（新增，重要）：
+- 本机 Python 开了 safe_path（sys.flags.safe_path=True）：`python tools\build_ota_memory.py` 这类带兄弟模块 import 的脚本会 ModuleNotFoundError。绕过：`python -c "import sys; sys.path.insert(0,'tools'); import runpy; runpy.run_path('tools/build_xxx.py', run_name='__main__')"`。
+- **tools/build_team_cards.py 与现网 team.json/team_bond.json 严重脱同步**（重生成会冲掉全部现网内容，实测 diff 1381 行）——这两个文件现在当手改数据处理，别再跑这个脚本，直到有人把脚本对齐。
+- build_zhong.py 的 zc_same label 已对齐现网（「我记住了 下一次是第20次」）；改 zhong 文案照旧改脚本重生成。
+- BGM 拍板变更：进页自动播放（用户 2026-11-19 拍板），ui.js 注释已对齐；§6.29 的「默认不放歌」作废。
+- 待推 commits：本地 main 领先 origin 多个提交，推送需用户开节点（代理 127.0.0.1:7897）。

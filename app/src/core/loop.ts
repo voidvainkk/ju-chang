@@ -317,7 +317,6 @@ export class Game {
   prev_season: any = null; // 上一季的结局/回响，显示在姿态屏
   pending: any = null; // ["card", card, slots] / ["act", …]
   private _bill: any = null;
-  private _warm: Ota[] = [];
   // `_week_cards` / `_pending_week_settle` 在 Python 侧也只赋值不读（loop.py:174-175，
   // 唯一读它的是死代码 auto_play），不移植，免得留一堆没人用的字段。
 
@@ -496,7 +495,8 @@ export class Game {
     }
     if (!wk.sun_talk) {
       wk.sun_talk = 1;
-      this.push(this._sunTalkStep());
+      // 周日的「还是这几个人」过场已删（用户 2026-11-19 拍板）：周日券账之后
+      // 直接接一次性提问和三张周卡，选完最后一张卡就结算。
       // 一次性提问排在前，三张周卡收尾：选完最后一张卡紧接着就是周结算
       for (const st of [...wk.extra, ...wk.events]) this.push(st);
       return true;
@@ -1229,7 +1229,6 @@ export class Game {
     // 每场各算各的账（人气决定今天谁来、来几个），state 里累加这一周的券数与
     // 收入，结算把所有场次加总——券账屏展示的钱就是会进钱包的钱。
     this._bill = B.weeklyBill(s, warm);
-    this._warm = warm;
     s._week_tickets = n0(gv(s, "_week_tickets", 0)) + this._bill.tickets;
     s._week_income = n0(gv(s, "_week_income", 0)) + this._bill.yen;
     this._collectWeekExtras(warm);
@@ -1241,23 +1240,6 @@ export class Game {
       score: pyRound(sc, 1),
       delta: { fame: pyRound(s.fame), psyche: pyRound(s.psyche) },
     });
-  }
-
-  private _sunTalkStep(): Step {
-    const warm = this._warm || [];
-    if (!warm.length) {
-      return {
-        type: "text",
-        title: "周日·特典",
-        body: ["周日这场下来，没人留下来。桌子收得很早。"],
-      };
-    }
-    const names = warm.map((o) => o.name).join("、");
-    return {
-      type: "text",
-      title: "周日·特典",
-      body: [`还是这几个人：${names}。话都说过一遍了，剩下的就是坐着。`],
-    };
   }
 
   private _billStep(sunday = false): Step {

@@ -1,1024 +1,1024 @@
 {
-  "_meta": {
-    "category": "外部舆论",
-    "design_note": "板子(匿名讨论版)、营销号、同行粉丝、路人、采访、连坐、出圈机会。选项在'接住热度 / 保住自己'之间付代价。数值是选后回执。enjou(炎上)/banzi(板子关注)/kaibox(开盒) 越高越糟。",
-    "resource_keys": {
-      "money": "钱",
-      "stamina": "体力",
-      "psyche": "心理",
-      "fame": "人气",
-      "stage": "舞台稳定",
-      "ota_all": "全体OTA黏性",
-      "relation_A": "队友A(真面·阿棠)",
-      "relation_B": "队友B(竞争·露露)",
-      "relation_C": "队友C(天真·小满)",
-      "relation_all": "团内关系整体",
-      "shiren": "私联人数",
-      "enjou": "炎上",
-      "kaibox": "开盒风险",
-      "shiroi": "私生跟踪",
-      "banzi": "板子关注度"
+ "_meta": {
+  "category": "外部舆论",
+  "design_note": "板子(匿名讨论版)、营销号、同行粉丝、路人、采访、连坐、出圈机会。选项在'接住热度 / 保住自己'之间付代价。数值是选后回执。enjou(炎上)/banzi(板子关注)/kaibox(开盒) 越高越糟。",
+  "resource_keys": {
+   "money": "钱",
+   "stamina": "体力",
+   "psyche": "心理",
+   "fame": "人气",
+   "stage": "舞台稳定",
+   "ota_all": "全体OTA黏性",
+   "relation_A": "队友A(真面·阿棠)",
+   "relation_B": "队友B(竞争·露露)",
+   "relation_C": "队友C(天真·小满)",
+   "relation_all": "团内关系整体",
+   "shiren": "私联人数",
+   "enjou": "炎上",
+   "kaibox": "开盒风险",
+   "shiroi": "私生跟踪",
+   "banzi": "板子关注度"
+  }
+ },
+ "cards": [
+  {
+   "id": "ext_board_thread",
+   "type": "外部",
+   "title": "板子上开了我的帖",
+   "gate": "人气 ≥ 12",
+   "weight": 1.0,
+   "cooldown": 3,
+   "narrative": "有人在板子上单开了我的帖，标题是『这团的C位到底凭什么』。底下已经有人开始扒我的旧照、猜我的年纪。我一条条往下翻，明知道不该看，手指还是没停。翻到一条说『长得也就那样』时，我心里咯噔一下，随即又有点想笑——我居然真的在乎一群不认识的人怎么看我。",
+   "options": [
+    {
+     "id": "close_it",
+     "label": "关掉，睡觉，眼不见心不烦",
+     "desc": "把手机扣在桌上，逼自己闭眼",
+     "immediate": {
+      "psyche": 4
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": 1.8
+       },
+       "note": "帖子没人理会，反而有人觉得是心虚，扒得更起劲了"
+      }
+     ]
+    },
+    {
+     "id": "sockpuppet",
+     "label": "开个小号下场，替自己辩两句",
+     "desc": "打字的手都在抖，还是发出去了",
+     "immediate": {
+      "psyche": 3,
+      "banzi": 2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "板子关注度 ≥ 40",
+       "effect": {
+        "enjou": 6,
+        "banzi": 1.8
+       },
+       "note": "小号被扒出来是我，『自己下场对线』成了新的笑柄"
+      }
+     ]
+    },
+    {
+     "id": "tell_ops",
+     "label": "截图发给运营，让他们按流程处理",
+     "desc": "把这事交出去，别自己扛",
+     "immediate": {
+      "psyche": -2,
+      "banzi": -4
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "fame": 3
+       },
+       "note": "运营发了声明，帖子沉了，反倒有人好奇来看演出"
+      }
+     ]
     }
+   ]
   },
-  "cards": [
+  {
+   "id": "ext_fanwar",
+   "type": "外部",
+   "title": "跟隔壁团的粉撕起来了",
+   "gate": "人气 ≥ 18 且 炎上 ≥ 10",
+   "weight": 0.9,
+   "cooldown": 4,
+   "narrative": "隔壁团的粉丝在超话里阴阳我们『蹭场地』，说我们占着他们团用过的livehouse不放。我们这边几个单推立刻回怼，一来一回，火越烧越大。我刷着那些骂战，一边觉得荒谬，一边又忍不住被那句『就是不如人家』刺到。事到如今，我怎么表态，都会被截图。",
+   "options": [
     {
-      "id": "ext_board_thread",
-      "type": "外部",
-      "title": "板子上开了我的帖",
-      "gate": "人气 ≥ 12",
-      "weight": 1.0,
-      "cooldown": 3,
-      "narrative": "有人在板子上单开了我的帖，标题是『这团的C位到底凭什么』。底下已经有人开始扒我的旧照、猜我的年纪。我一条条往下翻，明知道不该看，手指还是没停。翻到一条说『长得也就那样』时，我心里咯噔一下，随即又有点想笑——我居然真的在乎一群不认识的人怎么看我。",
-      "options": [
-        {
-          "id": "close_it",
-          "label": "关掉，睡觉，眼不见心不烦",
-          "desc": "把手机扣在桌上，逼自己闭眼",
-          "immediate": {
-            "psyche": 4
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "banzi": 1.8
-              },
-              "note": "帖子没人理会，反而有人觉得是心虚，扒得更起劲了"
-            }
-          ]
-        },
-        {
-          "id": "sockpuppet",
-          "label": "开个小号下场，替自己辩两句",
-          "desc": "打字的手都在抖，还是发出去了",
-          "immediate": {
-            "psyche": 3,
-            "banzi": 2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "板子关注度 ≥ 40",
-              "effect": {
-                "enjou": 6,
-                "banzi": 1.8
-              },
-              "note": "小号被扒出来是我，『自己下场对线』成了新的笑柄"
-            }
-          ]
-        },
-        {
-          "id": "tell_ops",
-          "label": "截图发给运营，让他们按流程处理",
-          "desc": "把这事交出去，别自己扛",
-          "immediate": {
-            "psyche": -2,
-            "banzi": -4
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "fame": 3
-              },
-              "note": "运营发了声明，帖子沉了，反倒有人好奇来看演出"
-            }
-          ]
-        }
-      ]
+     "id": "calm_down",
+     "label": "劝自家粉丝算了，别拉低身价",
+     "desc": "发一条平和的，把火往回收",
+     "immediate": {
+      "psyche": 2,
+      "enjou": -4,
+      "ota_all": -3
+     },
+     "delayed": []
     },
     {
-      "id": "ext_fanwar",
-      "type": "外部",
-      "title": "跟隔壁团的粉撕起来了",
-      "gate": "人气 ≥ 18 且 炎上 ≥ 10",
-      "weight": 0.9,
-      "cooldown": 4,
-      "narrative": "隔壁团的粉丝在超话里阴阳我们『蹭场地』，说我们占着他们团用过的livehouse不放。我们这边几个单推立刻回怼，一来一回，火越烧越大。我刷着那些骂战，一边觉得荒谬，一边又忍不住被那句『就是不如人家』刺到。事到如今，我怎么表态，都会被截图。",
-      "options": [
-        {
-          "id": "calm_down",
-          "label": "劝自家粉丝算了，别拉低身价",
-          "desc": "发一条平和的，把火往回收",
-          "immediate": {
-            "psyche": 2,
-            "enjou": -4,
-            "ota_all": -3
-          },
-          "delayed": []
-        },
-        {
-          "id": "join_fight",
-          "label": "下场撑腰，让粉丝知道我在",
-          "desc": "『谢谢你们，但别为我浪费时间』——然后还是阴阳了一句",
-          "immediate": {
-            "ota_all": 6,
-            "enjou": 6,
-            "psyche": -4
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 45",
-              "effect": {
-                "kaibox": 10
-              },
-              "note": "对面开始人肉我们这边带头的粉丝，事情彻底失控"
-            }
-          ]
-        },
-        {
-          "id": "ignore",
-          "label": "完全不接，当没看见",
-          "desc": "关掉超话，去练明天的舞",
-          "immediate": {
-            "psyche": -5,
-            "enjou": -2,
-            "stamina": 5
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "ota_all": -2
-              },
-              "note": "粉丝觉得你凉薄，替你在前面吵，你连句话都没有"
-            }
-          ]
-        }
-      ]
+     "id": "join_fight",
+     "label": "下场撑腰，让粉丝知道我在",
+     "desc": "『谢谢你们，但别为我浪费时间』——然后还是阴阳了一句",
+     "immediate": {
+      "ota_all": 6,
+      "enjou": 6,
+      "psyche": -4
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 45",
+       "effect": {
+        "kaibox": 10
+       },
+       "note": "对面开始人肉我们这边带头的粉丝，事情彻底失控"
+      }
+     ]
     },
     {
-      "id": "ext_bad_营业_clip",
-      "type": "外部",
-      "title": "翻车那一下被拍下来了",
-      "gate": "曾冷场或翻车 且 人气 ≥ 12",
-      "weight": 1.0,
-      "cooldown": 3,
-      "narrative": "昨天那场我忘词了，站在台上足足三秒没出声。当时台下安静得可怕，我笑着糊弄过去，以为没人记得。结果今天就在群里看见那段被截成十几秒的gif，配字『这业务能力也行？』。我盯着循环播放的自己，脸一阵阵发烫。",
-      "options": [
-        {
-          "id": "own_it",
-          "label": "把这段发出来，当众认了，说下次补上",
-          "desc": "与其被人笑，不如自己先笑自己",
-          "immediate": {
-            "fame": 5,
-            "psyche": -6,
-            "ota_all": 3
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "stage": 3
-              },
-              "note": "认了之后反而没包袱，那首歌唱得比哪次都稳"
-            }
-          ]
-        },
-        {
-          "id": "over_practice",
-          "label": "什么都不说，回去把这首练到吐",
-          "desc": "用实力堵嘴，别的不解释",
-          "immediate": {
-            "stamina": -18,
-            "stage": 3,
-            "psyche": -3
-          },
-          "delayed": []
-        },
-        {
-          "id": "blame",
-          "label": "怪设备、怪耳返，找个台阶",
-          "desc": "『那天耳返完全没声』——半真半假",
-          "immediate": {
-            "psyche": 3,
-            "enjou": 2,
-            "fame": -2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 40",
-              "effect": {
-                "enjou": 6
-              },
-              "note": "同场的人出来说耳返没问题，『甩锅』又添一桩"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ext_interview",
-      "type": "外部",
-      "title": "『你们算地下偶像吗』",
-      "gate": "人气 ≥ 24",
-      "weight": 0.8,
-      "cooldown": 5,
-      "narrative": "一个小媒体来拍我们，记者举着话筒问：『你们算地下偶像吧？家里人知道吗？』镜头红点亮着。我脑子里飞快地过了一遍——说实话，可能被剪成猎奇；说漂亮话，又违心。旁边小满紧张地攥着衣角，看着我。我知道这一句，也会是说给她听的。",
-      "options": [
-        {
-          "id": "honest",
-          "label": "实话实说：算，也不好意思地承认过得紧",
-          "desc": "不美化，也不卖惨",
-          "immediate": {
-            "fame": 6,
-            "psyche": -4,
-            "enjou": 2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "ota_all": 3
-              },
-              "note": "那段采访意外地真诚，评论区有人说『难得不装』"
-            }
-          ]
-        },
-        {
-          "id": "polish",
-          "label": "说漂亮话：我们是认真做舞台的团体",
-          "desc": "把'地下'两个字绕过去",
-          "immediate": {
-            "fame": 3,
-            "psyche": 2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "板子关注度 ≥ 40",
-              "effect": {
-                "banzi": 1.8
-              },
-              "note": "板子上有人嘲：『不就是地下偶像，装什么' }"
-            }
-          ]
-        },
-        {
-          "id": "protect_C",
-          "label": "把问题挡回去，别让小满被问家里",
-          "desc": "『这个就不聊了，今天是来看演出的』",
-          "immediate": {
-            "relation_C": 2,
-            "fame": -2,
-            "psyche": 2
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "ext_guilt_by_assoc",
-      "type": "外部",
-      "title": "隔壁出事，连坐到我",
-      "gate": "炎上 ≥ 12",
-      "weight": 0.9,
-      "cooldown": 4,
-      "narrative": "同公司的另一个团被爆出成员私联、还骗了粉丝的钱。事情闹大，连带着整个公司都被挂上热搜。有人翻出我们跟他们的合影，评论区一句『一丘之貉』获得了最高赞。我盯着那三个字，气到手抖——我什么都没做，可这口锅已经扣下来了。",
-      "options": [
-        {
-          "id": "distance",
-          "label": "第一时间发声明，跟那边划清界限",
-          "desc": "把关系撇干净，先保自己",
-          "immediate": {
-            "enjou": -3,
-            "relation_all": -3,
-            "psyche": -3
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "fame": -3
-              },
-              "note": "撇清被说成落井下石，同行那边从此结下梁子"
-            }
-          ]
-        },
-        {
-          "id": "stay_silent",
-          "label": "不表态，清者自清，熬过去",
-          "desc": "越描越黑，什么都不说",
-          "immediate": {
-            "psyche": -5,
-            "enjou": 2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 50",
-              "effect": {
-                "fame": -5,
-                "banzi": 2.4
-              },
-              "note": "沉默被解读成默认，骂声一路烧到我们自己头上"
-            }
-          ]
-        },
-        {
-          "id": "support_victim",
-          "label": "公开声援被骗的粉丝，只谈受害者",
-          "desc": "不站队公司，站在被坑的人那边",
-          "immediate": {
-            "fame": 4,
-            "psyche": 2,
-            "relation_all": -2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "ota_all": 3
-              },
-              "note": "『至少她们分得清是非』——这句话被转了很多次"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ext_break_out",
-      "type": "外部",
-      "title": "一个出圈的机会",
-      "gate": "人气 ≥ 30 且 舞台稳定 ≥ 50",
-      "weight": 1.0,
-      "cooldown": 6,
-      "narrative": "一个短视频平台的选秀企划找上门，说要给我们团一个'地下偶像逆袭'的专题，条件是要签一份对赌：成了资源全给，输了赔一笔违约金。运营眼睛发亮，把合同推到我面前。我翻着那几页密密麻麻的字，忽然想起房租，想起阿棠那句『你到底想做多久』。",
-      "options": [
-        {
-          "id": "sign",
-          "label": "签，赌这一把",
-          "desc": "不赌，这辈子可能就困在livehouse里了",
-          "immediate": {
-            "fame": 15,
-            "money": -200,
-            "psyche": -8
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "舞台稳定 < 45",
-              "effect": {
-                "money": -600,
-                "enjou": 15
-              },
-              "note": "企划要的是爆点，我们没接住，违约金和嘲讽一起砸下来"
-            }
-          ]
-        },
-        {
-          "id": "decline",
-          "label": "不签，这种赌局进去就身不由己",
-          "desc": "安稳点，别把整个团押上",
-          "immediate": {
-            "psyche": 3,
-            "fame": -4,
-            "relation_A": 2
-          },
-          "delayed": []
-        },
-        {
-          "id": "negotiate",
-          "label": "谈条件，把对赌改成保底分成",
-          "desc": "让运营去磨，能谈到多少算多少",
-          "immediate": {
-            "psyche": -4,
-            "stamina": -6,
-            "fame": 6
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "money": 250
-              },
-              "note": "磨下来一个不赚不赔的中间版，机会小了些，命保住了"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ext_first_leave",
-      "type": "外部舆论",
-      "title": "第一个退坑的人",
-      "gate": "人气 ≥ 18 且 周 ≥ 3",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "板子上刷到一条长帖，是那个从我第一次上台就一直在的 ID 发的：『追不动了，谢谢这段时间。』底下有人问怎么了，没回。我认得那个头像，从第一场就坐在同一个位置，喊 call 喊得比谁都响。原来所谓的单推，也是会走的。我盯着屏幕，第一次觉得这行当里，有些告别是悄悄发生的，连句再见都不肯留给我。",
-      "options": [
-        {
-          "id": "dm_thanks",
-          "label": "去版聊问一句，哪怕只是说声谢谢",
-          "desc": "就算留不住，也想让 TA 知道被看见了",
-          "immediate": {
-            "psyche": 5,
-            "stamina": -3
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "心理 < 30",
-              "effect": {
-                "psyche": -4
-              },
-              "note": "TA 回了一句『谢谢你还记得我』，然后再没上线——你发现有些人，是留不住的"
-            }
-          ]
-        },
-        {
-          "id": "pretend_not_seen",
-          "label": "装作没看见，照常排练",
-          "desc": "这行当不能为每一个离开的人停下",
-          "immediate": {
-            "psyche": -4,
-            "ota_all": -1
-          },
-          "delayed": []
-        },
-        {
-          "id": "public_thanks",
-          "label": "在评论区公开回一句谢谢，让留下的也看见",
-          "desc": "把这份情摆上台面",
-          "immediate": {
-            "fame": 3,
-            "psyche": 2,
-            "banzi": 2
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "ext_polaroid_backstage",
-      "type": "外部",
-      "title": "后台那张照片流出来了",
-      "gate": "人气 ≥ 20",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "有人拍到我在后台的样子：头发没梳，坐在折叠椅上啃一个凉掉的饭团，眼睛盯着手机。照片不算难看，问题是我不知道它是什么时候拍的——那个门有没有关，谁在我不知道的时候站在那里，我都想不起来。转了几次之后，底下开始有人拿它当表情包。",
-      "options": [
-        {
-          "id": "let_it_be",
-          "label": "不管它，反正只是啃饭团",
-          "desc": "越在意越有人拿它当武器",
-          "immediate": {
-            "psyche": -3,
-            "banzi": 2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "banzi": 1.2
-              },
-              "note": "没人出来说话，这张图就成了固定表情包，每次我发什么都被甩上来"
-            }
-          ]
-        },
-        {
-          "id": "find_the_shooter",
-          "label": "问 staff 是谁拍的，要一个答案",
-          "desc": "我总得知道后台还有谁进得来",
-          "immediate": {
-            "stamina": -5,
-            "psyche": 2,
-            "banzi": 1
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 30",
-              "effect": {
-                "relation_all": -6
-              },
-              "note": "查来查去查到团里人头上，没人承认，但那几天谁都不太说话"
-            }
-          ]
-        },
-        {
-          "id": "post_it_myself",
-          "label": "先自己发出去，配一句自嘲",
-          "desc": "抢在所有人前面把这张图变成一个笑话",
-          "immediate": {
-            "fame": 4,
-            "psyche": -5,
-            "banzi": 1.5
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "enjou": 4
-              },
-              "note": "有人说『她连这个都要发』，自嘲被读成了卖惨"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ext_clip_farm",
-      "type": "外部",
-      "title": "被剪成了三十秒的切片",
-      "gate": "人气 ≥ 18 且 炎上 ≥ 15",
-      "weight": 1.0,
-      "cooldown": 3,
-      "narrative": "有人把我上一场说的话剪成三十秒，前后都掐掉，只剩中间一句听起来很像在骂人。转发的人比我们那场的观众多得多。我盯着那句被单拎出来的话，自己读了两遍，也觉得像。",
-      "options": [
-        {
-          "id": "explain_full",
-          "label": "把完整的那段放出来，解释前后文",
-          "desc": "我确实说了，只是不是那个意思",
-          "immediate": {
-            "psyche": -4,
-            "banzi": 2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "板子关注度 ≥ 45",
-              "effect": {
-                "enjou": 5
-              },
-              "note": "越描越黑，『她急了她急了』传得比切片还快"
-            }
-          ]
-        },
-        {
-          "id": "silent",
-          "label": "一句都不说，等它过去",
-          "desc": "这事两天就没人提了，我信这个",
-          "immediate": {
-            "psyche": 3,
-            "banzi": 2
-          },
-          "delayed": []
-        },
-        {
-          "id": "lean_into_it",
-          "label": "下次 live 里把这句话唱出来",
-          "desc": "既然剪成了我的，那就真成我的",
-          "immediate": {
-            "stage": 3,
-            "fame": 3,
-            "psyche": -6
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "banzi": 1.8,
-                "enjou": 4
-              },
-              "note": "有人剪了第二版，这次配的是『死不悔改』"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ext_drunk_karaoke",
-      "type": "外部",
-      "title": "那天在居酒屋唱到十二点",
-      "gate": "人气 ≥ 20 且 周 ≥ 2",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "排练完和队友去吃了串，喝了两杯，有人拿着手机录了一段我跑调唱歌。当时大家都笑，我也笑。三天后那段视频出现在一个我不认识的人的账号里，配文是『地下偶像私下是这样的』。",
-      "options": [
-        {
-          "id": "joke_about_it",
-          "label": "在微博上自己转一遍，说破音是特色",
-          "desc": "先笑，别人就笑不到我",
-          "immediate": {
-            "fame": 4,
-            "psyche": -3,
-            "banzi": 2
-          },
-          "delayed": []
-        },
-        {
-          "id": "ask_who_sent",
-          "label": "在群里问那段是谁传出去的",
-          "desc": "我笑的不是视频，是有人把它递出去",
-          "immediate": {
-            "psyche": -5,
-            "relation_all": -8
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "banzi": 0.9
-              },
-              "note": "没人认，群冷了三天；视频这事反而越说越有人看"
-            }
-          ]
-        },
-        {
-          "id": "delete_everything",
-          "label": "把自己微博清一遍，什么都别留",
-          "desc": "少留下点东西，就少被人拿去用",
-          "immediate": {
-            "psyche": -6,
-            "fame": -4
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "banzi": -6
-              },
-              "note": "清空之后反而没东西可扒，风头过去了"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ext_old_group_exposed",
-      "type": "外部",
-      "title": "以前那个团被人翻出来了",
-      "gate": "人气 ≥ 28",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "有人翻到我之前在的那个团，把当时的合照、当时的名字、当时的站位都贴出来，问『她是不是逃了』。那个团解散得很体面，只是没钱了，可这话没人想听。底下有人说『原来是失败过的人』。",
-      "options": [
-        {
-          "id": "tell_the_truth",
-          "label": "说清楚：散得体面，就是没钱了",
-          "desc": "我不想让它变成一个需要解释的疤",
-          "immediate": {
-            "psyche": -3,
-            "banzi": 2,
-            "enjou": 2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 40",
-              "effect": {
-                "enjou": 5
-              },
-              "note": "有人把『没钱』两个字截出来做成梗，说这团迟早也一样"
-            }
-          ]
-        },
-        {
-          "id": "change_subject",
-          "label": "把话题拐回现在的团",
-          "desc": "过去的没什么可说，现在才重要",
-          "immediate": {
-            "psyche": 2,
-            "banzi": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "find_who",
-          "label": "想办法知道是谁翻的",
-          "desc": "这些东西，知道的人本来就不多",
-          "immediate": {
-            "psyche": -6,
-            "kaibox": 2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "板子关注度 ≥ 30",
-              "effect": {
-                "enjou": 5
-              },
-              "note": "我去问的那个老同事把对话截了图，事情变成『她自己也在查』"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ext_sns_hot_post",
-      "type": "外部",
-      "title": "我那条微博突然火了",
-      "gate": "人气 ≥ 12 且 板子关注度 ≥ 6",
-      "weight": 1.0,
-      "cooldown": 3,
-      "narrative": "凌晨随手发的一句话被转了几千次，评论里一半在笑，一半在骂。我从没被这么多人同时看着。手机一直在响，我把它扣在桌上，又翻过来看了一眼。",
-      "options": [
-        {
-          "id": "reply_angry",
-          "label": "挑最过分的一条回过去",
-          "desc": "我知道不该回，可我就是回了",
-          "immediate": {
-            "fame": 4,
-            "psyche": -7,
-            "enjou": 4
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "banzi": 1.8
-              },
-              "note": "我回复的截图被单独拎出来，成了新的物料"
-            }
-          ]
-        },
-        {
-          "id": "more_of_it",
-          "label": "趁热再发一条，说更多",
-          "desc": "既然有人看，就多说一点",
-          "immediate": {
-            "fame": 6,
-            "enjou": 2,
-            "banzi": 1.5
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 50",
-              "effect": {
-                "enjou": 6
-              },
-              "note": "第二天我开始一条条被翻旧账"
-            }
-          ]
-        },
-        {
-          "id": "go_quiet",
-          "label": "这几天不上线",
-          "desc": "热度总会过去，我等它过去",
-          "immediate": {
-            "psyche": 2,
-            "fame": -3,
-            "banzi": 2
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "ext_defend_in_comments",
-      "type": "外部",
-      "title": "有人在评论里替你说话",
-      "gate": "人气 ≥ 16 且 炎上 ≥ 8",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "live 视频下面，一条挑刺的评论被顶得很高，说我这样也配站 C 位。我正想划走，底下已经有人替我回了：一条一条，从我的第一次演出讲到上个月的救场，最后一句是『你要是不喜欢，可以不看，但别装懂』。头像是单推的那几个之一。",
-      "options": [
-        {
-          "id": "like_and_reply",
-          "label": "点个赞，回一句『谢谢你还在』",
-          "desc": "接住这份心意",
-          "immediate": {
-            "ota_all": 2,
-            "psyche": 3,
-            "banzi": 1
-          },
-          "note": "她秒回了一个哭脸，说『我每次都在』。我对着屏幕笑了很久。可这一回，底下多了几个人，开始扒我回话的语气。",
-          "delayed": []
-        },
-        {
-          "id": "stay_silent",
-          "label": "什么都不说，怕被当成炒作",
-          "desc": "让热度自己过去",
-          "immediate": {
-            "banzi": 2,
-            "psyche": -2
-          },
-          "note": "我没露面。后来那条评论被截图到处传，有人说是我自己开的小号。",
-          "delayed": []
-        },
-        {
-          "id": "defend_self",
-          "label": "自己下场，把话说清楚",
-          "desc": "亲自接这一仗",
-          "immediate": {
-            "psyche": 2,
-            "ota_all": -1
-          },
-          "note": "我回了一长段，语气硬了点。有单推版聊说『你别理他们』，也有人说我玻璃心。",
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "ext_clip_posted",
-      "type": "外部",
-      "title": "演出被拍了发上网",
-      "gate": "人气 ≥ 18",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "散场后刷到一段现场视频，是别人拍的。镜头晃得厉害，音也糊，可恰好拍到我一个抬头、一个笑——不是 live 的那种。播放量在往上爬，评论里有人说『不知名，但好戳』。",
-      "options": [
-        {
-          "id": "repost_it",
-          "label": "转过来，趁这波让人认识我们",
-          "desc": "抓住这一下",
-          "immediate": {
-            "fame": 3,
-            "ota_all": 1,
-            "enjou": 1
-          },
-          "note": "视频被转了上千次，后台多了不少新留言，也混进来几个专挑刺的。我知道这种运气来得快，去得也快。",
-          "delayed": []
-        },
-        {
-          "id": "let_it_spread",
-          "label": "不主动，让它自然传",
-          "desc": "稳一点",
-          "immediate": {
-            "fame": 1,
-            "psyche": -1
-          },
-          "note": "我没转，只在心里记了一笔。过了两天热度就淡了，像什么都没发生。",
-          "delayed": []
-        },
-        {
-          "id": "ask_take_down",
-          "label": "版聊拍的人，请她删掉",
-          "desc": "护住那点私人的东西",
-          "immediate": {
-            "banzi": 1,
-            "fame": -2
-          },
-          "note": "她很意外，说只是想分享。视频删了，可截图还在别处转。",
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "op_sincere_red_list",
-      "type": "外部舆论",
-      "title": "有人认真写了红榜",
-      "gate": "人气 ≥ 12 且 周 ≥ 2",
-      "weight": 1.5,
-      "cooldown": 4,
-      "narrative": "板子上有篇很长的红榜，把我排进这一季「最值得再看一次的场」。没有夸张的形容词，只写了很具体的事：第三首我走位会往左边让半步，给鼓手让出视线；散场后我在门口站到很晚。最后一句是：她好像真的很喜欢这个舞台。我不知道是谁写的。看的时候，手心有点出汗。",
-      "options": [
-        {
-          "id": "repost_thanks",
-          "label": "转发，说一句谢谢",
-          "desc": "让写的人也看见",
-          "immediate": {
-            "ota_all": 3,
-            "fame": 1,
-            "psyche": -1,
-            "banzi": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "screenshot_only",
-          "label": "截图存起来，不回应",
-          "desc": "这种事不必摆出来",
-          "immediate": {
-            "psyche": 3,
-            "ota_all": -1
-          },
-          "delayed": []
-        },
-        {
-          "id": "mention_onstage",
-          "label": "在台上提一句，不说名字",
-          "desc": "当面说才够真",
-          "immediate": {
-            "ota_all": 2,
-            "stage": 1,
-            "banzi": 2
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "op_regular_year_note",
-      "type": "外部舆论",
-      "title": "单推在年终总结里写了我",
-      "gate": "周 ≥ 5 且 人气 ≥ 16",
-      "weight": 1.5,
-      "cooldown": 6,
-      "narrative": "一个跟了大半年的单推，在年度总结里写了一段关于我的话。他说一开始只是路过，后来不知道为什么就留下来了。他写：她不是最好的那个，可我每次来都能看见她在进步。我认得他的字——每次特典会他都要求在切的边角写日期。",
-      "options": [
-        {
-          "id": "thank_in_person",
-          "label": "下次特典会当面谢他",
-          "desc": "有些话得当面说",
-          "immediate": {
-            "ota_all": 4,
-            "stamina": -1,
-            "psyche": -1
-          },
-          "delayed": []
-        },
-        {
-          "id": "pretend_unseen",
-          "label": "装作没看见",
-          "desc": "怕一开口就露怯",
-          "immediate": {
-            "psyche": -2,
-            "ota_all": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "save_the_line",
-          "label": "把那句话抄进备忘录",
-          "desc": "留着，难受的时候看",
-          "immediate": {
-            "psyche": 3,
-            "stage": 1,
-            "stamina": -1
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "op_box_office",
-      "type": "外部舆论",
-      "title": "算账帖",
-      "gate": "周 ≥ 2",
-      "weight": 1.5,
-      "cooldown": 4,
-      "narrative": "有人把这场的人数、票价、场地费列成了一张表，发在板子上。最后一行写着：这种团还开着干嘛。数字基本是准的，那天确实没坐满。下面有人回：人家好歹在坚持。也有人说：坚持有什么用。",
-      "options": [
-        {
-          "id": "mild_reply",
-          "label": "用小号回一句谢谢关心",
-          "desc": "不软不硬",
-          "immediate": {
-            "psyche": -2,
-            "banzi": 1,
-            "fame": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "save_it",
-          "label": "不回，把这张表存下来",
-          "desc": "记着，别忘",
-          "immediate": {
-            "banzi": -1,
-            "psyche": -2
-          },
-          "delayed": []
-        },
-        {
-          "id": "fill_next_show",
-          "label": "憋着劲，下一场把人坐满",
-          "desc": "用票房说话",
-          "immediate": {
-            "stage": 2,
-            "psyche": -3
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "op_red_list_offkey",
-      "type": "外部舆论",
-      "title": "红榜把我唱错的那句也写进去了",
-      "gate": "人气 ≥ 14 且 周 ≥ 3",
-      "weight": 1.5,
-      "cooldown": 5,
-      "narrative": "有篇 repo 把我第二首歌唱错的一句词原原本本写了出来，还写「她唱错的时候愣了一下，然后自己笑了，接着唱下去」。底下有人跟「这段我也记得」。我本以为翻车要挨骂，没想到被人记住的反而是那个笑。我有点说不清是高兴还是别的。",
-      "options": [
-        {
-          "id": "bring_it_up",
-          "label": "下次 live 主动提一句那次唱错",
-          "desc": "自己先笑，就没人笑得过我",
-          "immediate": {
-            "fame": 2,
-            "ota_all": 2,
-            "psyche": -1
-          },
-          "delayed": []
-        },
-        {
-          "id": "pretend_not_seen",
-          "label": "装作没看到，不提",
-          "desc": "提了像在卖惨",
-          "immediate": {
-            "psyche": -2,
-            "stage": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "drill_song",
-          "label": "把那首歌反复练到不会错",
-          "desc": "下次别再错",
-          "immediate": {
-            "stage": 3,
-            "stamina": -3,
-            "psyche": -1
-          },
-          "delayed": []
-        }
-      ]
+     "id": "ignore",
+     "label": "完全不接，当没看见",
+     "desc": "关掉超话，去练明天的舞",
+     "immediate": {
+      "psyche": -5,
+      "enjou": -2,
+      "stamina": 5
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "ota_all": -2
+       },
+       "note": "粉丝觉得我凉薄，替我在前面吵，我连句话都没有"
+      }
+     ]
     }
-  ]
+   ]
+  },
+  {
+   "id": "ext_bad_营业_clip",
+   "type": "外部",
+   "title": "翻车那一下被拍下来了",
+   "gate": "曾冷场或翻车 且 人气 ≥ 12",
+   "weight": 1.0,
+   "cooldown": 3,
+   "narrative": "昨天那场我忘词了，站在台上足足三秒没出声。当时台下安静得可怕，我笑着糊弄过去，以为没人记得。结果今天就在群里看见那段被截成十几秒的gif，配字『这业务能力也行？』。我盯着循环播放的自己，脸一阵阵发烫。",
+   "options": [
+    {
+     "id": "own_it",
+     "label": "把这段发出来，当众认了，说下次补上",
+     "desc": "与其被人笑，不如自己先笑自己",
+     "immediate": {
+      "fame": 5,
+      "psyche": -6,
+      "ota_all": 3
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "stage": 3
+       },
+       "note": "认了之后反而没包袱，那首歌唱得比哪次都稳"
+      }
+     ]
+    },
+    {
+     "id": "over_practice",
+     "label": "什么都不说，回去把这首练到吐",
+     "desc": "用实力堵嘴，别的不解释",
+     "immediate": {
+      "stamina": -18,
+      "stage": 3,
+      "psyche": -3
+     },
+     "delayed": []
+    },
+    {
+     "id": "blame",
+     "label": "怪设备、怪耳返，找个台阶",
+     "desc": "『那天耳返完全没声』——半真半假",
+     "immediate": {
+      "psyche": 3,
+      "enjou": 2,
+      "fame": -2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 40",
+       "effect": {
+        "enjou": 6
+       },
+       "note": "同场的人出来说耳返没问题，『甩锅』又添一桩"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ext_interview",
+   "type": "外部",
+   "title": "『你们算地下偶像吗』",
+   "gate": "人气 ≥ 24",
+   "weight": 0.8,
+   "cooldown": 5,
+   "narrative": "一个小媒体来拍我们，记者举着话筒问：『你们算地下偶像吧？家里人知道吗？』镜头红点亮着。我脑子里飞快地过了一遍——说实话，可能被剪成猎奇；说漂亮话，又违心。旁边小满紧张地攥着衣角，看着我。我知道这一句，也会是说给她听的。",
+   "options": [
+    {
+     "id": "honest",
+     "label": "实话实说：算，也不好意思地承认过得紧",
+     "desc": "不美化，也不卖惨",
+     "immediate": {
+      "fame": 6,
+      "psyche": -4,
+      "enjou": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "ota_all": 3
+       },
+       "note": "那段采访意外地真诚，评论区有人说『难得不装』"
+      }
+     ]
+    },
+    {
+     "id": "polish",
+     "label": "说漂亮话：我们是认真做舞台的团体",
+     "desc": "把'地下'两个字绕过去",
+     "immediate": {
+      "fame": 3,
+      "psyche": 2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "板子关注度 ≥ 40",
+       "effect": {
+        "banzi": 1.8
+       },
+       "note": "板子上有人嘲：『不就是地下偶像，装什么清高。』后面跟了一串哈哈哈哈，没人在意原帖说了什么"
+      }
+     ]
+    },
+    {
+     "id": "protect_C",
+     "label": "把问题挡回去，别让小满被问家里",
+     "desc": "『这个就不聊了，今天是来看演出的』",
+     "immediate": {
+      "relation_C": 2,
+      "fame": -2,
+      "psyche": 2
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "ext_guilt_by_assoc",
+   "type": "外部",
+   "title": "隔壁出事，连坐到我",
+   "gate": "炎上 ≥ 12",
+   "weight": 0.9,
+   "cooldown": 4,
+   "narrative": "同公司的另一个团被爆出成员私联、还骗了粉丝的钱。事情闹大，连带着整个公司都被挂上热搜。有人翻出我们跟他们的合影，评论区一句『一丘之貉』获得了最高赞。我盯着那三个字，气到手抖——我什么都没做，可这口锅已经扣下来了。",
+   "options": [
+    {
+     "id": "distance",
+     "label": "第一时间发声明，跟那边划清界限",
+     "desc": "把关系撇干净，先保自己",
+     "immediate": {
+      "enjou": -3,
+      "relation_all": -3,
+      "psyche": -3
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "fame": -3
+       },
+       "note": "撇清被说成落井下石，同行那边从此结下梁子"
+      }
+     ]
+    },
+    {
+     "id": "stay_silent",
+     "label": "不表态，清者自清，熬过去",
+     "desc": "越描越黑，什么都不说",
+     "immediate": {
+      "psyche": -5,
+      "enjou": 2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 50",
+       "effect": {
+        "fame": -5,
+        "banzi": 2.4
+       },
+       "note": "沉默被解读成默认，骂声一路烧到我们自己头上"
+      }
+     ]
+    },
+    {
+     "id": "support_victim",
+     "label": "公开声援被骗的粉丝，只谈受害者",
+     "desc": "不站队公司，站在被坑的人那边",
+     "immediate": {
+      "fame": 4,
+      "psyche": 2,
+      "relation_all": -2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "ota_all": 3
+       },
+       "note": "『至少她们分得清是非』——这句话被转了很多次"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ext_break_out",
+   "type": "外部",
+   "title": "一个出圈的机会",
+   "gate": "人气 ≥ 30 且 舞台稳定 ≥ 50",
+   "weight": 1.0,
+   "cooldown": 6,
+   "narrative": "一个短视频平台的选秀企划找上门，说要给我们团一个'地下偶像逆袭'的专题，条件是要签一份对赌：成了资源全给，输了赔一笔违约金。运营眼睛发亮，把合同推到我面前。我翻着那几页密密麻麻的字，忽然想起房租，想起阿棠那句『你到底想做多久』。",
+   "options": [
+    {
+     "id": "sign",
+     "label": "签，赌这一把",
+     "desc": "不赌，这辈子可能就困在livehouse里了",
+     "immediate": {
+      "fame": 15,
+      "money": -200,
+      "psyche": -8
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "舞台稳定 < 45",
+       "effect": {
+        "money": -600,
+        "enjou": 15
+       },
+       "note": "企划要的是爆点，我们没接住，违约金和嘲讽一起砸下来"
+      }
+     ]
+    },
+    {
+     "id": "decline",
+     "label": "不签，这种赌局进去就身不由己",
+     "desc": "安稳点，别把整个团押上",
+     "immediate": {
+      "psyche": 3,
+      "fame": -4,
+      "relation_A": 2
+     },
+     "delayed": []
+    },
+    {
+     "id": "negotiate",
+     "label": "谈条件，把对赌改成保底分成",
+     "desc": "让运营去磨，能谈到多少算多少",
+     "immediate": {
+      "psyche": -4,
+      "stamina": -6,
+      "fame": 6
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "money": 250
+       },
+       "note": "磨下来一个不赚不赔的中间版，机会小了些，命保住了"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ext_first_leave",
+   "type": "外部舆论",
+   "title": "第一个退坑的人",
+   "gate": "人气 ≥ 18 且 周 ≥ 3",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "板子上刷到一条长帖，是那个从我第一次上台就一直在的 ID 发的：『追不动了，谢谢这段时间。』底下有人问怎么了，没回。我认得那个头像，从第一场就坐在同一个位置，喊 call 喊得比谁都响。原来所谓的单推，也是会走的。我盯着屏幕，第一次觉得这行当里，有些告别是悄悄发生的，连句再见都不肯留给我。",
+   "options": [
+    {
+     "id": "dm_thanks",
+     "label": "去版聊问一句，哪怕只是说声谢谢",
+     "desc": "就算留不住，也想让 ta 知道被看见了",
+     "immediate": {
+      "psyche": 5,
+      "stamina": -3
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 30",
+       "effect": {
+        "psyche": -4
+       },
+       "note": "ta回了一句『谢谢你还记得我』，然后再没上线——我才发现，有些人是留不住的"
+      }
+     ]
+    },
+    {
+     "id": "pretend_not_seen",
+     "label": "装作没看见，照常排练",
+     "desc": "这行当不能为每一个离开的人停下",
+     "immediate": {
+      "psyche": -4,
+      "ota_all": -1
+     },
+     "delayed": []
+    },
+    {
+     "id": "public_thanks",
+     "label": "在评论区公开回一句谢谢，让留下的也看见",
+     "desc": "把这份情摆上台面",
+     "immediate": {
+      "fame": 3,
+      "psyche": 2,
+      "banzi": 2
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "ext_polaroid_backstage",
+   "type": "外部",
+   "title": "后台那张照片流出来了",
+   "gate": "人气 ≥ 20",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "有人拍到我在后台的样子：头发没梳，坐在折叠椅上啃一个凉掉的饭团，眼睛盯着手机。照片不算难看，问题是我不知道它是什么时候拍的——那个门有没有关，谁在我不知道的时候站在那里，我都想不起来。转了几次之后，底下开始有人拿它当表情包。",
+   "options": [
+    {
+     "id": "let_it_be",
+     "label": "不管它，反正只是啃饭团",
+     "desc": "越在意越有人拿它当武器",
+     "immediate": {
+      "psyche": -3,
+      "banzi": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": 1.2
+       },
+       "note": "没人出来说话，这张图就成了固定表情包，每次我发什么都被甩上来"
+      }
+     ]
+    },
+    {
+     "id": "find_the_shooter",
+     "label": "问 staff 是谁拍的，要一个答案",
+     "desc": "我总得知道后台还有谁进得来",
+     "immediate": {
+      "stamina": -5,
+      "psyche": 2,
+      "banzi": 1
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 30",
+       "effect": {
+        "relation_all": -6
+       },
+       "note": "查来查去查到团里人头上，没人承认，但那几天谁都不太说话"
+      }
+     ]
+    },
+    {
+     "id": "post_it_myself",
+     "label": "先自己发出去，配一句自嘲",
+     "desc": "抢在所有人前面把这张图变成一个笑话",
+     "immediate": {
+      "fame": 4,
+      "psyche": -5,
+      "banzi": 1.5
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "enjou": 4
+       },
+       "note": "有人说『她连这个都要发』，自嘲被读成了卖惨"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ext_clip_farm",
+   "type": "外部",
+   "title": "被剪成了三十秒的切片",
+   "gate": "人气 ≥ 18 且 炎上 ≥ 15",
+   "weight": 1.0,
+   "cooldown": 3,
+   "narrative": "有人把我上一场说的话剪成三十秒，前后都掐掉，只剩中间一句听起来很像在骂人。转发的人比我们那场的观众多得多。我盯着那句被单拎出来的话，自己读了两遍，也觉得像。",
+   "options": [
+    {
+     "id": "explain_full",
+     "label": "把完整的那段放出来，解释前后文",
+     "desc": "我确实说了，只是不是那个意思",
+     "immediate": {
+      "psyche": -4,
+      "banzi": 2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "板子关注度 ≥ 45",
+       "effect": {
+        "enjou": 5
+       },
+       "note": "越描越黑，『她急了她急了』传得比切片还快"
+      }
+     ]
+    },
+    {
+     "id": "silent",
+     "label": "一句都不说，等它过去",
+     "desc": "这事两天就没人提了，我信这个",
+     "immediate": {
+      "psyche": 3,
+      "banzi": 2
+     },
+     "delayed": []
+    },
+    {
+     "id": "lean_into_it",
+     "label": "下次 live 里把这句话唱出来",
+     "desc": "既然剪成了我的，那就真成我的",
+     "immediate": {
+      "stage": 3,
+      "fame": 3,
+      "psyche": -6
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": 1.8,
+        "enjou": 4
+       },
+       "note": "有人剪了第二版，这次配的是『死不悔改』"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ext_drunk_karaoke",
+   "type": "外部",
+   "title": "那天在居酒屋唱到十二点",
+   "gate": "人气 ≥ 20 且 周 ≥ 2",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "排练完和队友去吃了串，喝了两杯，有人拿着手机录了一段我跑调唱歌。当时大家都笑，我也笑。三天后那段视频出现在一个我不认识的人的账号里，配文是『地下偶像私下是这样的』。",
+   "options": [
+    {
+     "id": "joke_about_it",
+     "label": "在微博上自己转一遍，说破音是特色",
+     "desc": "先笑，别人就笑不到我",
+     "immediate": {
+      "fame": 4,
+      "psyche": -3,
+      "banzi": 2
+     },
+     "delayed": []
+    },
+    {
+     "id": "ask_who_sent",
+     "label": "在群里问那段是谁传出去的",
+     "desc": "我笑的不是视频，是有人把它递出去",
+     "immediate": {
+      "psyche": -5,
+      "relation_all": -8
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": 0.9
+       },
+       "note": "没人认，群冷了三天；视频这事反而越说越有人看"
+      }
+     ]
+    },
+    {
+     "id": "delete_everything",
+     "label": "把自己微博清一遍，什么都别留",
+     "desc": "少留下点东西，就少被人拿去用",
+     "immediate": {
+      "psyche": -6,
+      "fame": -4
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": -6
+       },
+       "note": "清空之后反而没东西可扒，风头过去了"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ext_old_group_exposed",
+   "type": "外部",
+   "title": "以前那个团被人翻出来了",
+   "gate": "人气 ≥ 28",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "有人翻到我之前在的那个团，把当时的合照、当时的名字、当时的站位都贴出来，问『她是不是逃了』。那个团解散得很体面，只是没钱了，可这话没人想听。底下有人说『原来是失败过的人』。",
+   "options": [
+    {
+     "id": "tell_the_truth",
+     "label": "说清楚：散得体面，就是没钱了",
+     "desc": "我不想让它变成一个需要解释的疤",
+     "immediate": {
+      "psyche": -3,
+      "banzi": 2,
+      "enjou": 2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 40",
+       "effect": {
+        "enjou": 5
+       },
+       "note": "有人把『没钱』两个字截出来做成梗，说这团迟早也一样"
+      }
+     ]
+    },
+    {
+     "id": "change_subject",
+     "label": "把话题拐回现在的团",
+     "desc": "过去的没什么可说，现在才重要",
+     "immediate": {
+      "psyche": 2,
+      "banzi": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "find_who",
+     "label": "想办法知道是谁翻的",
+     "desc": "这些东西，知道的人本来就不多",
+     "immediate": {
+      "psyche": -6,
+      "kaibox": 2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "板子关注度 ≥ 30",
+       "effect": {
+        "enjou": 5
+       },
+       "note": "我去问的那个老同事把对话截了图，事情变成『她自己也在查』"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ext_sns_hot_post",
+   "type": "外部",
+   "title": "我那条微博突然火了",
+   "gate": "人气 ≥ 12 且 板子关注度 ≥ 6",
+   "weight": 1.0,
+   "cooldown": 3,
+   "narrative": "凌晨随手发的一句话被转了几千次，评论里一半在笑，一半在骂。我从没被这么多人同时看着。手机一直在响，我把它扣在桌上，又翻过来看了一眼。",
+   "options": [
+    {
+     "id": "reply_angry",
+     "label": "挑最过分的一条回过去",
+     "desc": "我知道不该回，可我就是回了",
+     "immediate": {
+      "fame": 4,
+      "psyche": -7,
+      "enjou": 4
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": 1.8
+       },
+       "note": "我回复的截图被单独拎出来，成了新的物料"
+      }
+     ]
+    },
+    {
+     "id": "more_of_it",
+     "label": "趁热再发一条，说更多",
+     "desc": "既然有人看，就多说一点",
+     "immediate": {
+      "fame": 6,
+      "enjou": 2,
+      "banzi": 1.5
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 50",
+       "effect": {
+        "enjou": 6
+       },
+       "note": "第二天我开始一条条被翻旧账"
+      }
+     ]
+    },
+    {
+     "id": "go_quiet",
+     "label": "这几天不上线",
+     "desc": "热度总会过去，我等它过去",
+     "immediate": {
+      "psyche": 2,
+      "fame": -3,
+      "banzi": 2
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "ext_defend_in_comments",
+   "type": "外部",
+   "title": "有人在评论里替你说话",
+   "gate": "人气 ≥ 16 且 炎上 ≥ 8",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "live 视频下面，一条挑刺的评论被顶得很高，说我这样也配站 C 位。我正想划走，底下已经有人替我回了：一条一条，从我的第一次演出讲到上个月的救场，最后一句是『你要是不喜欢，可以不看，但别装懂』。头像是单推的那几个之一。",
+   "options": [
+    {
+     "id": "like_and_reply",
+     "label": "点个赞，回一句『谢谢你还在』",
+     "desc": "接住这份心意",
+     "immediate": {
+      "ota_all": 2,
+      "psyche": 3,
+      "banzi": 1
+     },
+     "note": "她秒回了一个哭脸，说『我每次都在』。我对着屏幕笑了很久。可这一回，底下多了几个人，开始扒我回话的语气。",
+     "delayed": []
+    },
+    {
+     "id": "stay_silent",
+     "label": "什么都不说，怕被当成炒作",
+     "desc": "让热度自己过去",
+     "immediate": {
+      "banzi": 2,
+      "psyche": -2
+     },
+     "note": "我没露面。后来那条评论被截图到处传，有人说是我自己开的小号。",
+     "delayed": []
+    },
+    {
+     "id": "defend_self",
+     "label": "自己下场，把话说清楚",
+     "desc": "亲自接这一仗",
+     "immediate": {
+      "psyche": 2,
+      "ota_all": -1
+     },
+     "note": "我回了一长段，语气硬了点。有单推版聊说『你别理他们』，也有人说我玻璃心。",
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "ext_clip_posted",
+   "type": "外部",
+   "title": "演出被拍了发上网",
+   "gate": "人气 ≥ 18",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "散场后刷到一段现场视频，是别人拍的。镜头晃得厉害，音也糊，可恰好拍到我一个抬头、一个笑——不是 live 的那种。播放量在往上爬，评论里有人说『不知名，但好戳』。",
+   "options": [
+    {
+     "id": "repost_it",
+     "label": "转过来，趁这波让人认识我们",
+     "desc": "抓住这一下",
+     "immediate": {
+      "fame": 3,
+      "ota_all": 1,
+      "enjou": 1
+     },
+     "note": "视频被转了上千次，后台多了不少新留言，也混进来几个专挑刺的。我知道这种运气来得快，去得也快。",
+     "delayed": []
+    },
+    {
+     "id": "let_it_spread",
+     "label": "不主动，让它自然传",
+     "desc": "稳一点",
+     "immediate": {
+      "fame": 1,
+      "psyche": -1
+     },
+     "note": "我没转，只在心里记了一笔。过了两天热度就淡了，像什么都没发生。",
+     "delayed": []
+    },
+    {
+     "id": "ask_take_down",
+     "label": "版聊拍的人，请她删掉",
+     "desc": "护住那点私人的东西",
+     "immediate": {
+      "banzi": 1,
+      "fame": -2
+     },
+     "note": "她很意外，说只是想分享。视频删了，可截图还在别处转。",
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "op_sincere_red_list",
+   "type": "外部舆论",
+   "title": "有人认真写了红榜",
+   "gate": "人气 ≥ 12 且 周 ≥ 2",
+   "weight": 1.5,
+   "cooldown": 4,
+   "narrative": "板子上有篇很长的红榜，把我排进这一季「最值得再看一次的场」。没有夸张的形容词，只写了很具体的事：第三首我走位会往左边让半步，给鼓手让出视线；散场后我在门口站到很晚。最后一句是：她好像真的很喜欢这个舞台。我不知道是谁写的。看的时候，手心有点出汗。",
+   "options": [
+    {
+     "id": "repost_thanks",
+     "label": "转发，说一句谢谢",
+     "desc": "让写的人也看见",
+     "immediate": {
+      "ota_all": 3,
+      "fame": 1,
+      "psyche": -1,
+      "banzi": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "screenshot_only",
+     "label": "截图存起来，不回应",
+     "desc": "这种事不必摆出来",
+     "immediate": {
+      "psyche": 3,
+      "ota_all": -1
+     },
+     "delayed": []
+    },
+    {
+     "id": "mention_onstage",
+     "label": "在台上提一句，不说名字",
+     "desc": "当面说才够真",
+     "immediate": {
+      "ota_all": 2,
+      "stage": 1,
+      "banzi": 2
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "op_regular_year_note",
+   "type": "外部舆论",
+   "title": "单推在年终总结里写了我",
+   "gate": "周 ≥ 5 且 人气 ≥ 16",
+   "weight": 1.5,
+   "cooldown": 6,
+   "narrative": "一个跟了大半年的单推，在年度总结里写了一段关于我的话。ta说一开始只是路过，后来不知道为什么就留下来了。ta写：她不是最好的那个，可我每次来都能看见她在进步。我认得ta的字——每次特典会ta都要求在切的边角写日期。",
+   "options": [
+    {
+     "id": "thank_in_person",
+     "label": "下次特典会当面谢ta",
+     "desc": "有些话得当面说",
+     "immediate": {
+      "ota_all": 4,
+      "stamina": -1,
+      "psyche": -1
+     },
+     "delayed": []
+    },
+    {
+     "id": "pretend_unseen",
+     "label": "装作没看见",
+     "desc": "怕一开口就露怯",
+     "immediate": {
+      "psyche": -2,
+      "ota_all": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "save_the_line",
+     "label": "把那句话抄进备忘录",
+     "desc": "留着，难受的时候看",
+     "immediate": {
+      "psyche": 3,
+      "stage": 1,
+      "stamina": -1
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "op_box_office",
+   "type": "外部舆论",
+   "title": "算账帖",
+   "gate": "周 ≥ 2",
+   "weight": 1.5,
+   "cooldown": 4,
+   "narrative": "有人把这场的人数、票价、场地费列成了一张表，发在板子上。最后一行写着：这种团还开着干嘛。数字基本是准的，那天确实没坐满。下面有人回：人家好歹在坚持。也有人说：坚持有什么用。",
+   "options": [
+    {
+     "id": "mild_reply",
+     "label": "用小号回一句谢谢关心",
+     "desc": "不软不硬",
+     "immediate": {
+      "psyche": -2,
+      "banzi": 1,
+      "fame": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "save_it",
+     "label": "不回，把这张表存下来",
+     "desc": "记着，别忘",
+     "immediate": {
+      "banzi": -1,
+      "psyche": -2
+     },
+     "delayed": []
+    },
+    {
+     "id": "fill_next_show",
+     "label": "憋着劲，下一场把人坐满",
+     "desc": "用票房说话",
+     "immediate": {
+      "stage": 2,
+      "psyche": -3
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "op_red_list_offkey",
+   "type": "外部舆论",
+   "title": "红榜把我唱错的那句也写进去了",
+   "gate": "人气 ≥ 14 且 周 ≥ 3",
+   "weight": 1.5,
+   "cooldown": 5,
+   "narrative": "有篇 repo 把我第二首歌唱错的一句词原原本本写了出来，还写「她唱错的时候愣了一下，然后自己笑了，接着唱下去」。底下有人跟「这段我也记得」。我本以为翻车要挨骂，没想到被人记住的反而是那个笑。我有点说不清是高兴还是别的。",
+   "options": [
+    {
+     "id": "bring_it_up",
+     "label": "下次 live 主动提一句那次唱错",
+     "desc": "自己先笑，就没人笑得过我",
+     "immediate": {
+      "fame": 2,
+      "ota_all": 2,
+      "psyche": -1
+     },
+     "delayed": []
+    },
+    {
+     "id": "pretend_not_seen",
+     "label": "装作没看到，不提",
+     "desc": "提了像在卖惨",
+     "immediate": {
+      "psyche": -2,
+      "stage": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "drill_song",
+     "label": "把那首歌反复练到不会错",
+     "desc": "下次别再错",
+     "immediate": {
+      "stage": 3,
+      "stamina": -3,
+      "psyche": -1
+     },
+     "delayed": []
+    }
+   ]
+  }
+ ]
 }

@@ -1,645 +1,647 @@
 {
-  "_meta": {
-    "category": "OTA互动",
-    "design_note": "每张卡＝一次特典会或一次私下越界。选项在『卖恋爱感赚钱 / 守边界保自己』之间拉扯，没有纯赚。数值是选后回执。",
-    "resource_keys": {
-      "money": "钱",
-      "stamina": "体力",
-      "psyche": "心理",
-      "fame": "人气",
-      "stage": "舞台稳定",
-      "ota_all": "全体OTA黏性",
-      "ota_jelly": "盐渍水母",
-      "ota_row0": "第零排",
-      "ota_sleepy": "今天也不困",
-      "ota_earphone": "蓝色耳机线",
-      "ota_film": "过期胶卷",
-      "relation_A": "队友A(真面)",
-      "relation_B": "队友B(竞争)",
-      "relation_C": "队友C(天真)",
-      "relation_all": "团内关系整体",
-      "shiren": "私联人数",
-      "enjou": "炎上",
-      "kaibox": "开盒风险",
-      "shiroi": "私生跟踪",
-      "banzi": "板子关注度"
-    },
-    "casting_schema": "card.casting = [ {slot, select:{gender?/fan_type?/archetype?/min_stickiness?/private_contact?}, allow_hatch} ]；narrative/label/desc 用 {{slot}} 显示名字、{{slot.ta}} 显示ta；effect 键 @<slot> = 投给该槽位选中 OTA 的黏性增减，ota_all 仍为全体；无符合条件者且 allow_hatch 时按原型孵化新人填入。"
+ "_meta": {
+  "category": "OTA互动",
+  "design_note": "每张卡＝一次特典会或一次私下越界。选项在『卖恋爱感赚钱 / 守边界保自己』之间拉扯，没有纯赚。数值是选后回执。",
+  "resource_keys": {
+   "money": "钱",
+   "stamina": "体力",
+   "psyche": "心理",
+   "fame": "人气",
+   "stage": "舞台稳定",
+   "ota_all": "全体OTA黏性",
+   "ota_jelly": "盐渍水母",
+   "ota_row0": "第零排",
+   "ota_sleepy": "今天也不困",
+   "ota_earphone": "蓝色耳机线",
+   "ota_film": "过期胶卷",
+   "relation_A": "队友A(真面)",
+   "relation_B": "队友B(竞争)",
+   "relation_C": "队友C(天真)",
+   "relation_all": "团内关系整体",
+   "shiren": "私联人数",
+   "enjou": "炎上",
+   "kaibox": "开盒风险",
+   "shiroi": "私生跟踪",
+   "banzi": "板子关注度"
   },
-  "cards": [
+  "casting_schema": "card.casting = [ {slot, select:{gender?/fan_type?/archetype?/min_stickiness?/private_contact?}, allow_hatch} ]；narrative/label/desc 用 {{slot}} 显示名字、{{slot.ta}} 显示ta；effect 键 @<slot> = 投给该槽位选中 OTA 的黏性增减，ota_all 仍为全体；无符合条件者且 allow_hatch 时按原型孵化新人填入。"
+ },
+ "cards": [
+  {
+   "id": "ota_regular_shift",
+   "type": "OTA互动",
+   "title": "每个字都算钱",
+   "gate": "任一 OTA 黏性 ≥ 70",
+   "weight": 1.0,
+   "cooldown": 3,
+   "narrative": "{{spender}}又来了，这次买了八张券，说要聊到我下班。{{spender.ta}}把券一张一张码在桌上，像在数我还剩多少时间。我盯着那叠券，脑子里先算了一笔账：八张，六百四，这个月房租就够了。想到这儿我自己都愣了一下——什么时候起，我看人先看的是这个。最后{{spender.ta}}顿了顿，问：『你一个人住吗？』",
+   "options": [
     {
-      "id": "ota_regular_shift",
-      "type": "OTA互动",
-      "title": "每个字都算钱",
-      "gate": "任一 OTA 黏性 ≥ 70",
-      "weight": 1.0,
-      "cooldown": 3,
-      "narrative": "{{spender}}又来了，这次买了八张券，说要聊到我下班。{{spender.ta}}把券一张一张码在桌上，像在数我还剩多少时间。我盯着那叠券，脑子里先算了一笔账：八张，六百四，这个月房租就够了。想到这儿我自己都愣了一下——什么时候起，我看人先看的是这个。最后{{spender.ta}}顿了顿，问：『你一个人住吗？』",
-      "options": [
-        {
-          "id": "deflect",
-          "label": "笑着岔开，问ta今晚哪首最爽",
-          "desc": "把话头拽回舞台，绝口不提自己",
-          "immediate": {
-            "ota_all": 3,
-            "psyche": -5,
-            "@speaker": -1
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "ota_all": -3
-              },
-              "note": "ta第二天只买了三张券，笑得没上次真"
-            }
-          ]
-        },
-        {
-          "id": "say_营业_alone",
-          "label": "顺着ta的话，说一个人住有点怕",
-          "desc": "把软肋露一点出去，ta眼睛立马亮了",
-          "immediate": {
-            "money": 640,
-            "kaibox": 5,
-            "psyche": -2,
-            "@speaker": 3
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "开盒风险 ≥ 50",
-              "effect": {
-                "shiroi": 10
-              },
-              "note": "ta知道你住哪一片了"
-            }
-          ]
-        },
-        {
-          "id": "cut_short",
-          "label": "说时间到了，去招呼下一位",
-          "desc": "把券推回去，站起来",
-          "immediate": {
-            "psyche": 6,
-            "ota_all": -4,
-            "@speaker": -3
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "enjou": 3
-              },
-              "note": "ta当晚在超话发帖：『今天被盐了』"
-            }
-          ]
-        }
-      ],
-      "casting": [
-        {
-          "slot": "spender",
-          "select": {
-            "archetype": "自来熟",
-            "min_stickiness": 70
-          },
-          "allow_hatch": true
-        }
-      ]
+     "id": "deflect",
+     "label": "笑着岔开，问ta今晚哪首最爽",
+     "desc": "把话头拽回舞台，绝口不提自己",
+     "immediate": {
+      "ota_all": 3,
+      "psyche": -5,
+      "@speaker": -1
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "ota_all": -3
+       },
+       "note": "ta第二天只买了三张券，笑得没上次真"
+      }
+     ]
     },
     {
-      "id": "ota_gachikoi",
-      "type": "OTA互动",
-      "title": "ta说ta不是把我当偶像",
-      "gate": "任一女友粉 OTA 黏性 ≥ 80 且 私联人数 = 0",
-      "weight": 1.2,
-      "cooldown": 4,
-      "narrative": "{{devotee}}追了半年，特典快结束时攥着券没松手。『我不是把你当偶像，我是真的喜欢你……你能不能，给我个微信号？』{{devotee.ta}}声音压得很低，怕旁边人听见。staff 就在两米外收桌子，随时会回过头。我心跳一下快起来——可奇怪的是，第一个冒出来的念头不是怕，是：给了又怎样，反正没人看见。",
-      "options": [
-        {
-          "id": "give_wechat",
-          "label": "把微信号写在小票背面递过去",
-          "desc": "ta没说话，只是笑，把票折好揣进胸口口袋。我看着ta走开，心里空了一下，说不清是松了口气，还是别的",
-          "immediate": {
-            "ota_all": 2,
-            "kaibox": 7,
-            "psyche": 2,
-            "@speaker": 5
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "开盒风险 ≥ 60",
-              "effect": {
-                "enjou": 15
-              },
-              "note": "聊天记录被截图发到板子上"
-            }
-          ],
-          "flag": "secret_contact"
-        },
-        {
-          "id": "slip_under_table",
-          "label": "趁staff转身收桌子，在桌下把号码塞进ta手心",
-          "desc": "动作快得像做贼，ta也配合着装没事，指尖却勾了我一下",
-          "immediate": {
-            "kaibox": 8,
-            "psyche": 5,
-            "@speaker": 6
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "开盒风险 ≥ 55",
-              "effect": {
-                "enjou": 12
-              },
-              "note": "ta把那张小纸条拍了照，发进了只有几个人的小群"
-            }
-          ],
-          "flag": "secret_contact"
-        },
-        {
-          "id": "gentle_no",
-          "label": "温柔地拒绝，说『我在这里等你来』",
-          "desc": "不给微信号，只把这句话留在ta那儿",
-          "immediate": {
-            "psyche": -3,
-            "ota_all": -2,
-            "@speaker": -2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "ota_all": 5
-              },
-              "note": "ta没走，反而每场都来，站在最前面"
-            }
-          ]
-        },
-        {
-          "id": "report",
-          "label": "回头跟队友和运营报一声，按规矩来",
-          "desc": "把这事摊开说，别自己扛",
-          "immediate": {
-            "psyche": 3,
-            "relation_all": -3,
-            "enjou": 2,
-            "@speaker": -4
-          },
-          "delayed": []
-        }
-      ],
-      "casting": [
-        {
-          "slot": "devotee",
-          "select": {
-            "fan_type": "女友粉",
-            "min_stickiness": 80
-          },
-          "allow_hatch": true
-        }
-      ]
+     "id": "say_营业_alone",
+     "label": "顺着ta的话，说一个人住有点怕",
+     "desc": "把软肋露一点出去，ta眼睛立马亮了",
+     "immediate": {
+      "money": 640,
+      "kaibox": 5,
+      "psyche": -2,
+      "@speaker": 3
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "开盒风险 ≥ 50",
+       "effect": {
+        "shiroi": 10
+       },
+       "note": "ta知道我住哪一片了"
+      }
+     ]
     },
     {
-      "id": "ota_newbie",
-      "type": "OTA互动",
-      "title": "第一次来的人",
-      "gate": "人气 ≥ 12",
-      "weight": 1.0,
-      "cooldown": 2,
-      "narrative": "一个女生在队尾排了很久才轮到，手抖着递券：『我第一次来……不知道该说什么。』ta手心全是汗，券边被捏皱了。我忽然想起自己第一次站在台下、连应援都不会喊的样子——那时候多希望台上的人，能多看我一眼。",
-      "options": [
-        {
-          "id": "invest",
-          "label": "多给ta点时间，主动找话题",
-          "desc": "问ta从哪知道我们团的，最近在听什么",
-          "immediate": {
-            "ota_all": 5,
-            "stamina": -8,
-            "@speaker": 4
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "ota_all": 2
-              },
-              "hatch_friend": true,
-              "base_stick": 45,
-              "note": "ta真的又来了，还拉了一个人。"
-            }
-          ],
-          "flags": [
-            "newbie_brought_friend"
-          ]
-        },
-        {
-          "id": "standard",
-          "label": "标准流程，礼貌聊满时长",
-          "desc": "介绍自己，签名，合影，送走",
-          "immediate": {
-            "fame": 2,
-            "psyche": -2,
-            "@speaker": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "push_cheki",
-          "label": "劝ta多买一张宿题切",
-          "desc": "『这张会画图哦，很值得』",
-          "immediate": {
-            "money": 80,
-            "ota_all": -2,
-            "psyche": -2,
-            "@speaker": -2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "心理 < 35",
-              "effect": {
-                "enjou": 5
-              },
-              "note": "ta回去比了价，觉得自己被推销，发了条吐槽"
-            }
-          ]
-        }
-      ],
-      "casting": [
-        {
-          "slot": "speaker",
-          "select": {
-            "gender": "女"
-          },
-          "allow_hatch": true,
-          "force_hatch": true,
-          "hatch_only": true
-        }
-      ]
-    },
-    {
-      "id": "ota_dd",
-      "type": "OTA互动",
-      "title": "ta要爬墙了",
-      "gate": "任一 OTA 黏性 ≥ 40",
-      "weight": 0.9,
-      "cooldown": 3,
-      "narrative": "{{drifter}}每个团都追，来找我时语气轻快得刺耳：『下个月我主推隔壁团了，今天是来告别的。』{{drifter.ta}}说着还晃了晃手里的别家周边。我脸上笑着，心里却像被什么东西轻轻抽空了一下——原来我这半年的『单推』，在{{drifter.ta}}那儿只是一个随时能换掉的选项。",
-      "options": [
-        {
-          "id": "bless",
-          "label": "大大方方祝福，送ta到门口",
-          "desc": "『去吧，那边的歌挺好听的』",
-          "immediate": {
-            "psyche": 4,
-            "ota_all": -6
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "人气 ≥ 30",
-              "effect": {
-                "ota_all": 2
-              },
-              "note": "ta偶尔还是会回来看看你"
-            }
-          ]
-        },
-        {
-          "id": "win_back",
-          "label": "用力挽留，说下场给ta留最好的位置",
-          "desc": "『再给我一次机会』",
-          "immediate": {
-            "ota_all": 5,
-            "psyche": -6
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "ota_all": -4
-              },
-              "note": "ta留下了，但你都看得出ta心不在这"
-            }
-          ]
-        },
-        {
-          "id": "cold",
-          "label": "冷淡点个头，不追",
-          "desc": "『嗯，路上小心』然后转身收拾东西",
-          "immediate": {
-            "psyche": 2,
-            "ota_all": -3,
-            "enjou": 1
-          },
-          "delayed": []
-        }
-      ],
-      "casting": [
-        {
-          "slot": "drifter",
-          "select": {
-            "archetype": "DD"
-          },
-          "allow_hatch": true
-        }
-      ]
-    },
-    {
-      "id": "ota_shashu",
-      "type": "OTA互动",
-      "title": "这个月我多买几张",
-      "gate": "任一 OTA 黏性 ≥ 70 且 钱 < 2600",
-      "weight": 1.1,
-      "cooldown": 4,
-      "narrative": "散场最后走的还是{{overextended}}。{{overextended.ta}}一边收拾东西一边说：「我最近换了工作，工资还没下来，不过这个月我可以多买几张，冲一冲你那个生日应援。」{{overextended.ta}}笑了笑，有点不好意思，「你别有压力啊。」我脑子里那笔账自己就跳出来了：{{overextended.ta}}手上这些券，刚好能补上我这个月的房租。我知道{{overextended.ta}}攒那点钱本来是为了别的事。",
-      "options": [
-        {
-          "id": "push_harder",
-          "label": "顺势再推一把「那要不……你再帮我冲冲榜？」",
-          "desc": "话出口我自己都听见了一点讨好，可我已经开始替它找理由了：ta愿意的，我又没逼ta。",
-          "immediate": {
-            "money": 560,
-            "psyche": 3,
-            "@speaker": 2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "enjou": 10,
-                "psyche": -10,
-                "@overextended": -20
-              },
-              "note": "TA家里翻出ta借钱囤券的转账记录，闹到了网上；有人贴出ta在小群说的『给喜欢的人花钱不心疼』，配文『这偶像真会挑人下手』"
-            }
-          ]
-        },
-        {
-          "id": "take_quietly",
-          "label": "收下，什么都不说破",
-          "desc": "我道了谢，把券收进包最里面那层。总有点不是滋味，但我选择先不管它。",
-          "immediate": {
-            "money": 320,
-            "psyche": -2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "钱 < 1000",
-              "effect": {
-                "@overextended": -6
-              },
-              "note": "ta下个月明显来得少了，你说不清是不是自己想多了"
-            }
-          ]
-        },
-        {
-          "id": "stop_her",
-          "label": "把ta拦住「这个月别买了，你自己留着」",
-          "desc": "我说得很轻，但没让步。ta愣住，继而眼睛有点红。",
-          "immediate": {
-            "psyche": 5,
-            "@speaker": 3
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "钱 < 1000",
-              "effect": {
-                "psyche": -8
-              },
-              "note": "交完租只剩几十块，我在便利店站了很久，还是把那包烟放了回去"
-            }
-          ]
-        }
-      ],
-      "casting": [
-        {
-          "slot": "overextended",
-          "select": {
-            "archetype": "社恐温柔",
-            "min_stickiness": 70
-          },
-          "allow_hatch": true
-        }
-      ]
-    },
-    {
-      "id": "ota_buddy",
-      "type": "OTA互动",
-      "title": "ta把我当哥们儿",
-      "gate": "任一男性 OTA 黏性 ≥ 60",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "特典会散了，{{buddy}}没走，靠着桌边跟我贫：「你这舞，昨天第三段是不是差点忘动作？」说着伸手就来拍我的脑袋，宿舍里那种闹法。我下意识一躲，接着就笑了——好久没人这么跟我说过话，不用 live、不用端着，就当我是个普通姑娘。可我一抬眼，看见{{hurt}}站在不远处，手里攥着两张没送出去的券。",
-      "options": [
-        {
-          "id": "play_along",
-          "label": "玩闹回去，笑成一团",
-          "desc": "我抬手把ta的手拨开，笑着回敬了一句更难听的。那一瞬间我是真的松快。",
-          "immediate": {
-            "psyche": 9,
-            "ota_all": -2,
-            "@speaker": 2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "enjou": 8,
-                "banzi": 5,
-                "@hurt": -4
-              },
-              "note": "板子上有人发帖：「ta把跟男粉勾肩搭背当可爱，那我们凑的钱算什么？」底下几十条『心凉了』"
-            }
-          ]
-        },
-        {
-          "id": "step_back",
-          "label": "笑着退半步，把话头带回台上",
-          "desc": "我笑着往后让了让，说「行行行我错了」，顺手把话题拐回今天的歌单。端住了。",
-          "immediate": {
-            "psyche": -3,
-            "@speaker": -3
-          },
-          "delayed": []
-        },
-        {
-          "id": "make_it_show",
-          "label": "把打闹变成给全场的玩笑",
-          "desc": "我干脆站起来对着还没散的人喊：「看见没，{{buddy}}说我跳错，下次让ta上来跳！」全场笑。",
-          "immediate": {
-            "psyche": 2,
-            "ota_all": 2,
-            "@speaker": 1,
-            "stamina": -3
-          },
-          "delayed": []
-        }
-      ],
-      "casting": [
-        {
-          "slot": "buddy",
-          "select": {
-            "gender": "男",
-            "min_stickiness": 60
-          },
-          "allow_hatch": true
-        },
-        {
-          "slot": "hurt",
-          "select": {
-            "fan_type": "女友粉"
-          },
-          "allow_hatch": true
-        }
-      ]
-    },
-    {
-      "id": "ota_remembered",
-      "type": "OTA相处的瞬间",
-      "title": "记得我说过的话",
-      "gate": "任一 OTA 黏性 ≥ 60",
-      "weight": 1.0,
-      "cooldown": 5,
-      "casting": [
-        {
-          "slot": "listener",
-          "select": {
-            "min_stickiness": 60
-          },
-          "allow_hatch": true
-        }
-      ],
-      "narrative": "我随口跟{{listener}}提过一次，说我小时候住的那条巷子口有棵老槐树，夏天风一吹，落一地的花。今天散场，我桌上放着一个小玻璃瓶，里头是晒干的槐花，压着张纸条：『你说的那棵树。』我盯着那瓶子，忽然鼻子发酸——原来有人把我随口说的话，当成一件要记一辈子的事。",
-      "options": [
-        {
-          "id": "keep_and_remember_back",
-          "label": "好好收着，也开始记一件 TA 的事",
-          "desc": "被人这样记住，是会想还回去的",
-          "immediate": {
-            "psyche": 5,
-            "stamina": -4,
-            "@speaker": 5
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "开盒风险 ≥ 55",
-              "effect": {
-                "kaibox": 6
-              },
-              "note": "你把 TA 也记进了心里，这条线就越缠越紧，收不回来了"
-            }
-          ]
-        },
-        {
-          "id": "deflect",
-          "label": "笑说『你怎么记这个』，把话岔开",
-          "desc": "我怕被人这样记住，好像欠下了什么",
-          "immediate": {
-            "psyche": -3,
-            "@speaker": -4
-          },
-          "delayed": []
-        },
-        {
-          "id": "polite_distance",
-          "label": "当面道谢，但说『别为我花这些心思』",
-          "desc": "划条线，自己好受，凉了对方",
-          "immediate": {
-            "psyche": 3,
-            "ota_all": -2,
-            "@speaker": -3
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "ota_shashu_backstage",
-      "type": "OTA互动",
-      "title": "跳过去的那一眼",
-      "gate": "任一 OTA 黏性 ≥ 75 且 人气 ≥ 18",
-      "weight": 0.9,
-      "cooldown": 4,
-      "narrative": "最后一首的饭撒环节，我扫过去，{{oldfan}}在第三排偏左，那个位置坐了整个季度。ta手里举着的东西被灯晃得看不清，可我知道那是给我的。ta旁边的位置空着，再往右就是个生面孔，第一次来，一直低头看手机。我只有十秒，谁都知道这十秒是有数的。",
-      "options": [
-        {
-          "id": "give_new",
-          "label": "对着那张生面孔笑，把动作做给新人",
-          "desc": "第三排那位不会走的，ta一直都在",
-          "immediate": {
-            "fame": 3,
-            "ota_all": 1,
-            "psyche": -2,
-            "@speaker": -2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "banzi": 7
-              },
-              "note": "超话里多了一条：『单推在这个团到底算什么？』下面有人说我只看新来的"
-            }
-          ]
-        },
-        {
-          "id": "give_both",
-          "label": "对两边各走半步，雨露均沾",
-          "desc": "谁都不得罪，谁都没被专门看到",
-          "immediate": {
-            "fame": 1,
-            "stamina": -4,
-            "psyche": -3,
-            "@speaker": -1
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 40",
-              "effect": {
-                "banzi": 5
-              },
-              "note": "有人把这段截出来逐帧对比：『ta给谁都是这半下』"
-            }
-          ]
-        },
-        {
-          "id": "give_old",
-          "label": "先冲第三排点头，把这一下给ta",
-          "desc": "老熟人也需要被看见，不然ta凭什么一直来",
-          "immediate": {
-            "ota_all": 3,
-            "psyche": 3,
-            "fame": -1,
-            "@speaker": 2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "money": -120
-              },
-              "note": "那个生面孔没再来，这一场的票退了两张"
-            }
-          ]
-        }
-      ],
-      "casting": [
-        {
-          "slot": "oldfan",
-          "select": {
-            "min_stickiness": 75
-          },
-          "allow_hatch": true
-        }
-      ]
+     "id": "cut_short",
+     "label": "说时间到了，去招呼下一位",
+     "desc": "把券推回去，站起来",
+     "immediate": {
+      "psyche": 6,
+      "ota_all": -4,
+      "@speaker": -3
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "enjou": 3
+       },
+       "note": "ta当晚在超话发帖：『今天被盐了』"
+      }
+     ]
     }
-  ]
+   ],
+   "casting": [
+    {
+     "slot": "spender",
+     "select": {
+      "archetype": "自来熟",
+      "min_stickiness": 70
+     },
+     "allow_hatch": true
+    }
+   ]
+  },
+  {
+   "id": "ota_gachikoi",
+   "type": "OTA互动",
+   "title": "ta说ta不是把我当偶像",
+   "gate": "任一女友粉 OTA 黏性 ≥ 80 且 私联人数 = 0",
+   "weight": 1.2,
+   "cooldown": 4,
+   "narrative": "{{devotee}}追了半年，特典快结束时攥着券没松手。『我不是把你当偶像，我是真的喜欢你……你能不能，给我个微信号？』{{devotee.ta}}声音压得很低，怕旁边人听见。staff 就在两米外收桌子，随时会回过头。我心跳一下快起来——可奇怪的是，第一个冒出来的念头不是怕，是：给了又怎样，反正没人看见。",
+   "options": [
+    {
+     "id": "give_wechat",
+     "label": "把微信号写在券的背面递过去",
+     "desc": "ta没说话，只是笑，把票折好揣进胸口口袋。我看着ta走开，心里空了一下，说不清是松了口气，还是别的",
+     "immediate": {
+      "ota_all": 2,
+      "kaibox": 7,
+      "psyche": 2,
+      "@speaker": 5
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "开盒风险 ≥ 60",
+       "effect": {
+        "enjou": 15
+       },
+       "note": "聊天记录被截图发到板子上"
+      }
+     ],
+     "flag": "secret_contact"
+    },
+    {
+     "id": "slip_under_table",
+     "label": "趁staff转身收桌子，在桌下把号码塞进ta手心",
+     "desc": "动作快得像做贼，ta也配合着装没事，指尖却勾了我一下",
+     "immediate": {
+      "kaibox": 8,
+      "psyche": 5,
+      "@speaker": 6
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "开盒风险 ≥ 55",
+       "effect": {
+        "enjou": 12
+       },
+       "note": "ta把那张小纸条拍了照，发进了只有几个人的小群"
+      }
+     ],
+     "flag": "secret_contact"
+    },
+    {
+     "id": "gentle_no",
+     "label": "温柔地拒绝，说『我在这里等你来』",
+     "desc": "不给微信号，只把这句话留在ta那儿",
+     "immediate": {
+      "psyche": -3,
+      "ota_all": -2,
+      "@speaker": -2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "ota_all": 5
+       },
+       "note": "ta没走，反而每场都来，站在最前面"
+      }
+     ]
+    },
+    {
+     "id": "report",
+     "label": "回头跟队友和运营报一声，按规矩来",
+     "desc": "把这事摊开说，别自己扛",
+     "note": "群里说完，运营回了句『知道了，按规矩来』。小满发来一个抱拳。事情摆在明面上，反倒不那么压心了",
+     "immediate": {
+      "psyche": 3,
+      "relation_all": -3,
+      "enjou": 2,
+      "@speaker": -4
+     },
+     "delayed": []
+    }
+   ],
+   "casting": [
+    {
+     "slot": "devotee",
+     "select": {
+      "fan_type": "女友粉",
+      "min_stickiness": 80
+     },
+     "allow_hatch": true
+    }
+   ]
+  },
+  {
+   "id": "ota_newbie",
+   "type": "OTA互动",
+   "title": "第一次来的人",
+   "gate": "人气 ≥ 12",
+   "weight": 1.0,
+   "cooldown": 2,
+   "narrative": "一个女生在队尾排了很久才轮到，手抖着递券：『我第一次来……不知道该说什么。』ta手心全是汗，券边被捏皱了。我忽然想起自己第一次站在台下、连应援都不会喊的样子——那时候多希望台上的人，能多看我一眼。",
+   "options": [
+    {
+     "id": "invest",
+     "label": "多给ta点时间，主动找话题",
+     "desc": "问ta从哪知道我们团的，最近在听什么",
+     "immediate": {
+      "ota_all": 5,
+      "stamina": -8,
+      "@speaker": 4
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "ota_all": 2
+       },
+       "hatch_friend": true,
+       "base_stick": 45,
+       "note": "ta真的又来了，还拉了一个人。"
+      }
+     ],
+     "flags": [
+      "newbie_brought_friend"
+     ]
+    },
+    {
+     "id": "standard",
+     "label": "标准流程，礼貌聊满时长",
+     "desc": "介绍自己，签名，合影，送走",
+     "immediate": {
+      "fame": 2,
+      "psyche": -2,
+      "@speaker": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "push_cheki",
+     "label": "劝ta多买一张宿题切",
+     "desc": "『这张会画图哦，很值得』",
+     "immediate": {
+      "money": 80,
+      "ota_all": -2,
+      "psyche": -2,
+      "@speaker": -2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 35",
+       "effect": {
+        "enjou": 5
+       },
+       "note": "ta回去比了价，觉得自己被推销，发了条吐槽"
+      }
+     ]
+    }
+   ],
+   "casting": [
+    {
+     "slot": "speaker",
+     "select": {
+      "gender": "女"
+     },
+     "allow_hatch": true,
+     "force_hatch": true,
+     "hatch_only": true
+    }
+   ]
+  },
+  {
+   "id": "ota_dd",
+   "type": "OTA互动",
+   "title": "ta要爬墙了",
+   "gate": "任一 OTA 黏性 ≥ 40",
+   "weight": 0.9,
+   "cooldown": 3,
+   "narrative": "{{drifter}}每个团都追，来找我时语气轻快得刺耳：『下个月我主推隔壁团了，今天是来告别的。』{{drifter.ta}}说着还晃了晃手里的别家周边。我脸上笑着，心里却像被什么东西轻轻抽空了一下——原来我这半年的『单推』，在{{drifter.ta}}那儿只是一个随时能换掉的选项。",
+   "options": [
+    {
+     "id": "bless",
+     "label": "大大方方祝福，送ta到门口",
+     "desc": "『去吧，那边的歌挺好听的』",
+     "immediate": {
+      "psyche": 4,
+      "ota_all": -6
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "人气 ≥ 30",
+       "effect": {
+        "ota_all": 2
+       },
+       "note": "ta偶尔还是会回来看看我"
+      }
+     ]
+    },
+    {
+     "id": "win_back",
+     "label": "用力挽留，说下场给ta留最好的位置",
+     "desc": "『再给我一次机会』",
+     "immediate": {
+      "ota_all": 5,
+      "psyche": -6
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "ota_all": -4
+       },
+       "note": "ta留下了，但我都看得出ta心不在这"
+      }
+     ]
+    },
+    {
+     "id": "cold",
+     "label": "冷淡点个头，不追",
+     "desc": "『嗯，路上小心』然后转身收拾东西",
+     "note": "{{spender.ta}}也没多说什么，拎着那叠券走了。屋子一下子安静下来，少掉的六百四我告诉自己别再算第二遍",
+     "immediate": {
+      "psyche": 2,
+      "ota_all": -3,
+      "enjou": 1
+     },
+     "delayed": []
+    }
+   ],
+   "casting": [
+    {
+     "slot": "drifter",
+     "select": {
+      "archetype": "DD"
+     },
+     "allow_hatch": true
+    }
+   ]
+  },
+  {
+   "id": "ota_shashu",
+   "type": "OTA互动",
+   "title": "这个月我多买几张",
+   "gate": "任一 OTA 黏性 ≥ 70 且 钱 < 2600",
+   "weight": 1.1,
+   "cooldown": 4,
+   "narrative": "散场最后走的还是{{overextended}}。{{overextended.ta}}一边收拾东西一边说：「我最近换了工作，工资还没下来，不过这个月我可以多买几张，冲一冲你那个生日应援。」{{overextended.ta}}笑了笑，有点不好意思，「你别有压力啊。」我脑子里那笔账自己就跳出来了：{{overextended.ta}}手上这些券，刚好能补上我这个月的房租。我知道{{overextended.ta}}攒那点钱本来是为了别的事。",
+   "options": [
+    {
+     "id": "push_harder",
+     "label": "顺势再推一把「那要不……你再帮我冲冲榜？」",
+     "desc": "话出口我自己都听见了一点讨好，可我已经开始替它找理由了：ta愿意的，我又没逼ta。",
+     "immediate": {
+      "money": 560,
+      "psyche": 3,
+      "@speaker": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "enjou": 10,
+        "psyche": -10,
+        "@overextended": -20
+       },
+       "note": "TA家里翻出ta借钱囤券的转账记录，闹到了网上；有人贴出ta在小群说的『给喜欢的人花钱不心疼』，配文『这偶像真会挑人下手』"
+      }
+     ]
+    },
+    {
+     "id": "take_quietly",
+     "label": "收下，什么都不说破",
+     "desc": "我道了谢，把券收进包最里面那层。总有点不是滋味，但我选择先不管它。",
+     "immediate": {
+      "money": 320,
+      "psyche": -2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "钱 < 1000",
+       "effect": {
+        "@overextended": -6
+       },
+       "note": "ta下个月明显来得少了，我说不清是不是自己想多了"
+      }
+     ]
+    },
+    {
+     "id": "stop_her",
+     "label": "把ta拦住「这个月别买了，你自己留着」",
+     "desc": "我说得很轻，但没让步。ta愣住，继而眼睛有点红。",
+     "immediate": {
+      "psyche": 5,
+      "@speaker": 3
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "钱 < 1000",
+       "effect": {
+        "psyche": -8
+       },
+       "note": "交完租只剩几十块，我在便利店站了很久，还是把那包烟放了回去"
+      }
+     ]
+    }
+   ],
+   "casting": [
+    {
+     "slot": "overextended",
+     "select": {
+      "archetype": "社恐温柔",
+      "min_stickiness": 70
+     },
+     "allow_hatch": true
+    }
+   ]
+  },
+  {
+   "id": "ota_buddy",
+   "type": "OTA互动",
+   "title": "ta把我当哥们儿",
+   "gate": "任一男性 OTA 黏性 ≥ 60",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "特典会散了，{{buddy}}没走，靠着桌边跟我贫：「你这舞，昨天第三段是不是差点忘动作？」说着伸手就来拍我的脑袋，宿舍里那种闹法。我下意识一躲，接着就笑了——好久没人这么跟我说过话，不用 live、不用端着，就当我是个普通姑娘。可我一抬眼，看见{{hurt}}站在不远处，手里攥着两张没送出去的券。",
+   "options": [
+    {
+     "id": "play_along",
+     "label": "玩闹回去，笑成一团",
+     "desc": "我抬手把ta的手拨开，笑着回敬了一句更难听的。那一瞬间我是真的松快。",
+     "immediate": {
+      "psyche": 9,
+      "ota_all": -2,
+      "@speaker": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "enjou": 8,
+        "banzi": 5,
+        "@hurt": -4
+       },
+       "note": "板子上有人发帖：「ta把跟男粉勾肩搭背当可爱，那我们凑的钱算什么？」底下几十条『心凉了』"
+      }
+     ]
+    },
+    {
+     "id": "step_back",
+     "label": "笑着退半步，把话头带回台上",
+     "desc": "我笑着往后让了让，说「行行行我错了」，顺手把话题拐回今天的歌单。端住了。",
+     "immediate": {
+      "psyche": -3,
+      "@speaker": -3
+     },
+     "delayed": []
+    },
+    {
+     "id": "make_it_show",
+     "label": "把打闹变成给全场的玩笑",
+     "desc": "我干脆站起来对着还没散的人喊：「看见没，{{buddy}}说我跳错，下次让ta上来跳！」全场笑。",
+     "immediate": {
+      "psyche": 2,
+      "ota_all": 2,
+      "@speaker": 1,
+      "stamina": -3
+     },
+     "delayed": []
+    }
+   ],
+   "casting": [
+    {
+     "slot": "buddy",
+     "select": {
+      "gender": "男",
+      "min_stickiness": 60
+     },
+     "allow_hatch": true
+    },
+    {
+     "slot": "hurt",
+     "select": {
+      "fan_type": "女友粉"
+     },
+     "allow_hatch": true
+    }
+   ]
+  },
+  {
+   "id": "ota_remembered",
+   "type": "OTA相处的瞬间",
+   "title": "记得我说过的话",
+   "gate": "任一 OTA 黏性 ≥ 60",
+   "weight": 1.0,
+   "cooldown": 5,
+   "casting": [
+    {
+     "slot": "listener",
+     "select": {
+      "min_stickiness": 60
+     },
+     "allow_hatch": true
+    }
+   ],
+   "narrative": "我随口跟{{listener}}提过一次，说我小时候住的那条巷子口有棵老槐树，夏天风一吹，落一地的花。今天散场，我桌上放着一个小玻璃瓶，里头是晒干的槐花，压着张纸条：『你说的那棵树。』我盯着那瓶子，忽然鼻子发酸——原来有人把我随口说的话，当成一件要记一辈子的事。",
+   "options": [
+    {
+     "id": "keep_and_remember_back",
+     "label": "好好收着，也开始记一件 ta 的事",
+     "desc": "被人这样记住，是会想还回去的",
+     "immediate": {
+      "psyche": 5,
+      "stamina": -4,
+      "@speaker": 5
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "开盒风险 ≥ 55",
+       "effect": {
+        "kaibox": 6
+       },
+       "note": "我把 ta 也记进了心里，这条线就越缠越紧，收不回来了"
+      }
+     ]
+    },
+    {
+     "id": "deflect",
+     "label": "笑说『你怎么记这个』，把话岔开",
+     "desc": "我怕被人这样记住，好像欠下了什么",
+     "immediate": {
+      "psyche": -3,
+      "@speaker": -4
+     },
+     "delayed": []
+    },
+    {
+     "id": "polite_distance",
+     "label": "当面道谢，但说『别为我花这些心思』",
+     "desc": "划条线，自己好受，凉了对方",
+     "immediate": {
+      "psyche": 3,
+      "ota_all": -2,
+      "@speaker": -3
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "ota_shashu_backstage",
+   "type": "OTA互动",
+   "title": "跳过去的那一眼",
+   "gate": "任一 OTA 黏性 ≥ 75 且 人气 ≥ 18",
+   "weight": 0.9,
+   "cooldown": 4,
+   "narrative": "最后一首的饭撒环节，我扫过去，{{oldfan}}在第三排偏左，那个位置坐了整个季度。ta手里举着的东西被灯晃得看不清，可我知道那是给我的。ta旁边的位置空着，再往右就是个生面孔，第一次来，一直低头看手机。我只有十秒，谁都知道这十秒是有数的。",
+   "options": [
+    {
+     "id": "give_new",
+     "label": "对着那张生面孔笑，把动作做给新人",
+     "desc": "第三排那位不会走的，ta一直都在",
+     "immediate": {
+      "fame": 3,
+      "ota_all": 1,
+      "psyche": -2,
+      "@speaker": -2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "banzi": 7
+       },
+       "note": "超话里多了一条：『单推在这个团到底算什么？』下面有人说我只看新来的"
+      }
+     ]
+    },
+    {
+     "id": "give_both",
+     "label": "对两边各走半步，雨露均沾",
+     "desc": "谁都不得罪，谁都没被专门看到",
+     "immediate": {
+      "fame": 1,
+      "stamina": -4,
+      "psyche": -3,
+      "@speaker": -1
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 40",
+       "effect": {
+        "banzi": 5
+       },
+       "note": "有人把这段截出来逐帧对比：『ta给谁都是这半下』"
+      }
+     ]
+    },
+    {
+     "id": "give_old",
+     "label": "先冲第三排点头，把这一下给ta",
+     "desc": "老熟人也需要被看见，不然ta凭什么一直来",
+     "immediate": {
+      "ota_all": 3,
+      "psyche": 3,
+      "fame": -1,
+      "@speaker": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "money": -120
+       },
+       "note": "那个生面孔没再来，这一场的票退了两张"
+      }
+     ]
+    }
+   ],
+   "casting": [
+    {
+     "slot": "oldfan",
+     "select": {
+      "min_stickiness": 75
+     },
+     "allow_hatch": true
+    }
+   ]
+  }
+ ]
 }

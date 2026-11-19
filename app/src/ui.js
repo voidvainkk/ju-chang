@@ -236,7 +236,7 @@ function applyOtaFold(folded) {
 if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold(!$("ota-panel").classList.contains("fold"));
 applyOtaFold(localStorage.getItem(OTA_FOLD_KEY) !== "0");
 
-/* ---------- BGM 唱片（默认不放歌，点唱片弹选歌窗） ---------- */
+/* ---------- BGM 唱片（进页自动播放，用户 2026-11-19 拍板；点唱片弹选歌窗） ---------- */
 const BGM_TRACKS = [
   { src: "bgm_1.mp3", name: "Offline Sedation" },
   { src: "bgm_2.mp3", name: "Digital Coma (1)" },

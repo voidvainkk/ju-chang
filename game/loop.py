@@ -310,7 +310,8 @@ class Game:
             return True
         if not wk["sun_talk"]:
             wk["sun_talk"] = 1
-            self.push(self._sun_talk_step())
+            # 周日的「还是这几个人」过场已删（用户 2026-11-19 拍板）：周日券账
+            # 之后直接接一次性提问和三张周卡，选完最后一张卡就结算。
             # 运营/累不累/离开这些一次性提问排在三张周卡前面：选完最后一张卡，
             # 紧接着就是周结算，中间不再插别的屏。
             for st in list(wk["extra"]) + list(wk["events"]):
@@ -980,7 +981,6 @@ class Game:
         # 每场各算各的账（人气决定今天谁来、来几个），state 里累加这一周的券数与
         # 收入，结算把所有场次加总——券账屏展示的钱就是会进钱包的钱。
         self._bill = B.weekly_bill(s, warm)
-        self._warm = warm
         s["_week_tickets"] = s.get("_week_tickets", 0) + self._bill["tickets"]
         s["_week_income"] = s.get("_week_income", 0) + self._bill["yen"]
         self._collect_week_extras(warm)
@@ -996,15 +996,6 @@ class Game:
     def _wait_after(self):
         """一屏内容出完了：队列里还剩东西就让它们接着走，空了就派发下一格。"""
         self.after_step()
-
-    def _sun_talk_step(self):
-        warm = getattr(self, "_warm", None) or []
-        if not warm:
-            return {"type": "text", "title": "周日·特典",
-                    "body": ["周日这场下来，没人留下来。桌子收得很早。"]}
-        names = "、".join(o["name"] for o in warm)
-        return {"type": "text", "title": "周日·特典",
-                "body": ["还是这几个人：%s。话都说过一遍了，剩下的就是坐着。" % names]}
 
     def _bill_step(self, sunday=False):
         return {"type": "bill", "title": "周日这一场的券" if sunday else "这一场的券",

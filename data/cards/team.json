@@ -1,1158 +1,1159 @@
 {
-  "_meta": {
-    "category": "团内队友",
-    "design_note": "三个队友各有调性：A真面、B竞争、C天真。每张卡＝一次'这些人跟你要不要一起走下去'的拉扯。选项在'护住关系 / 护住自己'之间付代价，没有纯赚。数值是选后回执。",
-    "teammates": {
-      "team_A": {
-        "name": "阿棠",
-        "tone": "真面。26岁，团里待得最久的，前一个团解散了她才来的。话少、准，抽很多烟又戒了。她什么都见过，所以不信任何承诺——除了你偶尔露出来的那点真。她是唯一一个会问你'你到底想做多久'的人。",
-        "relation_key": "relation_A"
-      },
-      "team_B": {
-        "name": "露露",
-        "tone": "竞争。22岁，人气第二、正在往上冲，觉得自己该是第一。对镜头永远在笑，转过身那笑就没了。她不是坏，她只是太想赢，赢对她来说是活下去。跟你的关系是客气里带刺。",
-        "relation_key": "relation_B"
-      },
-      "team_C": {
-        "name": "小满",
-        "tone": "天真。19岁，刚高中毕业，真心相信'只要努力就会被看见'。给每个OTA回长消息，包上贴手写便签。你看着她，像看一年前的自己——也因此最不忍心让她看到这行的底。",
-        "relation_key": "relation_C"
-      }
-    },
-    "resource_keys": {
-      "money": "钱",
-      "stamina": "体力",
-      "psyche": "心理",
-      "fame": "人气",
-      "stage": "舞台稳定",
-      "ota_all": "全体OTA黏性",
-      "relation_A": "队友A(真面·阿棠)",
-      "relation_B": "队友B(竞争·露露)",
-      "relation_C": "队友C(天真·小满)",
-      "relation_all": "团内关系整体",
-      "shiren": "私联人数",
-      "enjou": "炎上",
-      "kaibox": "开盒风险",
-      "shiroi": "私生跟踪",
-      "banzi": "板子关注度"
-    }
+ "_meta": {
+  "category": "团内队友",
+  "design_note": "三个队友各有调性：A真面、B竞争、C天真。每张卡＝一次'这些人跟你要不要一起走下去'的拉扯。选项在'护住关系 / 护住自己'之间付代价，没有纯赚。数值是选后回执。",
+  "teammates": {
+   "team_A": {
+    "name": "阿棠",
+    "tone": "真面。26岁，团里待得最久的，前一个团解散了她才来的。话少、准，抽很多烟又戒了。她什么都见过，所以不信任何承诺——除了你偶尔露出来的那点真。她是唯一一个会问你'你到底想做多久'的人。",
+    "relation_key": "relation_A"
+   },
+   "team_B": {
+    "name": "露露",
+    "tone": "竞争。22岁，人气第二、正在往上冲，觉得自己该是第一。对镜头永远在笑，转过身那笑就没了。她不是坏，她只是太想赢，赢对她来说是活下去。跟你的关系是客气里带刺。",
+    "relation_key": "relation_B"
+   },
+   "team_C": {
+    "name": "小满",
+    "tone": "天真。19岁，刚高中毕业，真心相信'只要努力就会被看见'。给每个OTA回长消息，包上贴手写便签。你看着她，像看一年前的自己——也因此最不忍心让她看到这行的底。",
+    "relation_key": "relation_C"
+   }
   },
-  "cards": [
+  "resource_keys": {
+   "money": "钱",
+   "stamina": "体力",
+   "psyche": "心理",
+   "fame": "人气",
+   "stage": "舞台稳定",
+   "ota_all": "全体OTA黏性",
+   "relation_A": "队友A(真面·阿棠)",
+   "relation_B": "队友B(竞争·露露)",
+   "relation_C": "队友C(天真·小满)",
+   "relation_all": "团内关系整体",
+   "shiren": "私联人数",
+   "enjou": "炎上",
+   "kaibox": "开盒风险",
+   "shiroi": "私生跟踪",
+   "banzi": "板子关注度"
+  }
+ },
+ "cards": [
+  {
+   "id": "team_shift_split",
+   "type": "团内",
+   "title": "只有两小时",
+   "gate": "无",
+   "weight": 1.0,
+   "cooldown": 3,
+   "narrative": "周末加练只有两个小时，排练室还是跟别的团拼的。阿棠说练老歌，稳，别在台上出丑；露露说排新曲，趁热冲一把，老歌谁都会。小满两边都点头，眼睛在我和阿棠、露露之间来回看。我夹在中间，知道这两小时怎么分，今晚就得罪一个人。",
+   "options": [
     {
-      "id": "team_shift_split",
-      "type": "团内",
-      "title": "只有两小时",
-      "gate": "无",
-      "weight": 1.0,
-      "cooldown": 3,
-      "narrative": "周末加练只有两个小时，排练室还是跟别的团拼的。阿棠说练老歌，稳，别在台上出丑；露露说排新曲，趁热冲一把，老歌谁都会。小满两边都点头，眼睛在我和阿棠、露露之间来回看。我夹在中间，知道这两小时怎么分，今晚就得罪一个人。",
-      "options": [
-        {
-          "id": "support_A",
-          "label": "听阿棠的，练老歌保稳",
-          "desc": "把新曲先放一放，别在台上翻车",
-          "immediate": {
-            "relation_A": 2,
-            "relation_B": -5,
-            "stage": 2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "relation_B": -3
-              },
-              "note": "露露练新曲时故意不带你和声，说'反正你们求稳'",
-              "card_id": "due_g_harmony"
-            }
-          ]
-        },
-        {
-          "id": "support_B",
-          "label": "挺露露，搏一把新曲",
-          "desc": "老歌留到 live 当天再顺，先把新曲啃下来",
-          "immediate": {
-            "relation_B": 2,
-            "relation_A": -4,
-            "stamina": -12,
-            "fame": 1
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "stage": 2
-              },
-              "note": "新曲排出来了，毛糙，可现场那股生猛劲救了场"
-            }
-          ]
-        },
-        {
-          "id": "split_half",
-          "label": "各练一半，谁都别落下",
-          "desc": "我来排时间，两边都抠一点",
-          "immediate": {
-            "relation_all": 1,
-            "stamina": -18,
-            "psyche": -3
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "stage": -2
-              },
-              "note": "两首都练得半生不熟，live 前一晚我还在抠动作"
-            }
-          ]
-        }
-      ]
+     "id": "support_A",
+     "label": "听阿棠的，练老歌保稳",
+     "desc": "把新曲先放一放，别在台上翻车",
+     "immediate": {
+      "relation_A": 2,
+      "relation_B": -5,
+      "stage": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "relation_B": -3
+       },
+       "note": "露露练新曲时故意不带我和声，说'反正我们求稳'",
+       "card_id": "due_g_harmony"
+      }
+     ]
     },
     {
-      "id": "team_truth",
-      "type": "团内",
-      "title": "你到底想做多久",
-      "gate": "心理 ≥ 40 且 阿棠关系 ≥ 42",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "排练散了，阿棠没走，递给我一根没点的烟，自己也没点。排练室的灯只开了一半，她的脸在暗里。她忽然问：『你到底想做多久？』——不是问这个团，是问我。我张了张嘴，发现这个问题我从来没认真回答过自己。",
-      "options": [
-        {
-          "id": "tell_truth",
-          "label": "说实话，说我也怕，也不知道能撑多久",
-          "desc": "把那层撑着的壳，在她面前卸一点",
-          "immediate": {
-            "relation_A": 3,
-            "psyche": -4,
-            "relation_all": 1
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "心理 < 30",
-              "effect": {
-                "psyche": 8
-              },
-              "note": "最难的那晚，阿棠没多说，只发来一句『我还在』"
-            }
-          ]
-        },
-        {
-          "id": "deflect",
-          "label": "打太极，说走一步看一步呗",
-          "desc": "笑笑，把烟推回去",
-          "immediate": {
-            "psyche": 3,
-            "relation_A": -4
-          },
-          "delayed": []
-        },
-        {
-          "id": "ask_back",
-          "label": "反问她：那你呢，你想做多久",
-          "desc": "把这个问题原样扔回去",
-          "immediate": {
-            "relation_A": 1,
-            "psyche": 2,
-            "relation_B": -2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "relation_A": 1
-              },
-              "note": "阿棠笑了一下，说『问得好』，那天之后她对我的态度松了"
-            }
-          ]
-        }
-      ]
+     "id": "support_B",
+     "label": "挺露露，搏一把新曲",
+     "desc": "老歌留到 live 当天再顺，先把新曲啃下来",
+     "immediate": {
+      "relation_B": 2,
+      "relation_A": -4,
+      "stamina": -12,
+      "fame": 1
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "stage": 2
+       },
+       "note": "新曲排出来了，毛糙，可现场那股生猛劲救了场"
+      }
+     ]
     },
     {
-      "id": "team_innocence",
-      "type": "团内",
-      "title": "是不是真的没人看",
-      "gate": "小满关系 ≥ 35",
-      "weight": 0.9,
-      "cooldown": 3,
-      "narrative": "半夜小满发来消息，一张截图，是个帖子，骂我们团『糊得连应援色都没人认得出』。她问：『姐，是不是真的没人看我们啊？』隔了几秒又发：『我是不是很没用。』我盯着那两行字，想起她包里那些手写便签，心里发堵。",
-      "options": [
-        {
-          "id": "comfort_honest",
-          "label": "说实话安慰：难，但我们的场子是真的",
-          "desc": "不骗她，也不让她一个人扛",
-          "immediate": {
-            "relation_C": 3,
-            "psyche": -4
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "relation_C": 1
-              },
-              "note": "小满哭完，第二天照常来排练，只是笑少了"
-            }
-          ]
-        },
-        {
-          "id": "white_lie",
-          "label": "编个善意的谎：那帖子是黑粉故意黑的",
-          "desc": "先把她护住，别的以后再说",
-          "immediate": {
-            "relation_C": 2,
-            "psyche": 2,
-            "relation_all": -2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 40",
-              "effect": {
-                "relation_C": -8
-              },
-              "note": "她后来自己刷到了那条帖子，回头问我那天为什么骗她",
-              "card_id": "due_d_phone"
-            }
-          ]
-        },
-        {
-          "id": "change_subject",
-          "label": "转移话题，问她想不想吃夜宵",
-          "desc": "这种问题，我答不动",
-          "immediate": {
-            "psyche": 3,
-            "relation_C": -3
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_fallout",
-      "type": "团内",
-      "title": "锅甩到我头上",
-      "gate": "曾欠队友人情 且 周 ≥ 2",
-      "weight": 0.9,
-      "cooldown": 4,
-      "narrative": "运营问上次排练缺席怎么回事。我还没开口，露露先说了：『那天她状态就不对，我提醒过。』她语气很平，像在说别人的事。上周我才替她顶过班——那点人情，她今天拿来抵这一句了。三个人都在场，谁都没接话。",
-      "options": [
-        {
-          "id": "confront",
-          "label": "当场对质：上周是谁替你顶的班",
-          "desc": "把这笔账摊到台面上",
-          "immediate": {
-            "psyche": 3,
-            "relation_B": -8,
-            "enjou": 2
-          },
-          "delayed": []
-        },
-        {
-          "id": "swallow",
-          "label": "忍下，不在这时候撕",
-          "desc": "认了，回头再说",
-          "immediate": {
-            "psyche": -8,
-            "relation_all": 1
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "心理 < 30",
-              "effect": {
-                "psyche": -6
-              },
-              "note": "那口没咽下去的气，某天凌晨全堵在胸口"
-            }
-          ]
-        },
-        {
-          "id": "ask_A",
-          "label": "请阿棠评评理",
-          "desc": "这团里，她说话还算数",
-          "immediate": {
-            "relation_A": 2,
-            "relation_B": -4,
-            "psyche": 2
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "relation_all": -3
-              },
-              "note": "阿棠把事压下来了，可『拉帮结派』这个话头，从此在团里散不掉"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "team_scapegoat",
-      "type": "团内",
-      "title": "总要有人背这个锅",
-      "gate": "炎上 ≥ 12",
-      "weight": 1.0,
-      "cooldown": 5,
-      "narrative": "一次翻车之后，运营的脸色很难看，说这场得有人负责，暗示是『某个人状态不行』。会议室里三个人都看着我，又都飞快地移开眼。我知道，谁先开口，这口锅就是谁的。空气里全是没人敢先呼吸的声音。",
-      "options": [
-        {
-          "id": "take_blame",
-          "label": "我来背，说是我状态不好",
-          "desc": "一个人认了，别把团拖进去",
-          "immediate": {
-            "relation_all": 3,
-            "psyche": -10,
-            "enjou": 3
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "炎上 ≥ 60",
-              "effect": {
-                "fame": -8
-              },
-              "note": "『那个出事的』成了我的标签，运营开始在排班上边缘化我"
-            }
-          ]
-        },
-        {
-          "id": "push_B",
-          "label": "顺着暗示，把话头引向露露",
-          "desc": "她本来那场就走神",
-          "immediate": {
-            "relation_B": -12,
-            "psyche": 4,
-            "relation_all": -5
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "enjou": 6
-              },
-              "note": "露露没辩解，只是那天下班后，一个人在天台站了很久",
-              "card_id": "due_b_roof"
-            }
-          ],
-          "flags": [
-            "owe_team"
-          ]
-        },
-        {
-          "id": "everyone",
-          "label": "说这是我们三个人的问题，一起扛",
-          "desc": "不给运营找人开刀的机会",
-          "immediate": {
-            "relation_all": 2,
-            "stamina": -10,
-            "fame": 1
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "stage": -2
-              },
-              "note": "一起扛赢回了口碑，可三个人都累到脱形"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "team_trust_test",
-      "type": "团内",
-      "title": "只告诉了你一个人",
-      "gate": "阿棠关系 ≥ 42 且 心理 ≥ 50",
-      "weight": 1.0,
-      "cooldown": 6,
-      "narrative": "阿棠把我叫到后台，说她要退了，合约到期就不续了。她顿了顿：『这事我只告诉了你一个人，别说出去。』我看着她，忽然明白过来——她要是走了，这个团就散了一半。而我现在，手里攥着一件说出来能拦住她、也会毁掉她信任的事。",
-      "options": [
-        {
-          "id": "keep_secret",
-          "label": "守口如瓶，一个字都不说",
-          "desc": "这是她唯一交到我手上的东西",
-          "immediate": {
-            "relation_A": 5,
-            "psyche": -6
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "小满关系 < 40",
-              "effect": {
-                "relation_all": -10
-              },
-              "note": "阿棠走的那天，小满看着我，像在看一个共谋"
-            }
-          ]
-        },
-        {
-          "id": "tell_ops",
-          "label": "偷偷告诉运营，让他们挽留",
-          "desc": "团不能散，哪怕她会恨我",
-          "immediate": {
-            "relation_A": -14,
-            "relation_all": 1,
-            "psyche": 3
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "stage": 4
-              },
-              "note": "团还在，可阿棠那天看我的眼神，我到结局都记得"
-            }
-          ]
-        },
-        {
-          "id": "persuade_her",
-          "label": "劝她自己说出去，别一个人扛",
-          "desc": "把决定权还给她，不替她选",
-          "immediate": {
-            "relation_A": 2,
-            "psyche": -3,
-            "stage": 1
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "阿棠关系 ≥ 75",
-              "effect": {
-                "relation_A": 2
-              },
-              "note": "她最后没走。她说，是因为那天我没有替她决定"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "team_lulu_cry",
-      "type": "团内关系",
-      "title": "撞见露露一个人在后台哭",
-      "gate": "露露关系 ≥ 40 且 周 ≥ 3",
-      "weight": 1.0,
-      "cooldown": 5,
-      "narrative": "回后台拿东西，撞见露露一个人蹲在器材箱后面，肩膀一抽一抽的。她听见动静猛地抬头，眼睛红得像被人打了一拳，第一反应是把脸别过去：『你什么都没看见。』那个平时在台上抢我镜头、说话带刺的人，原来也会这样。我站在门口，进也不是，退也不是。",
-      "options": [
-        {
-          "id": "sit_and_tissue",
-          "label": "蹲下来，什么也不问，递张纸巾",
-          "desc": "有时候人要的不是办法，是有人陪着",
-          "immediate": {
-            "relation_B": 3,
-            "psyche": 3,
-            "stamina": -2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "露露关系 ≥ 70",
-              "effect": {
-                "relation_all": 2
-              },
-              "note": "后来排练有人挑你刺，是露露替你挡了一句"
-            }
-          ]
-        },
-        {
-          "id": "i_saw_nothing",
-          "label": "说『我什么都没看见』，转身走",
-          "desc": "守住她的面子，也关上了那扇门",
-          "immediate": {
-            "relation_B": -3,
-            "psyche": -2
-          },
-          "delayed": []
-        },
-        {
-          "id": "ask_and_help",
-          "label": "问她怎么了，说『我们可以一起想办法』",
-          "desc": "靠近了，可她的难处也许会变成你的",
-          "immediate": {
-            "relation_B": 1,
-            "psyche": -5,
-            "stamina": -4
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "心理 < 35",
-              "effect": {
-                "psyche": -4
-              },
-              "note": "她的难处你扛了一半，才发现自己也没那么多余力"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "team_money_split",
-      "type": "团内",
-      "title": "分钱的时候",
-      "gate": "周 ≥ 2",
-      "weight": 1.1,
-      "cooldown": 4,
-      "narrative": "运营把这一场的账摊在桌上，说特典收入要按人数分。露露当场就笑了：『按人数？我这一场买券的人最多。』小满低头看手机，阿棠没说话。运营看着我说：『你是 C 位，你说怎么分。』",
-      "options": [
-        {
-          "id": "split_by_tickets",
-          "label": "按券分，谁卖得多谁多拿",
-          "desc": "公平，但把「谁更像商品」摆到了台面上",
-          "immediate": {
-            "relation_B": 2,
-            "relation_C": -5,
-            "relation_A": -2,
-            "psyche": -2
-          },
-          "delayed": []
-        },
-        {
-          "id": "split_even",
-          "label": "平分，谁也别多谁也别少",
-          "desc": "保住感情，露露会记这一笔",
-          "immediate": {
-            "relation_A": 2,
-            "relation_C": 2,
-            "relation_B": -6,
-            "fame": -1
-          },
-          "delayed": []
-        },
-        {
-          "id": "split_by_need",
-          "label": "按谁这个月更缺钱来分",
-          "desc": "把私事当依据，谁都得说点不想说的",
-          "immediate": {
-            "relation_C": 2,
-            "relation_B": -3,
-            "stamina": -3,
-            "psyche": -4
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "relation_B": -3
-              },
-              "note": "露露私下跟人说，C 位拿钱的时候讲的是感情",
-              "card_id": "due_f_backstage"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "team_center_push",
-      "type": "团内",
-      "title": "招新的海报",
-      "gate": "人气 ≥ 12 且 周 ≥ 2",
-      "weight": 1.0,
-      "cooldown": 5,
-      "narrative": "运营做了新海报，主视觉是两个人，露露站在我旁边，位置其实是齐的。她看了两遍，忽然问：『为什么我不能站中间？』运营端着手机打哈哈，让我决定。",
-      "options": [
-        {
-          "id": "give_her_center",
-          "label": "让她站中间，我去旁边",
-          "desc": "队里会松一口气，外面会说这个团乱了",
-          "immediate": {
-            "relation_B": 4,
-            "fame": -4,
-            "psyche": -3,
-            "relation_A": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "keep_center_dry",
-          "label": "照原样，说这是运营定的",
-          "desc": "把决定推给上面，谁也不得罪，也没人舒服",
-          "immediate": {
-            "relation_B": -5,
-            "psyche": 2,
-            "enjou": 1
-          },
-          "delayed": []
-        },
-        {
-          "id": "two_posters",
-          "label": "说做两版，一人一版轮着发",
-          "desc": "两边都照顾了，成本是时间和钱",
-          "immediate": {
-            "money": -180,
-            "relation_B": 2,
-            "relation_all": 1,
-            "stamina": -4
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_mamman_cried",
-      "type": "团内",
-      "title": "排练被骂哭了",
-      "gate": "周 ≥ 2",
-      "weight": 1.1,
-      "cooldown": 4,
-      "narrative": "排练到一半，老师指着小满说『你再这样下去就别上了』。小满没顶嘴，一直低着头。散场以后她坐在台阶上没走，裙摆上还沾着排练室地板的灰。我站在门口，里面灯还亮着，老师在收音响。",
-      "options": [
-        {
-          "id": "sit_with_her",
-          "label": "走过去陪她坐一会儿，什么也不说",
-          "desc": "今晚练不成了，可她需要有人在场",
-          "immediate": {
-            "relation_C": 4,
-            "stamina": -4,
-            "psyche": 2
-          },
-          "delayed": []
-        },
-        {
-          "id": "go_back_practice",
-          "label": "回去接着练，明天再来找她",
-          "desc": "先把自己的事做对，她会懂也会记",
-          "immediate": {
-            "relation_C": -4,
-            "dance": 2,
-            "psyche": -3
-          },
-          "delayed": []
-        },
-        {
-          "id": "talk_to_teacher",
-          "label": "去跟老师说，能不能再给她一次机会",
-          "desc": "替她把话说出口，老师的火转到这边",
-          "immediate": {
-            "relation_C": 3,
-            "enjou": 2,
-            "psyche": -5
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "effect": {
-                "relation_all": -2
-              },
-              "note": "老师后来在群里点了名，说有人替别人求情"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "team_atang_quit",
-      "type": "团内",
-      "title": "她说她大概要走了",
-      "gate": "阿棠关系 ≥ 42 且 周 ≥ 3",
-      "weight": 1.0,
-      "cooldown": 6,
-      "narrative": "阿棠把手机递过来，屏幕上是她妈发的一串语音，标题写着『房子的事』。她收回手机，说：『我可能下个月就不干了。』说得很轻，像怕我听见。排练室外面有人在搬箱子，声音一下一下的。",
-      "options": [
-        {
-          "id": "ask_her_stay",
-          "label": "问她留下要什么条件，能帮的都帮",
-          "desc": "把她的难处接过来一部分",
-          "immediate": {
-            "relation_A": 5,
-            "money": -300,
-            "psyche": -4,
-            "stamina": -3
-          },
-          "delayed": []
-        },
-        {
-          "id": "let_her_go",
-          "label": "说不管你走不走，我都记得这一段",
-          "desc": "不拦，把话说到，心里空一块",
-          "immediate": {
-            "relation_A": 2,
-            "psyche": -6
-          },
-          "delayed": []
-        },
-        {
-          "id": "ask_ops",
-          "label": "去问运营有没有办法留人",
-          "desc": "把事情交给有办法的人，也交出去了她的私事",
-          "immediate": {
-            "relation_A": -3,
-            "relation_all": 1,
-            "enjou": 1,
-            "psyche": 2
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_late_rollcall",
-      "type": "团内",
-      "title": "又是她迟到",
-      "gate": "周 ≥ 2 且 体力 < 60",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "第三次了。露露踩着点到，包都不换就站进队形。老师看了我一眼，意思是『你是 C 位』。队里没人说话，可所有人都在等一个态度，包括露露自己。",
-      "options": [
-        {
-          "id": "cover_for_her",
-          "label": "跟大家说这次算我的",
-          "desc": "把事压下去，队里会记我一笔",
-          "immediate": {
-            "relation_B": 2,
-            "relation_A": -3,
-            "relation_C": -2,
-            "psyche": -4
-          },
-          "delayed": []
-        },
-        {
-          "id": "call_it_out",
-          "label": "当着所有人说清楚规矩",
-          "desc": "规矩立住了，露露会记住是我开的口",
-          "immediate": {
-            "relation_B": -8,
-            "relation_A": 2,
-            "relation_C": 1,
-            "psyche": -2
-          },
-          "delayed": []
-        },
-        {
-          "id": "ask_why_private",
-          "label": "散场以后单独问她怎么了",
-          "desc": "先问原因，再谈规矩",
-          "immediate": {
-            "relation_B": 1,
-            "stamina": -3,
-            "psyche": -2
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "露露关系 ≥ 65",
-              "effect": {
-                "relation_B": 2
-              },
-              "note": "她后来没再迟到，还在群里说了句『以后我不拖团里后腿』"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "team_cold_war",
-      "type": "团内",
-      "title": "群里安静了三天",
-      "gate": "周 ≥ 3",
-      "weight": 0.9,
-      "cooldown": 5,
-      "narrative": "排练完没人走，也没人说话。收东西的声音特别响。有人把空调关了，有人又重新打开。我知道前天那件事还没过去，可是谁也不想当第一个开口的人。",
-      "options": [
-        {
-          "id": "break_ice",
-          "label": "先开口，把那件事摆出来说",
-          "desc": "撕开一次，可能好也可能更糟",
-          "immediate": {
-            "relation_all": 1,
-            "psyche": -5,
-            "stamina": -2
-          },
-          "delayed": []
-        },
-        {
-          "id": "let_it_rot",
-          "label": "谁都不提，让时间过去",
-          "desc": "短期太平，坏的会沉下去",
-          "immediate": {
-            "psyche": 2,
-            "relation_all": -3
-          },
-          "delayed": [
-            {
-              "when": "条件",
-              "condition": "队友关系均值 < 45",
-              "effect": {
-                "relation_all": -4
-              },
-              "note": "那三天的事没人再提，可排练时再没人接我的话",
-              "card_id": "due_c_silence"
-            }
-          ]
-        },
-        {
-          "id": "buy_them_food",
-          "label": "自掏腰包点了宵夜，边吃边聊",
-          "desc": "钱能买一点缓冲",
-          "immediate": {
-            "money": -120,
-            "relation_all": 2,
-            "stamina": -2
-          },
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_break_off",
-      "type": "团内",
-      "title": "那句不该说的话",
-      "gate": "周 ≥ 3",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "排练到第三遍，鼓点又错了。我说了一句，说完屋子里就安静了。她没有回嘴，只是把鼓棒放下，走到门口站着。",
-      "casting": [],
-      "options": [
-        {
-          "id": "bo_apologize_later",
-          "label": "第二天买一杯放在她更衣室的柜子上",
-          "desc": "不说对不起，就当没发生过",
-          "immediate": {
-            "relation_A": -4,
-            "relation_B": -6,
-            "relation_C": -2,
-            "psyche": -4,
-            "money": -18
-          },
-          "note": "她喝了，没问是不是我买的。"
-        },
-        {
-          "id": "bo_apologize_now",
-          "label": "追到门口，把那句话收回来",
-          "desc": "承认刚才那话说重了",
-          "immediate": {
-            "relation_A": -1,
-            "relation_B": -1,
-            "relation_C": -1,
-            "psyche": -6,
-            "stamina": -2
-          },
-          "note": "她说没关系，声音是平的。"
-        },
-        {
-          "id": "bo_double_down",
-          "label": "不追，接着把这一段跳完",
-          "desc": "台上不许有人拖后腿，这话总得有人说",
-          "immediate": {
-            "relation_A": -8,
-            "relation_B": -12,
-            "relation_C": -8,
-            "stage": 2,
-            "fame": 1
-          },
-          "delayed": [
-            {
-              "when": "下周",
-              "note": "她开始在群里回得越来越短，散场也不等我了。",
-              "effect": {
-                "relation_all": -3,
-                "psyche": -2
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "truth_team_doubt",
-      "type": "团内",
-      "title": "她说这团没救了",
-      "gate": "周 ≥ 2 且 任一队友关系 ≥ 30",
-      "weight": 2.0,
-      "cooldown": 2,
-      "narrative": "排练间隙，队友靠着墙喝水，忽然说：「你是不是也觉得，这团没救了。」没抬头。",
-      "options": [
-        {
-          "id": "admit_yes",
-          "label": "「是」",
-          "desc": "一个字，说出来比想象中轻",
-          "tone": "truth",
-          "immediate": {
-            "relation_all": 4,
-            "psyche": 2,
-            "template": -0.01
-          },
-          "delayed": [],
-          "note": "她把水瓶放下，过了一会儿才说：『我也觉得。』"
-        },
-        {
-          "id": "say_keep_going",
-          "label": "「再撑撑看」",
-          "desc": "这句话我已经说得很顺了",
-          "tone": "safe",
-          "immediate": {
-            "template": 0.02,
-            "psyche": -1
-          },
-          "delayed": [],
-          "note": "她笑了一下，没接话"
-        }
-      ]
-    },
-    {
-      "id": "truth_after_live",
-      "type": "团内",
-      "title": "散场后，她说我笑得很假",
-      "gate": "周 ≥ 3",
-      "weight": 1.8,
-      "cooldown": 2,
-      "narrative": "散场后人走得差不多了，队友把外套搭在肩上：「你刚才那段，笑得很假。」语气不重，像在确认。",
-      "options": [
-        {
-          "id": "say_thinking_elsewhere",
-          "label": "「因为我在想别的事」",
-          "desc": "承认走神，比承认难过容易一点",
-          "tone": "truth",
-          "immediate": {
-            "relation_all": 3,
-            "psyche": 4,
-            "enjou": 1
-          },
-          "delayed": [],
-          "note": "她点点头：『看出来了。』"
-        },
-        {
-          "id": "say_just_tired",
-          "label": "「可能太累了吧」",
-          "desc": "把真话折成一个更安全的形状",
-          "tone": "safe",
-          "immediate": {
-            "template": 0.02,
-            "psyche": -2
-          },
-          "delayed": [],
-          "note": "她「嗯」了一声，先走了"
-        }
-      ]
-    },
-    {
-      "id": "team_fridge",
-      "type": "团内关系",
-      "title": "排练室的冰箱",
-      "gate": "队友关系均值 < 50",
-      "weight": 1.0,
-      "cooldown": 4,
-      "narrative": "排练室那台旧冰箱，门一开就是股馊味。里面塞着上个月谁买的、已经说不清是谁的酸奶和半盒草莓。没人愿意先扔——扔了好像就成了那个计较的人。今天又有人把吃剩的便当塞进去，盖子都没盖。",
-      "options": [
-        {
-          "id": "clean_fridge",
-          "label": "买了新的，把过期的全清了",
-          "desc": "花点钱，眼不见为净",
-          "immediate": {
-            "money": -300,
-            "relation_all": 4
-          },
-          "note": "我把冰箱擦了整整一下午。她们回来时愣了一下，谁都没提，可阿棠默默把新买的牛奶摆正了。",
-          "delayed": []
-        },
-        {
-          "id": "split_chores",
-          "label": "摊开说，谁的东西谁负责",
-          "desc": "把规矩立起来，但会有点难看",
-          "immediate": {
-            "money": -150,
-            "relation_all": 3,
-            "psyche": -2
-          },
-          "note": "我买了张便签贴门上，一人一格。露露没说话，第二天她那格是空的。",
-          "delayed": []
-        },
-        {
-          "id": "let_it_rot",
-          "label": "算了，把门关上",
-          "desc": "省下力气，也省下争执",
-          "immediate": {
-            "psyche": 6,
-            "relation_all": -1
-          },
-          "note": "我把门轻轻带上。那股味道后面几天都散不掉，像谁也没打算收拾的东西。",
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_speak_out",
-      "type": "团内关系",
-      "title": "把话说开",
-      "gate": "队友关系均值 < 42 且 周 ≥ 3",
-      "weight": 1.0,
-      "cooldown": 6,
-      "narrative": "这套架已经吵得不成样子了。排到一半，谁都不看谁，动作全在对着空气做。散场以后没人走，都坐在那儿，等一个人先开口。我们心里都清楚，再绕下去，这个团就散了。",
-      "options": [
-        {
-          "id": "speak_all",
-          "label": "今天不排了，坐下来把话全说开",
-          "desc": "累一场，但可能是唯一的机会",
-          "immediate": {
-            "stamina": -10,
-            "psyche": -6,
-            "relation_all": 7
-          },
-          "note": "从下午说到天黑，哭的哭，翻旧账的翻旧账。走的时候谁都没笑，可第二天排练，鼓点第一次没错。",
-          "delayed": []
-        },
-        {
-          "id": "speak_part",
-          "label": "挑最要紧的那件说",
-          "desc": "不全摊开，留点体面",
-          "immediate": {
-            "relation_all": 3,
-            "psyche": -2
-          },
-          "note": "我只提了排班的事，绕开了真正的那个疙瘩。她们松了口气，我也松了口气——裂缝还在。",
-          "delayed": []
-        },
-        {
-          "id": "swallow",
-          "label": "想想还是算了，忍过去",
-          "desc": "维持表面的平静",
-          "immediate": {
-            "relation_all": -3,
-            "psyche": 3
-          },
-          "note": "话到嘴边又咽了回去。那晚我们照常排完，散了。我知道有些东西正在慢慢凉掉。",
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_carry_load",
-      "type": "团内关系",
-      "title": "替大家扛一次",
-      "gate": "队友关系均值 < 60 且 体力 ≥ 50",
-      "weight": 1.0,
-      "cooldown": 6,
-      "narrative": "这个月的脏活累活堆成了山：搬器材、跑物料、占排练室、陪运营开会。总得有人接。她们看我的眼神里有点过意不去，又有点松一口气。我知道这时候站出来的人，会被记住。",
-      "options": [
-        {
-          "id": "carry_all",
-          "label": "这周最脏最累的活，我一个人接了",
-          "desc": "身体会垮一点，但她们看得见",
-          "immediate": {
-            "stamina": -15,
-            "relation_all": 6
-          },
-          "note": "连续四天我先到排练室、最后一个走。没人道谢，但小满把她的热水袋塞给了我。",
-          "delayed": []
-        },
-        {
-          "id": "carry_half",
-          "label": "能搭把手的地方搭一下",
-          "desc": "量力而行",
-          "immediate": {
-            "stamina": -8,
-            "relation_all": 2
-          },
-          "note": "我多搬了几趟器材。阿棠看了我一眼，说『你也不容易』，然后接过了我手里的箱子。",
-          "delayed": []
-        },
-        {
-          "id": "not_carry",
-          "label": "这不是我的活，凭什么",
-          "desc": "守住自己的边界",
-          "immediate": {
-            "relation_all": -2,
-            "psyche": 3
-          },
-          "note": "我说了句『轮也该轮到别人了吧』。空气静了一秒，露露笑了一下，那笑什么都没说。",
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_last_train",
-      "type": "团内关系",
-      "title": "一起等末班车",
-      "gate": "队友关系均值 < 55",
-      "weight": 1.0,
-      "cooldown": 5,
-      "narrative": "演出结束已经十一点多，站台上只剩我们几个。末班车还有二十分钟。有人说明早还早，先撤了；有人没动。风有点凉，路灯把影子拉得老长。",
-      "options": [
-        {
-          "id": "wait_together",
-          "label": "谁都别先走，一起等",
-          "desc": "多站半个小时而已",
-          "immediate": {
-            "stamina": -4,
-            "relation_all": 3
-          },
-          "note": "末班车迟迟不来，我们蹲在站台上分一包薯片。小满说到她小时候的事，露露笑得直不起腰。",
-          "delayed": []
-        },
-        {
-          "id": "call_cab",
-          "label": "算了，打车送她们回去",
-          "desc": "花点钱，省点力气",
-          "immediate": {
-            "money": -120,
-            "relation_all": 3,
-            "stamina": -2
-          },
-          "note": "车里挤了四个人，谁都没说话，可那种安静不难受。到楼下阿棠说，谢谢啊。",
-          "delayed": []
-        },
-        {
-          "id": "go_alone",
-          "label": "我先走一步，明早还早",
-          "desc": "各回各的",
-          "immediate": {
-            "psyche": 2,
-            "relation_all": -1
-          },
-          "note": "我说了句先撤了，一个人走向地铁口。回头看了一眼，她们三个还挤在站牌底下。",
-          "delayed": []
-        }
-      ]
-    },
-    {
-      "id": "team_no_apology",
-      "type": "团内关系",
-      "title": "谁都不肯先道歉",
-      "gate": "队友关系均值 < 45 且 周 ≥ 3",
-      "weight": 1.0,
-      "cooldown": 6,
-      "narrative": "为了一件早该过去的小事，我们四个已经三天没好好说话了。排练时各练各的，散场各走各的。谁都知道再这样下去会出事，可谁都不肯先开口——先低头的那个，好像就输了。",
-      "options": [
-        {
-          "id": "apologize_first",
-          "label": "我先说『那天是我急了』",
-          "desc": "把面子放下",
-          "immediate": {
-            "psyche": -5,
-            "relation_all": 6
-          },
-          "note": "话一出口，屋子里静了两秒。然后阿棠说『我也有不对』。那堵墙，就这么塌了一角。",
-          "delayed": []
-        },
-        {
-          "id": "milk_tea",
-          "label": "买四杯奶茶放桌上，什么都不说",
-          "desc": "用行动代替道歉",
-          "immediate": {
-            "money": -160,
-            "relation_all": 4,
-            "psyche": -2
-          },
-          "note": "她们进来看到奶茶，谁都没问是谁买的，一人拿了一杯。露露喝了一口说『太甜了』，但喝完了。",
-          "delayed": []
-        },
-        {
-          "id": "wait_them",
-          "label": "等她们先低头",
-          "desc": "我不欠这一步",
-          "immediate": {
-            "psyche": 3,
-            "relation_all": -2
-          },
-          "note": "我照常排我的。第三天小满先绷不住，红着眼眶来拉我。我赢了这一步，也输了点什么。",
-          "delayed": []
-        }
-      ]
+     "id": "split_half",
+     "label": "各练一半，谁都别落下",
+     "desc": "我来排时间，两边都抠一点",
+     "immediate": {
+      "relation_all": 1,
+      "stamina": -18,
+      "psyche": -3
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "stage": -2
+       },
+       "note": "两首都练得半生不熟，live 前一晚我还在抠动作"
+      }
+     ]
     }
-  ]
+   ]
+  },
+  {
+   "id": "team_truth",
+   "type": "团内",
+   "title": "你到底想做多久",
+   "gate": "心理 ≥ 40 且 阿棠关系 ≥ 42",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "排练散了，阿棠没走，递给我一根没点的烟，自己也没点。排练室的灯只开了一半，她的脸在暗里。她忽然问：『你到底想做多久？』——不是问这个团，是问我。我张了张嘴，发现这个问题我从来没认真回答过自己。",
+   "options": [
+    {
+     "id": "tell_truth",
+     "label": "说实话，说我也怕，也不知道能撑多久",
+     "desc": "把那层撑着的壳，在她面前卸一点",
+     "immediate": {
+      "relation_A": 3,
+      "psyche": -4,
+      "relation_all": 1
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 30",
+       "effect": {
+        "psyche": 8
+       },
+       "note": "最难的那晚，阿棠没多说，只发来一句『我还在』"
+      }
+     ]
+    },
+    {
+     "id": "deflect",
+     "label": "打太极，说走一步看一步呗",
+     "desc": "笑笑，把烟推回去",
+     "immediate": {
+      "psyche": 3,
+      "relation_A": -4
+     },
+     "delayed": []
+    },
+    {
+     "id": "ask_back",
+     "label": "反问她：那你呢，你想做多久",
+     "desc": "把这个问题原样扔回去",
+     "immediate": {
+      "relation_A": 1,
+      "psyche": 2,
+      "relation_B": -2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "relation_A": 1
+       },
+       "note": "阿棠笑了一下，说『问得好』，那天之后她对我的态度松了"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_innocence",
+   "type": "团内",
+   "title": "是不是真的没人看",
+   "gate": "小满关系 ≥ 35",
+   "weight": 0.9,
+   "cooldown": 3,
+   "narrative": "半夜小满发来消息，一张截图，是个帖子，骂我们团『糊得连应援色都没人认得出』。她问：『姐，是不是真的没人看我们啊？』隔了几秒又发：『我是不是很没用。』我盯着那两行字，想起她包里那些手写便签，心里发堵。",
+   "options": [
+    {
+     "id": "comfort_honest",
+     "label": "说实话安慰：难，但我们的场子是真的",
+     "desc": "不骗她，也不让她一个人扛",
+     "immediate": {
+      "relation_C": 3,
+      "psyche": -4
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "relation_C": 1
+       },
+       "note": "小满哭完，第二天照常来排练，只是笑少了"
+      }
+     ]
+    },
+    {
+     "id": "white_lie",
+     "label": "编个善意的谎：那帖子是黑粉故意黑的",
+     "desc": "先把她护住，别的以后再说",
+     "immediate": {
+      "relation_C": 2,
+      "psyche": 2,
+      "relation_all": -2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 40",
+       "effect": {
+        "relation_C": -8
+       },
+       "note": "她后来自己刷到了那条帖子，回头问我那天为什么骗她",
+       "card_id": "due_d_phone"
+      }
+     ]
+    },
+    {
+     "id": "change_subject",
+     "label": "转移话题，问她想不想吃夜宵",
+     "desc": "这种问题，我答不动",
+     "immediate": {
+      "psyche": 3,
+      "relation_C": -3
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_fallout",
+   "type": "团内",
+   "title": "锅甩到我头上",
+   "gate": "曾欠队友人情 且 周 ≥ 2",
+   "weight": 0.9,
+   "cooldown": 4,
+   "narrative": "运营问上次排练缺席怎么回事。我还没开口，露露先说了：『那天她状态就不对，我提醒过。』她语气很平，像在说别人的事。上周我才替她顶过班——那点人情，她今天拿来抵这一句了。三个人都在场，谁都没接话。",
+   "options": [
+    {
+     "id": "confront",
+     "label": "当场对质：上周是谁替你顶的班",
+     "desc": "把这笔账摊到台面上",
+     "note": "话一出口露露就笑了，那种笑我看得懂：她早等着这一句。桌子上的空气一下子冷到底",
+     "immediate": {
+      "psyche": 3,
+      "relation_B": -8,
+      "enjou": 2
+     },
+     "delayed": []
+    },
+    {
+     "id": "swallow",
+     "label": "忍下，不在这时候撕",
+     "desc": "认了，回头再说",
+     "immediate": {
+      "psyche": -8,
+      "relation_all": 1
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 30",
+       "effect": {
+        "psyche": -6
+       },
+       "note": "那口没咽下去的气，某天凌晨全堵在胸口"
+      }
+     ]
+    },
+    {
+     "id": "ask_A",
+     "label": "请阿棠评评理",
+     "desc": "这团里，她说话还算数",
+     "immediate": {
+      "relation_A": 2,
+      "relation_B": -4,
+      "psyche": 2
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "relation_all": -3
+       },
+       "note": "阿棠把事压下来了，可『拉帮结派』这个话头，从此在团里散不掉"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_scapegoat",
+   "type": "团内",
+   "title": "总要有人背这个锅",
+   "gate": "炎上 ≥ 12",
+   "weight": 1.0,
+   "cooldown": 5,
+   "narrative": "一次翻车之后，运营的脸色很难看，说这场得有人负责，暗示是『某个人状态不行』。会议室里三个人都看着我，又都飞快地移开眼。我知道，谁先开口，这口锅就是谁的。空气里全是没人敢先呼吸的声音。",
+   "options": [
+    {
+     "id": "take_blame",
+     "label": "我来背，说是我状态不好",
+     "desc": "一个人认了，别把团拖进去",
+     "immediate": {
+      "relation_all": 3,
+      "psyche": -10,
+      "enjou": 3
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "炎上 ≥ 60",
+       "effect": {
+        "fame": -8
+       },
+       "note": "『那个出事的』成了我的标签，运营开始在排班上边缘化我"
+      }
+     ]
+    },
+    {
+     "id": "push_B",
+     "label": "顺着暗示，把话头引向露露",
+     "desc": "她本来那场就走神",
+     "immediate": {
+      "relation_B": -12,
+      "psyche": 4,
+      "relation_all": -5
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "enjou": 6
+       },
+       "note": "露露没辩解，只是那天下班后，一个人在天台站了很久",
+       "card_id": "due_b_roof"
+      }
+     ],
+     "flags": [
+      "owe_team"
+     ]
+    },
+    {
+     "id": "everyone",
+     "label": "说这是我们三个人的问题，一起扛",
+     "desc": "不给运营找人开刀的机会",
+     "immediate": {
+      "relation_all": 2,
+      "stamina": -10,
+      "fame": 1
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "stage": -2
+       },
+       "note": "一起扛赢回了口碑，可三个人都累到脱形"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_trust_test",
+   "type": "团内",
+   "title": "只告诉了你一个人",
+   "gate": "阿棠关系 ≥ 42 且 心理 ≥ 50",
+   "weight": 1.0,
+   "cooldown": 6,
+   "narrative": "阿棠把我叫到后台，说她要退了，合约到期就不续了。她顿了顿：『这事我只告诉了你一个人，别说出去。』我看着她，忽然明白过来——她要是走了，这个团就散了一半。而我现在，手里攥着一件说出来能拦住她、也会毁掉她信任的事。",
+   "options": [
+    {
+     "id": "keep_secret",
+     "label": "守口如瓶，一个字都不说",
+     "desc": "这是她唯一交到我手上的东西",
+     "immediate": {
+      "relation_A": 5,
+      "psyche": -6
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "小满关系 < 40",
+       "effect": {
+        "relation_all": -10
+       },
+       "note": "阿棠走的那天，小满看着我，像在看一个共谋"
+      }
+     ]
+    },
+    {
+     "id": "tell_ops",
+     "label": "偷偷告诉运营，让他们挽留",
+     "desc": "团不能散，哪怕她会恨我",
+     "immediate": {
+      "relation_A": -14,
+      "relation_all": 1,
+      "psyche": 3
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "stage": 4
+       },
+       "note": "团还在，可阿棠那天看我的眼神，我到结局都记得"
+      }
+     ]
+    },
+    {
+     "id": "persuade_her",
+     "label": "劝她自己说出去，别一个人扛",
+     "desc": "把决定权还给她，不替她选",
+     "immediate": {
+      "relation_A": 2,
+      "psyche": -3,
+      "stage": 1
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "阿棠关系 ≥ 75",
+       "effect": {
+        "relation_A": 2
+       },
+       "note": "她最后没走。她说，是因为那天我没有替她决定"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_lulu_cry",
+   "type": "团内关系",
+   "title": "撞见露露一个人在后台哭",
+   "gate": "露露关系 ≥ 40 且 周 ≥ 3",
+   "weight": 1.0,
+   "cooldown": 5,
+   "narrative": "回后台拿东西，撞见露露一个人蹲在器材箱后面，肩膀一抽一抽的。她听见动静猛地抬头，眼睛红得像被人打了一拳，第一反应是把脸别过去：『你什么都没看见。』那个平时在台上抢我镜头、说话带刺的人，原来也会这样。我站在门口，进也不是，退也不是。",
+   "options": [
+    {
+     "id": "sit_and_tissue",
+     "label": "蹲下来，什么也不问，递张纸巾",
+     "desc": "有时候人要的不是办法，是有人陪着",
+     "immediate": {
+      "relation_B": 3,
+      "psyche": 3,
+      "stamina": -2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "露露关系 ≥ 70",
+       "effect": {
+        "relation_all": 2
+       },
+       "note": "后来排练有人挑我刺，是露露替我挡了一句"
+      }
+     ]
+    },
+    {
+     "id": "i_saw_nothing",
+     "label": "说『我什么都没看见』，转身走",
+     "desc": "守住她的面子，也关上了那扇门",
+     "immediate": {
+      "relation_B": -3,
+      "psyche": -2
+     },
+     "delayed": []
+    },
+    {
+     "id": "ask_and_help",
+     "label": "问她怎么了，说『我们可以一起想办法』",
+     "desc": "靠近了，可她的难处也许会变成你的",
+     "immediate": {
+      "relation_B": 1,
+      "psyche": -5,
+      "stamina": -4
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "心理 < 35",
+       "effect": {
+        "psyche": -4
+       },
+       "note": "她的难处我扛了一半，才发现自己也没那么多余力"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_money_split",
+   "type": "团内",
+   "title": "分钱的时候",
+   "gate": "周 ≥ 2",
+   "weight": 1.1,
+   "cooldown": 4,
+   "narrative": "运营把这一场的账摊在桌上，说特典收入要按人数分。露露当场就笑了：『按人数？我这一场买券的人最多。』小满低头看手机，阿棠没说话。运营看着我说：『你是 C 位，你说怎么分。』",
+   "options": [
+    {
+     "id": "split_by_tickets",
+     "label": "按券分，谁卖得多谁多拿",
+     "desc": "公平，但把「谁更像商品」摆到了台面上",
+     "immediate": {
+      "relation_B": 2,
+      "relation_C": -5,
+      "relation_A": -2,
+      "psyche": -2
+     },
+     "delayed": []
+    },
+    {
+     "id": "split_even",
+     "label": "平分，谁也别多谁也别少",
+     "desc": "保住感情，露露会记这一笔",
+     "immediate": {
+      "relation_A": 2,
+      "relation_C": 2,
+      "relation_B": -6,
+      "fame": -1
+     },
+     "delayed": []
+    },
+    {
+     "id": "split_by_need",
+     "label": "按谁这个月更缺钱来分",
+     "desc": "把私事当依据，谁都得说点不想说的",
+     "immediate": {
+      "relation_C": 2,
+      "relation_B": -3,
+      "stamina": -3,
+      "psyche": -4
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "relation_B": -3
+       },
+       "note": "露露私下跟人说，C 位拿钱的时候讲的是感情",
+       "card_id": "due_f_backstage"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_center_push",
+   "type": "团内",
+   "title": "招新的海报",
+   "gate": "人气 ≥ 12 且 周 ≥ 2",
+   "weight": 1.0,
+   "cooldown": 5,
+   "narrative": "运营做了新海报，主视觉是两个人，露露站在我旁边，位置其实是齐的。她看了两遍，忽然问：『为什么我不能站中间？』运营端着手机打哈哈，让我决定。",
+   "options": [
+    {
+     "id": "give_her_center",
+     "label": "让她站中间，我去旁边",
+     "desc": "队里会松一口气，外面会说这个团乱了",
+     "immediate": {
+      "relation_B": 4,
+      "fame": -4,
+      "psyche": -3,
+      "relation_A": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "keep_center_dry",
+     "label": "照原样，说这是运营定的",
+     "desc": "把决定推给上面，谁也不得罪，也没人舒服",
+     "immediate": {
+      "relation_B": -5,
+      "psyche": 2,
+      "enjou": 1
+     },
+     "delayed": []
+    },
+    {
+     "id": "two_posters",
+     "label": "说做两版，一人一版轮着发",
+     "desc": "两边都照顾了，成本是时间和钱",
+     "immediate": {
+      "money": -180,
+      "relation_B": 2,
+      "relation_all": 1,
+      "stamina": -4
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_mamman_cried",
+   "type": "团内",
+   "title": "排练被骂哭了",
+   "gate": "周 ≥ 2",
+   "weight": 1.1,
+   "cooldown": 4,
+   "narrative": "排练到一半，老师指着小满说『你再这样下去就别上了』。小满没顶嘴，一直低着头。散场以后她坐在台阶上没走，裙摆上还沾着排练室地板的灰。我站在门口，里面灯还亮着，老师在收音响。",
+   "options": [
+    {
+     "id": "sit_with_her",
+     "label": "走过去陪她坐一会儿，什么也不说",
+     "desc": "今晚练不成了，可她需要有人在场",
+     "immediate": {
+      "relation_C": 4,
+      "stamina": -4,
+      "psyche": 2
+     },
+     "delayed": []
+    },
+    {
+     "id": "go_back_practice",
+     "label": "回去接着练，明天再来找她",
+     "desc": "先把自己的事做对，她会懂也会记",
+     "immediate": {
+      "relation_C": -4,
+      "dance": 2,
+      "psyche": -3
+     },
+     "delayed": []
+    },
+    {
+     "id": "talk_to_teacher",
+     "label": "去跟老师说，能不能再给她一次机会",
+     "desc": "替她把话说出口，老师的火转到这边",
+     "immediate": {
+      "relation_C": 3,
+      "enjou": 2,
+      "psyche": -5
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "effect": {
+        "relation_all": -2
+       },
+       "note": "老师后来在群里点了名，说有人替别人求情"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_atang_quit",
+   "type": "团内",
+   "title": "她说她大概要走了",
+   "gate": "阿棠关系 ≥ 42 且 周 ≥ 3",
+   "weight": 1.0,
+   "cooldown": 6,
+   "narrative": "阿棠把手机递过来，屏幕上是她妈发的一串语音，标题写着『房子的事』。她收回手机，说：『我可能下个月就不干了。』说得很轻，像怕我听见。排练室外面有人在搬箱子，声音一下一下的。",
+   "options": [
+    {
+     "id": "ask_her_stay",
+     "label": "问她留下要什么条件，能帮的都帮",
+     "desc": "把她的难处接过来一部分",
+     "immediate": {
+      "relation_A": 5,
+      "money": -300,
+      "psyche": -4,
+      "stamina": -3
+     },
+     "delayed": []
+    },
+    {
+     "id": "let_her_go",
+     "label": "说不管你走不走，我都记得这一段",
+     "desc": "不拦，把话说到，心里空一块",
+     "immediate": {
+      "relation_A": 2,
+      "psyche": -6
+     },
+     "delayed": []
+    },
+    {
+     "id": "ask_ops",
+     "label": "去问运营有没有办法留人",
+     "desc": "把事情交给有办法的人，也交出去了她的私事",
+     "immediate": {
+      "relation_A": -3,
+      "relation_all": 1,
+      "enjou": 1,
+      "psyche": 2
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_late_rollcall",
+   "type": "团内",
+   "title": "又是她迟到",
+   "gate": "周 ≥ 2 且 体力 < 60",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "第三次了。露露踩着点到，包都不换就站进队形。老师看了我一眼，意思是『你是 C 位』。队里没人说话，可所有人都在等一个态度，包括露露自己。",
+   "options": [
+    {
+     "id": "cover_for_her",
+     "label": "跟大家说这次算我的",
+     "desc": "把事压下去，队里会记我一笔",
+     "immediate": {
+      "relation_B": 2,
+      "relation_A": -3,
+      "relation_C": -2,
+      "psyche": -4
+     },
+     "delayed": []
+    },
+    {
+     "id": "call_it_out",
+     "label": "当着所有人说清楚规矩",
+     "desc": "规矩立住了，露露会记住是我开的口",
+     "immediate": {
+      "relation_B": -8,
+      "relation_A": 2,
+      "relation_C": 1,
+      "psyche": -2
+     },
+     "delayed": []
+    },
+    {
+     "id": "ask_why_private",
+     "label": "散场以后单独问她怎么了",
+     "desc": "先问原因，再谈规矩",
+     "immediate": {
+      "relation_B": 1,
+      "stamina": -3,
+      "psyche": -2
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "露露关系 ≥ 65",
+       "effect": {
+        "relation_B": 2
+       },
+       "note": "她后来没再迟到，还在群里说了句『以后我不拖团里后腿』"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "team_cold_war",
+   "type": "团内",
+   "title": "群里安静了三天",
+   "gate": "周 ≥ 3",
+   "weight": 0.9,
+   "cooldown": 5,
+   "narrative": "排练完没人走，也没人说话。收东西的声音特别响。有人把空调关了，有人又重新打开。我知道前天那件事还没过去，可是谁也不想当第一个开口的人。",
+   "options": [
+    {
+     "id": "break_ice",
+     "label": "先开口，把那件事摆出来说",
+     "desc": "撕开一次，可能好也可能更糟",
+     "immediate": {
+      "relation_all": 1,
+      "psyche": -5,
+      "stamina": -2
+     },
+     "delayed": []
+    },
+    {
+     "id": "let_it_rot",
+     "label": "谁都不提，让时间过去",
+     "desc": "短期太平，坏的会沉下去",
+     "immediate": {
+      "psyche": 2,
+      "relation_all": -3
+     },
+     "delayed": [
+      {
+       "when": "条件",
+       "condition": "队友关系均值 < 45",
+       "effect": {
+        "relation_all": -4
+       },
+       "note": "那三天的事没人再提，可排练时再没人接我的话",
+       "card_id": "due_c_silence"
+      }
+     ]
+    },
+    {
+     "id": "buy_them_food",
+     "label": "自掏腰包点了宵夜，边吃边聊",
+     "desc": "钱能买一点缓冲",
+     "immediate": {
+      "money": -120,
+      "relation_all": 2,
+      "stamina": -2
+     },
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_break_off",
+   "type": "团内",
+   "title": "那句不该说的话",
+   "gate": "周 ≥ 3",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "排练到第三遍，鼓点又错了。我说了一句，说完屋子里就安静了。她没有回嘴，只是把鼓棒放下，走到门口站着。",
+   "casting": [],
+   "options": [
+    {
+     "id": "bo_apologize_later",
+     "label": "第二天买一杯放在她化妆间的柜子上",
+     "desc": "不说对不起，就当没发生过",
+     "immediate": {
+      "relation_A": -4,
+      "relation_B": -6,
+      "relation_C": -2,
+      "psyche": -4,
+      "money": -18
+     },
+     "note": "她喝了，没问是不是我买的。"
+    },
+    {
+     "id": "bo_apologize_now",
+     "label": "追到门口，把那句话收回来",
+     "desc": "承认刚才那话说重了",
+     "immediate": {
+      "relation_A": -1,
+      "relation_B": -1,
+      "relation_C": -1,
+      "psyche": -6,
+      "stamina": -2
+     },
+     "note": "她说没关系，声音是平的。"
+    },
+    {
+     "id": "bo_double_down",
+     "label": "不追，接着把这一段跳完",
+     "desc": "台上不许有人拖后腿，这话总得有人说",
+     "immediate": {
+      "relation_A": -8,
+      "relation_B": -12,
+      "relation_C": -8,
+      "stage": 2,
+      "fame": 1
+     },
+     "delayed": [
+      {
+       "when": "下周",
+       "note": "她开始在群里回得越来越短，散场也不等我了。",
+       "effect": {
+        "relation_all": -3,
+        "psyche": -2
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "truth_team_doubt",
+   "type": "团内",
+   "title": "她说这团没救了",
+   "gate": "周 ≥ 2 且 任一队友关系 ≥ 30",
+   "weight": 2.0,
+   "cooldown": 2,
+   "narrative": "排练间隙，队友靠着墙喝水，忽然说：「你是不是也觉得，这团没救了。」没抬头。",
+   "options": [
+    {
+     "id": "admit_yes",
+     "label": "「是」",
+     "desc": "一个字，说出来比想象中轻",
+     "tone": "truth",
+     "immediate": {
+      "relation_all": 4,
+      "psyche": 2,
+      "template": -0.01
+     },
+     "delayed": [],
+     "note": "她把水瓶放下，过了一会儿才说：『我也觉得。』"
+    },
+    {
+     "id": "say_keep_going",
+     "label": "「再撑撑看」",
+     "desc": "这句话我已经说得很顺了",
+     "tone": "safe",
+     "immediate": {
+      "template": 0.02,
+      "psyche": -1
+     },
+     "delayed": [],
+     "note": "她笑了一下，没接话"
+    }
+   ]
+  },
+  {
+   "id": "truth_after_live",
+   "type": "团内",
+   "title": "散场后，她说我笑得很假",
+   "gate": "周 ≥ 3",
+   "weight": 1.8,
+   "cooldown": 2,
+   "narrative": "散场后人走得差不多了，队友把外套搭在肩上：「你刚才那段，笑得很假。」语气不重，像在确认。",
+   "options": [
+    {
+     "id": "say_thinking_elsewhere",
+     "label": "「因为我在想别的事」",
+     "desc": "承认走神，比承认难过容易一点",
+     "tone": "truth",
+     "immediate": {
+      "relation_all": 3,
+      "psyche": 4,
+      "enjou": 1
+     },
+     "delayed": [],
+     "note": "她点点头：『看出来了。』"
+    },
+    {
+     "id": "say_just_tired",
+     "label": "「可能太累了吧」",
+     "desc": "把真话折成一个更安全的形状",
+     "tone": "safe",
+     "immediate": {
+      "template": 0.02,
+      "psyche": -2
+     },
+     "delayed": [],
+     "note": "她「嗯」了一声，先走了"
+    }
+   ]
+  },
+  {
+   "id": "team_fridge",
+   "type": "团内关系",
+   "title": "排练室的冰箱",
+   "gate": "队友关系均值 < 50",
+   "weight": 1.0,
+   "cooldown": 4,
+   "narrative": "排练室那台旧冰箱，门一开就是股馊味。里面塞着上个月谁买的、已经说不清是谁的酸奶和半盒草莓。没人愿意先扔——扔了好像就成了那个计较的人。今天又有人把吃剩的便当塞进去，盖子都没盖。",
+   "options": [
+    {
+     "id": "clean_fridge",
+     "label": "买了新的，把过期的全清了",
+     "desc": "花点钱，眼不见为净",
+     "immediate": {
+      "money": -300,
+      "relation_all": 4
+     },
+     "note": "我把冰箱擦了整整一下午。她们回来时愣了一下，谁都没提，可阿棠默默把新买的牛奶摆正了。",
+     "delayed": []
+    },
+    {
+     "id": "split_chores",
+     "label": "摊开说，谁的东西谁负责",
+     "desc": "把规矩立起来，但会有点难看",
+     "immediate": {
+      "money": -150,
+      "relation_all": 3,
+      "psyche": -2
+     },
+     "note": "我买了张便签贴门上，一人一格。露露没说话，第二天她那格是空的。",
+     "delayed": []
+    },
+    {
+     "id": "let_it_rot",
+     "label": "算了，把门关上",
+     "desc": "省下力气，也省下争执",
+     "immediate": {
+      "psyche": 6,
+      "relation_all": -1
+     },
+     "note": "我把门轻轻带上。那股味道后面几天都散不掉，像谁也没打算收拾的东西。",
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_speak_out",
+   "type": "团内关系",
+   "title": "把话说开",
+   "gate": "队友关系均值 < 42 且 周 ≥ 3",
+   "weight": 1.0,
+   "cooldown": 6,
+   "narrative": "这套架已经吵得不成样子了。排到一半，谁都不看谁，动作全在对着空气做。散场以后没人走，都坐在那儿，等一个人先开口。我们心里都清楚，再绕下去，这个团就散了。",
+   "options": [
+    {
+     "id": "speak_all",
+     "label": "今天不排了，坐下来把话全说开",
+     "desc": "累一场，但可能是唯一的机会",
+     "immediate": {
+      "stamina": -10,
+      "psyche": -6,
+      "relation_all": 7
+     },
+     "note": "从下午说到天黑，哭的哭，翻旧账的翻旧账。走的时候谁都没笑，可第二天排练，鼓点第一次没错。",
+     "delayed": []
+    },
+    {
+     "id": "speak_part",
+     "label": "挑最要紧的那件说",
+     "desc": "不全摊开，留点体面",
+     "immediate": {
+      "relation_all": 3,
+      "psyche": -2
+     },
+     "note": "我只提了排班的事，绕开了真正的那个疙瘩。她们松了口气，我也松了口气——裂缝还在。",
+     "delayed": []
+    },
+    {
+     "id": "swallow",
+     "label": "想想还是算了，忍过去",
+     "desc": "维持表面的平静",
+     "immediate": {
+      "relation_all": -3,
+      "psyche": 3
+     },
+     "note": "话到嘴边又咽了回去。那晚我们照常排完，散了。我知道有些东西正在慢慢凉掉。",
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_carry_load",
+   "type": "团内关系",
+   "title": "替大家扛一次",
+   "gate": "队友关系均值 < 60 且 体力 ≥ 50",
+   "weight": 1.0,
+   "cooldown": 6,
+   "narrative": "这个月的脏活累活堆成了山：搬器材、跑物料、占排练室、陪运营开会。总得有人接。她们看我的眼神里有点过意不去，又有点松一口气。我知道这时候站出来的人，会被记住。",
+   "options": [
+    {
+     "id": "carry_all",
+     "label": "这周最脏最累的活，我一个人接了",
+     "desc": "身体会垮一点，但她们看得见",
+     "immediate": {
+      "stamina": -15,
+      "relation_all": 6
+     },
+     "note": "连续四天我先到排练室、最后一个走。没人道谢，但小满把她的热水袋塞给了我。",
+     "delayed": []
+    },
+    {
+     "id": "carry_half",
+     "label": "能搭把手的地方搭一下",
+     "desc": "量力而行",
+     "immediate": {
+      "stamina": -8,
+      "relation_all": 2
+     },
+     "note": "我多搬了几趟器材。阿棠看了我一眼，说『你也不容易』，然后接过了我手里的箱子。",
+     "delayed": []
+    },
+    {
+     "id": "not_carry",
+     "label": "这不是我的活，凭什么",
+     "desc": "守住自己的边界",
+     "immediate": {
+      "relation_all": -2,
+      "psyche": 3
+     },
+     "note": "我说了句『轮也该轮到别人了吧』。空气静了一秒，露露笑了一下，那笑什么都没说。",
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_last_train",
+   "type": "团内关系",
+   "title": "一起等末班车",
+   "gate": "队友关系均值 < 55",
+   "weight": 1.0,
+   "cooldown": 5,
+   "narrative": "演出结束已经十一点多，站台上只剩我们几个。末班车还有二十分钟。有人说明早还早，先撤了；有人没动。风有点凉，路灯把影子拉得老长。",
+   "options": [
+    {
+     "id": "wait_together",
+     "label": "谁都别先走，一起等",
+     "desc": "多站半个小时而已",
+     "immediate": {
+      "stamina": -4,
+      "relation_all": 3
+     },
+     "note": "末班车迟迟不来，我们蹲在站台上分一包薯片。小满说到她小时候的事，露露笑得直不起腰。",
+     "delayed": []
+    },
+    {
+     "id": "call_cab",
+     "label": "算了，打车送她们回去",
+     "desc": "花点钱，省点力气",
+     "immediate": {
+      "money": -120,
+      "relation_all": 3,
+      "stamina": -2
+     },
+     "note": "车里挤了四个人，谁都没说话，可那种安静不难受。到楼下阿棠说，谢谢啊。",
+     "delayed": []
+    },
+    {
+     "id": "go_alone",
+     "label": "我先走一步，明早还早",
+     "desc": "各回各的",
+     "immediate": {
+      "psyche": 2,
+      "relation_all": -1
+     },
+     "note": "我说了句先撤了，一个人走向地铁口。回头看了一眼，她们三个还挤在站牌底下。",
+     "delayed": []
+    }
+   ]
+  },
+  {
+   "id": "team_no_apology",
+   "type": "团内关系",
+   "title": "谁都不肯先道歉",
+   "gate": "队友关系均值 < 45 且 周 ≥ 3",
+   "weight": 1.0,
+   "cooldown": 6,
+   "narrative": "为了一件早该过去的小事，我们四个已经三天没好好说话了。排练时各练各的，散场各走各的。谁都知道再这样下去会出事，可谁都不肯先开口——先低头的那个，好像就输了。",
+   "options": [
+    {
+     "id": "apologize_first",
+     "label": "我先说『那天是我急了』",
+     "desc": "把面子放下",
+     "immediate": {
+      "psyche": -5,
+      "relation_all": 6
+     },
+     "note": "话一出口，屋子里静了两秒。然后阿棠说『我也有不对』。那堵墙，就这么塌了一角。",
+     "delayed": []
+    },
+    {
+     "id": "milk_tea",
+     "label": "买四杯奶茶放桌上，什么都不说",
+     "desc": "用行动代替道歉",
+     "immediate": {
+      "money": -160,
+      "relation_all": 4,
+      "psyche": -2
+     },
+     "note": "她们进来看到奶茶，谁都没问是谁买的，一人拿了一杯。露露喝了一口说『太甜了』，但喝完了。",
+     "delayed": []
+    },
+    {
+     "id": "wait_them",
+     "label": "等她们先低头",
+     "desc": "我不欠这一步",
+     "immediate": {
+      "psyche": 3,
+      "relation_all": -2
+     },
+     "note": "我照常排我的。第三天小满先绷不住，红着眼眶来拉我。我赢了这一步，也输了点什么。",
+     "delayed": []
+    }
+   ]
+  }
+ ]
 }
