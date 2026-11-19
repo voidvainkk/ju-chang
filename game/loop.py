@@ -1448,7 +1448,7 @@ class Game:
         rent = ""
         if s["week"] % 2 == 1:
             rent = "，房租已经交了" if rent_paid else "，这周还要交 %d 块房租" % E.RENT
-        body = ["六天晚上，周五、周六各一场 live。手里还剩 %d 块%s。"
+        body = ["六天晚上，周六、周日各一场 live。手里还剩 %d 块%s。"
                 % (round(s["money"]), rent)]
         self.push({"type": "text", "title": "第 %d 周" % s["week"], "body": body})
         if s["week"] % 2 == 1 and not rent_paid:

@@ -1735,7 +1735,7 @@ export class Game {
       rentPaid = true;
     }
     const rent = s.week % 2 === 1 ? (rentPaid ? "，房租已经交了" : `，这周还要交 ${E.RENT} 块房租`) : "";
-    const body = [`六天晚上，周五、周六各一场 live。手里还剩 ${pyRound(s.money)} 块${rent}。`];
+    const body = [`六天晚上，周六、周日各一场 live。手里还剩 ${pyRound(s.money)} 块${rent}。`];
     this.push({ type: "text", title: `第 ${s.week} 周`, body });
     if (s.week % 2 === 1 && !rentPaid) {
       s.psyche -= 18;
