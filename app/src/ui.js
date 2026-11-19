@@ -464,15 +464,20 @@ function popup(delta, snap, sticks, mates) {
         `<div class="prow"><span>${name}</span>
          <b class="${v > 0 ? "up" : "dn"}">${v > 0 ? "+" : ""}${v}</b>${nowMate(name)}</div>`).join("")}</div>`
     : "";
-  // 右下角只露主数值；黏性/关系多的时候收进「更多」，点一下展开
+  // 右下角只露主数值；黏性/关系两条以内直接摊开（得带上名字，裸 +N 看不出是谁），
+  // 再多才收进「更多」，点一下展开
   const extra = ota + mate;
   const extraN = sticks2.length + mates2.length;
+  const collapsed = extraN > 2;
   box.innerHTML = `<div class="pmain">${main}</div>`
     + (extra
-      ? `<button type="button" class="pmore" aria-expanded="false">+${extraN}</button>
+      ? (collapsed
+        ? `<button type="button" class="pmore" aria-expanded="false">+${extraN}</button>
          <div class="pextra">${extra}</div>`
+        : `<div class="pextra">${extra}</div>`)
       : "");
   box.classList.remove("hidden", "open");
+  if (extra && !collapsed) box.classList.add("open");
   box.classList.remove("in");
   void box.offsetWidth;
   box.classList.add("in");

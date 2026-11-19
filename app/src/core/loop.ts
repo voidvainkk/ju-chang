@@ -2196,7 +2196,12 @@ export class Game {
       // 玩家推开的那个选项不该让同一张卡原地重播（「又遇到第一拍」）。
       if (!s._line_seen) s._line_seen = {};
       const seen: string[] = s._line_seen[lidId] || [];
-      const pool = (st.variants || []).filter((x: any) => !seen.includes(x.id));
+      let pool = (st.variants || []).filter((x: any) => !seen.includes(x.id));
+      if (lidId === "romance" && st.stage === 4) {
+        // 掷骰已经判了「这一晚没被撞破」：随机池里就别再混进
+        // 「被撞破」——公开意图 0% 撞破的口径不能被这条池子架空。
+        pool = pool.filter((x: any) => x.id !== "finale_caught");
+      }
       v = this.rng.choice(pool.length ? pool : st.variants);
       s._line_seen[lidId] = seen.concat([v.id]).slice(-8);
     }

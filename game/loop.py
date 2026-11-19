@@ -1848,7 +1848,13 @@ class Game:
             # 同一拍隔两周再回来时，尽量换一张没演过的：
             # 玩家推开的那个选项不该让同一张卡原地重播（「又遇到第一拍」）。
             seen = (s.get("_line_seen") or {}).get(lid_id) or []
-            pool = [x for x in st["variants"] if x["id"] not in seen] or st["variants"]
+            pool = [x for x in st["variants"] if x["id"] not in seen]
+            if lid_id == "romance" and st["stage"] == 4:
+                # 掷骰已经判了「这一晚没被撞破」：随机池里就别再混进
+                # 「被撞破」——公开意图 0% 撞破的口径不能被这条池子架空。
+                pool = [x for x in pool if x["id"] != "finale_caught"]
+            if not pool:
+                pool = st["variants"]
             v = self.rng.choice(pool)
             s["_line_seen"] = s.get("_line_seen") or {}
             s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]

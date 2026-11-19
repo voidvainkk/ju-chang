@@ -349,7 +349,8 @@ doc = {
                     "options": [
                         opt("yc_promise_after", "说：下来我一定说完", "把这句话钉下来",
                             {"psyche": 5, "relation_A": 4, "stamina": -2}, 1, ["romance_confirmed"],
-                            note="台上那一场，我唱得格外用力，眼睛一直找台侧的她"),
+                            note="台上那一场，我唱得格外用力，眼睛一直找台侧的她。下来以后，她在走廊尽头等我，"
+                 "我把那句话原样说完了。她安静了两秒，说：『好。这回不许再被打断。』"),
                         opt("yc_let_slide", "把话咽回去，装作没发生", "让那句话被风吹走",
                             {"psyche": -4, "relation_A": -2}, 0, ["pretended"],
                             note="下来以后，那句话我们再也没提过"),
