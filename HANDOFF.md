@@ -1187,6 +1187,14 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 工具链坑（新增，重要）：
 - 本机 Python 开了 safe_path（sys.flags.safe_path=True）：`python tools\build_ota_memory.py` 这类带兄弟模块 import 的脚本会 ModuleNotFoundError。绕过：`python -c "import sys; sys.path.insert(0,'tools'); import runpy; runpy.run_path('tools/build_xxx.py', run_name='__main__')"`。
 - **tools/build_team_cards.py 与现网 team.json/team_bond.json 严重脱同步**（重生成会冲掉全部现网内容，实测 diff 1381 行）——这两个文件现在当手改数据处理，别再跑这个脚本，直到有人把脚本对齐。
+
+## 6.31 · 2026-11-19 恋爱线三修 + 提前结局语义收紧（AutoClaw 会话）
+
+- 确认拍「被电话打断」：note 补上她的答复（原来只有「台上唱得格外用力」，她那句『下来继续说』没有落点）；卡面重写为「被打断的表白」——narrative 点名『我喜欢你，不是队友的那种』，选项 label 直说表白。
+- 收场掷骰判「没撞破」后，随机池剔除「被撞破」（py+ts）——公开意图 0% 撞破的口径此前被这条池子架空。六种子复测：恋爱主线 6/6 当场毕业日。
+- 提前结局审计：六条里五条本来就是当场进结局（用完/唯一/控制不了在 `_after_finale`/`_push_collapse` 已修过旧病）；唯一例外是谈一谈的「公开」只写 intent。收紧：谈一谈选「现在就公开」→ flags 改写 romance_public + choose_romance_talk/chooseRomanceTalk 落旗后立即 `_finish`——当场进入毕业日结局画面（正文按「第 X 周/剩下的周没有发生」写成，任意周适配）。三个谈一谈变体 label/desc/note 同步改口径；「只看当下」保持 intent。攻略/结局.md/结局条件图/endings.json from 同步。
+- ui.js 右下角面板：黏性/关系两条以内直接摊开（带名字），>2 才折叠——「裸 +1」折叠按钮是「加黏性不显示 ota 名字」观感的来源。
+- 新增两张正面卡 pos_far_gig（远征·第一天）/ pos_rail_takeoff（杆区起飞了），卡库 157→159；positive.json 走验证时注意 LF/CRLF 警告无害。
 - build_zhong.py 的 zc_same label 已对齐现网（「我记住了 下一次是第20次」）；改 zhong 文案照旧改脚本重生成。
 - BGM 拍板变更：进页自动播放（用户 2026-11-19 拍板），ui.js 注释已对齐；§6.29 的「默认不放歌」作废。
 - 待推 commits：本地 main 领先 origin 多个提交，推送需用户开节点（代理 127.0.0.1:7897）。

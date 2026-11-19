@@ -1609,6 +1609,12 @@ export class Game {
       delta: delta(before, s),
       face: (slots.ta as Ota)?.name || "阿棠",
     });
+    if ((o.flags || []).includes("romance_public")) {
+      // 谈一谈里选「现在就公开」：这句话说出口，这一季就到这里——
+      // 不是把结局提前定下来，而是当场进入结局画面（毕业日）。
+      this._finish();
+      return;
+    }
     this.afterStep();
   }
 

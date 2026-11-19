@@ -250,7 +250,7 @@ EARLY = [
         "name": "毕业日",
         "trigger": {
             "flag": "romance_public",
-            "from": "恋爱线前夜选公开"
+            "from": "恋爱线任一次选公开，当场结季"
         },
         "why": "我们两个都知道，所以一起走了"
     },
