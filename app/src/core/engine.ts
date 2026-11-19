@@ -2176,8 +2176,8 @@ export function doWeek(
   // 运营递过来的那条会火的路：第一次是明确的拒绝时刻
   if (!g(s, "offer_seen") && s.week >= 4) {
     s.offer_seen = true;
-    const offers = ["炒 CP", "讲以前那个团", "接一条擦边商务"];
-    s.offer_kind = offers[(s.week - 3) % 3];
+    const offers = ["炒 CP", "接一条擦边商务"];
+    s.offer_kind = offers[(s.week - 3) % 2];
     report.push(["offer", `运营：${s.offer_kind} 这条能火，做不做？`]);
   }
   // 延迟队列：本场结束的先结，本周末发生的全部结

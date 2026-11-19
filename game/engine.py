@@ -1999,8 +1999,8 @@ def do_week(s, world, rng, policy=None):
     # 之后还会再来提——再来时答应它，就转去「你第一天知道我的恶劣吗」。
     if (not s.get("offer_seen")) and s["week"] >= 4:
         s["offer_seen"] = True
-        _offers = ["炒 CP", "讲以前那个团", "接一条擦边商务"]
-        s["offer_kind"] = _offers[(s["week"] - 3) % 3]
+        _offers = ["炒 CP", "接一条擦边商务"]
+        s["offer_kind"] = _offers[(s["week"] - 3) % 2]
         report.append(("offer", "运营：%s 这条能火，做不做？" % s["offer_kind"]))
     # 延迟队列：本场结束的先结，本周末发生的全部结
     # （「下周」是相对**下一场 live**说的，不是「下个月」——

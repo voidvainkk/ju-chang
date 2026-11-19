@@ -288,10 +288,6 @@ export class Game {
       "运营把一份策划摊在桌上：和露露捆一个『双人线』，每周发两条互动，超话会自己吵起来。",
       "这条能火，做不做？",
     ],
-    讲以前那个团: [
-      "运营说，台上那段『从散了的团里出来』，讲一遍上热搜，讲两遍就是人设。",
-      "这条能火，做不做？",
-    ],
     接一条擦边商务: [
       "运营推过来一张报价单，是一个擦边饮料的商单。钱不少，发出来会有人骂，也一定会有人转。",
       "这条能火，做不做？",
@@ -1484,8 +1480,8 @@ export class Game {
     if (s.week < Game.OFFER_FROM_WEEK || s.offer_choice || s.offer_asked) return null;
     s.offer_asked = true;
     if (!s.offer_kind) {
-      const offers = ["炒 CP", "讲以前那个团", "接一条擦边商务"];
-      s.offer_kind = offers[(s.week - 3) % 3];
+      const offers = ["炒 CP", "接一条擦边商务"];
+      s.offer_kind = offers[(s.week - 3) % 2];
     }
     const kind = s.offer_kind;
     const [head] = Game.OFFER_TEXT[kind] ?? ["运营递过来一个能火的路子。", "这条能火，做不做？"];

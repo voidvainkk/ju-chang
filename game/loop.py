@@ -1197,8 +1197,6 @@ class Game:
     OFFER_TEXT = {
         "炒 CP": ("运营把一份策划摊在桌上：和露露捆一个『双人线』，每周发两条互动，"
                  "超话会自己吵起来。", "这条能火，做不做？"),
-        "讲以前那个团": ("运营说，台上那段『从散了的团里出来』，讲一遍上热搜，讲两遍就是人设。",
-                     "这条能火，做不做？"),
         "接一条擦边商务": ("运营推过来一张报价单，是一个擦边饮料的商单。钱不少，"
                        "发出来会有人骂，也一定会有人转。", "这条能火，做不做？"),
     }
@@ -1212,8 +1210,8 @@ class Game:
             return None
         s["offer_asked"] = True
         if not s.get("offer_kind"):
-            _offers = ["炒 CP", "讲以前那个团", "接一条擦边商务"]
-            s["offer_kind"] = _offers[(s["week"] - 3) % 3]
+            _offers = ["炒 CP", "接一条擦边商务"]
+            s["offer_kind"] = _offers[(s["week"] - 3) % 2]
         kind = s.get("offer_kind")
         head, tail = self.OFFER_TEXT.get(kind, ("运营递过来一个能火的路子。", "这条能火，做不做？"))
         # 排在券账后面（和其他几件事一起），由 _flush_week_events 接上
