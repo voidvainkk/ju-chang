@@ -535,7 +535,13 @@ class Game:
         "mc": "对着镜子说了一个小时的话，说到自己都想笑。",
         "content": "拍了一组，挑了半天配了句话发出去。",
         "work": "架好手机播到凌晨，在线人数一直没过两位数。",
-        "rest": "什么都没做，睡到下午，起来煮了碗面。",
+        # 休息没有「事件」，回复轮着来，别天天煮面
+        "rest": ["什么都没做，睡到下午，起来煮了碗面。",
+                 "闹钟定了五个也没用，一觉睡到天黑，屋里暗得分不清几点。",
+                 "在地板上躺了一下午，听完一整张专辑，手机都懒得看。",
+                 "去楼下泡了个热水澡，出来的时候觉得骨头轻了二两。",
+                 "给家里打了个电话，没提这行的事，光听我妈讲菜市场就听了半个钟头。",
+                 "翻了一遍这一季的返图，挑出最喜欢的一张设成了锁屏。"],
     }
 
     def _maybe_ask_stay(self):
@@ -602,7 +608,10 @@ class Game:
                 extra.append(now + "；再练 %d 点到下一档。" % left)
             else:
                 extra.append(now + "；已经压得住整场了。")
-        self.push({"type": "receipt", "title": self.ACT_TEXT.get(aid, ""),
+        act_text = self.ACT_TEXT.get(aid, "")
+        if isinstance(act_text, (list, tuple)):
+            act_text = self.rng.choice(act_text)
+        self.push({"type": "receipt", "title": act_text,
                    "body": extra, "delta": _delta(before, s),
                    "sticks": _sticks(_osnap_before, s),
                    "mates": _mates_changed(_rsnap_before, s),
@@ -919,7 +928,8 @@ class Game:
         # 版聊回完一个人，括号里点一句：这条是当着全群的面回出去的。
         if card.get("type") == "版聊":
             body.append("（这样回复了大家）")
-        self.push({"type": "receipt", "title": self._fill(o.get("label", ""), slots),
+        # 回复插队首：选了哪张卡，那条回复立刻跟在后面，不把几张卡的回复攒到一起
+        self.queue.insert(0, {"type": "receipt", "title": self._fill(o.get("label", ""), slots),
                    "body": body, "delta": _delta(before, self.state),
                    "sticks": _sticks(_osnap_before, self.state),
                    "mates": _mates_changed(_rsnap_before, self.state),
@@ -1301,7 +1311,8 @@ class Game:
         reply = self._rq_reply(card, o, slots)
         if reply:
             body.insert(0, reply)
-        self.push({"type": "receipt", "title": self._fill(o.get("label", ""), slots),
+        # 同 choose_card：回复插队首，选完立刻看到
+        self.queue.insert(0, {"type": "receipt", "title": self._fill(o.get("label", ""), slots),
                    "body": body, "delta": _delta(before, self.state),
                    "sticks": _sticks(_osnap_before, self.state),
                    "mates": _mates_changed(_rsnap_before, self.state),

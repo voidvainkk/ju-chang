@@ -261,13 +261,21 @@ export class Game {
     OTA相处的瞬间: "",
   };
 
-  static ACT_TEXT: Record<string, string> = {
+  static ACT_TEXT: Record<string, string | string[]> = {
     dance: "练到快十点，最后一节才算顺下来。",
     sing: "嗓子一开始是哑的，唱到后面反而开了。",
     mc: "对着镜子说了一个小时的话，说到自己都想笑。",
     content: "拍了一组，挑了半天配了句话发出去。",
     work: "架好手机播到凌晨，在线人数一直没过两位数。",
-    rest: "什么都没做，睡到下午，起来煮了碗面。",
+    // 休息没有「事件」，回复轮着来，别天天煮面
+    rest: [
+      "什么都没做，睡到下午，起来煮了碗面。",
+      "闹钟定了五个也没用，一觉睡到天黑，屋里暗得分不清几点。",
+      "在地板上躺了一下午，听完一整张专辑，手机都懒得看。",
+      "去楼下泡了个热水澡，出来的时候觉得骨头轻了二两。",
+      "给家里打了个电话，没提这行的事，光听我妈讲菜市场就听了半个钟头。",
+      "翻了一遍这一季的返图，挑出最喜欢的一张设成了锁屏。",
+    ],
   };
 
   static TEAM_TYPES = ["团内", "团内关系", "团内冲突"];
@@ -802,9 +810,11 @@ export class Game {
       if (left) extra.push(now + `；再练 ${left} 点到下一档。`);
       else extra.push(now + "；已经压得住整场了。");
     }
+    let actText = Game.ACT_TEXT[aid] ?? "";
+    if (Array.isArray(actText)) actText = this.rng.choice(actText as string[]);
     this.push({
       type: "receipt",
-      title: Game.ACT_TEXT[aid] ?? "",
+      title: actText,
       body: extra,
       delta: delta(before, s),
       sticks: sticks(ob, s),
@@ -1157,7 +1167,8 @@ export class Game {
     }
     // 版聊回完一个人，括号里点一句：这条是当着全群的面回出去的。
     if (card.type === "版聊") body.push("（这样回复了大家）");
-    this.push({
+    // 回复插队首：选了哪张卡，那条回复立刻跟在后面
+    this.queue.unshift({
       type: "receipt",
       title: this._fill(gv(o, "label", ""), slots),
       body,
@@ -1586,7 +1597,8 @@ export class Game {
     }
     const reply = this._rqReply(card, o, slots);
     if (reply) body.unshift(reply);
-    this.push({
+    // 同 chooseCard：回复插队首，选完立刻看到
+    this.queue.unshift({
       type: "receipt",
       title: this._fill(gv(o, "label", ""), slots),
       body,
