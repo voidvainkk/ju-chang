@@ -94,7 +94,12 @@ def _choose(g, step, n):
         if not opts:
             g.advance()
             return
-        oid = opts[n % len(opts)]["id"]
+        if step.get("rtalk"):
+            # 恋爱谈一谈脚本局选第二项「只看当下」：季必须继续跑完，
+            # 收场拍（前夜/撞破/办公室）才进得了基准——第一项现在是当场结季。
+            oid = opts[1 % len(opts)]["id"]
+        else:
+            oid = opts[n % len(opts)]["id"]
         if step.get("talk"):
             g.choose_talk(oid)
         elif step.get("line"):

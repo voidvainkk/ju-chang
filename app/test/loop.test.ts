@@ -164,7 +164,11 @@ function choose(g: Game, step: Record<string, any>, n: number): void {
       g.advance();
       return;
     }
-    const oid = opts[n % opts.length].id;
+    const oid = step.rtalk
+      ? // 恋爱谈一谈脚本局选第二项「只看当下」：季必须继续跑完，
+        // 收场拍（前夜/撞破/办公室）才进得了基准——第一项现在是当场结季。
+        opts[1 % opts.length].id
+      : opts[n % opts.length].id;
     if (step.talk) g.chooseTalk(oid);
     else if (step.line) g.chooseStory(oid);
     else g.chooseCard(oid);

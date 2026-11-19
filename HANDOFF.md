@@ -1195,6 +1195,7 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - 提前结局审计：六条里五条本来就是当场进结局（用完/唯一/控制不了在 `_after_finale`/`_push_collapse` 已修过旧病）；唯一例外是谈一谈的「公开」只写 intent。收紧：谈一谈选「现在就公开」→ flags 改写 romance_public + choose_romance_talk/chooseRomanceTalk 落旗后立即 `_finish`——当场进入毕业日结局画面（正文按「第 X 周/剩下的周没有发生」写成，任意周适配）。三个谈一谈变体 label/desc/note 同步改口径；「只看当下」保持 intent。攻略/结局.md/结局条件图/endings.json from 同步。
 - ui.js 右下角面板：黏性/关系两条以内直接摊开（带名字），>2 才折叠——「裸 +1」折叠按钮是「加黏性不显示 ota 名字」观感的来源。
 - 新增两张正面卡 pos_far_gig（远征·第一天）/ pos_rail_takeoff（杆区起飞了），卡库 157→159；positive.json 走验证时注意 LF/CRLF 警告无害。
+- 对账覆盖保卫：谈一谈第一项现在是当场结季，脚本局会在这里被砍断——两侧 harness（loop_trace.py / loop.test.ts）对 rtalk 固定选第二项「只看当下」，季跑完，收场拍进基准。种子 1 覆盖运营办公室、种子 42 覆盖被撞破（掷骰撞破路径也在）；决赛前夜变体不在种子路径，但其选项结算走同一段 choose_story 代码，文案有 STORY 校验兜底。
 - build_zhong.py 的 zc_same label 已对齐现网（「我记住了 下一次是第20次」）；改 zhong 文案照旧改脚本重生成。
 - BGM 拍板变更：进页自动播放（用户 2026-11-19 拍板），ui.js 注释已对齐；§6.29 的「默认不放歌」作废。
 - 待推 commits：本地 main 领先 origin 多个提交，推送需用户开节点（代理 127.0.0.1:7897）。
