@@ -718,15 +718,24 @@ def apply_option(s, option, rng, slots=None, card=None):
                                 "truth": ensure_truth(s, cid, rng)}
             s["clues_said"] += 1
             ev.append(("clue_said", cid))
-    if option.get("rq_drop") or "zhong_boundary" in (fl or []):
-        # 岔开话题（她以后不会再问这件事）/ 把她挡在门外（重线安静两周）
+    if "zhong_boundary" in (fl or []):
+        # 把她挡在门外（重线安静两周）。这个冷却只归重线自己的挡回选项，
+        # 不再跟回考的「岔开话题」绑在一起——对谁的水果偏好岔开话题，
+        # 都不该让重线主角安静两周。
         line_cool(s, "zhong", 2)
     if option.get("rq_drop"):
-        for cid, info in list(s["clues"].items()):
-            if info["state"] == "said":
-                info["state"] = "dropped"
+        # 岔开话题：只作废这张卡自己说的那条线索（rq_lock 里带着 clue），
+        # 不再把所有「已说未考」的线索一起作废。
+        cid_d = None
+        rl_d = option.get("rq_lock")
+        if isinstance(rl_d, dict):
+            cid_d = rl_d.get("clue")
+        if cid_d:
+            info_d = (s.get("clues") or {}).get(cid_d)
+            if info_d is not None and info_d["state"] == "said":
+                info_d["state"] = "dropped"
                 s["clues_said"] = max(0, s["clues_said"] - 1)
-                ev.append(("clue_dropped", cid))
+                ev.append(("clue_dropped", cid_d))
     if option.get("rq_pick"):
         pick = option["rq_pick"]
         cid = pick.get("clue")
@@ -788,7 +797,7 @@ def _tokens(a, b):
     return a if a in b else b
 
 
-def eval_clause(s, text):
+def eval_clause(s, text, stick_floor=None):
     text = text.strip()
     if not text or text == "无":
         return True
@@ -841,13 +850,29 @@ def eval_clause(s, text):
             return False
         best = max(o["stick"] for o in pool)
         return best >= val if "≥" in op else best <= val
+    m_mate = re.match(r"^任一队友关系\s*(≥|≤|>|<)\s*([\d.]+)$", t)
+    if m_mate:
+        # 「任一队友关系」：三个队友里关系最好的那个达不达标（truth_team_doubt 用）。
+        # 以前解析不了这句，兜底 return False，整卡死。
+        best = max(float(s.get("relation_A") or 0), float(s.get("relation_B") or 0),
+                   float(s.get("relation_C") or 0))
+        val = float(m_mate.group(2))
+        return best >= val if m_mate.group(1) in ("≥", ">") else best <= val
     m = re.match(r"^(.+?)\s*(≥|≤|=|>|<)\s*([\d.]+)$", t)
     if m:
         key = _NUM.get(m.group(1).strip())
         if key is None:
             return False
         if key == "weeks_known":
-            cur = min([o["weeks_known"] for o in s["ota"]] or [6])
+            # 「认识周数」在带「任一OTA黏性 ≥ X」的闸门里，指的是「那位黏性达标的
+            # OTA」认识多久（取其中最久者），不是全队最年轻的人——否则孵化一个
+            # 新人就把 10 张重档回考卡全锁两周。
+            if stick_floor:
+                cand = [o["weeks_known"] for o in s["ota"]
+                        if (o.get("stick") or 0) >= stick_floor]
+                cur = max(cand) if cand else 0
+            else:
+                cur = min([o["weeks_known"] for o in s["ota"]] or [6])
         elif key == "shiren":
             cur = s["shiren"]
         elif key == "stage":
@@ -870,13 +895,27 @@ def _cmp(t):
     return (m.group(1), float(m.group(2))) if m else (None, 0.0)
 
 
+def _gate_stick_floor(parts):
+    """闸门里「任一OTA黏性 ≥ X」给出的门槛。同一个闸门里的「认识周数」
+    要按这个门槛取人，别拿全队最小值。"""
+    floor = None
+    for x in parts:
+        m = re.search(r"任一\s*OTA\s*黏性\s*(≥|>)\s*([\d.]+)", x)
+        if m:
+            v = float(m.group(2))
+            floor = v if floor is None else max(floor, v)
+    return floor
+
+
 def eval_gate(s, gate):
     """支持：无 / 单条 / 「A 且 B」/「A 或 B」/ 带中文括号注释 / 不带空格的比较。"""
     if not gate:
         return True
     g = re.sub(r"（[^）]*）", "", gate)
     if "且" in g:
-        return all(eval_clause(s, x) for x in g.split("且"))
+        parts = g.split("且")
+        floor = _gate_stick_floor(parts)
+        return all(eval_clause(s, x, floor) for x in parts)
     if "或" in g:
         return any(eval_clause(s, x) for x in g.split("或"))
     return eval_clause(s, g)
@@ -1110,6 +1149,7 @@ def ota_pick(s, world, rng, chosens, allow_newbie=False):
     rest = [c for c in world["cards"]
             if _is_ota_card(c)
             and not c["id"].startswith(("ota_say_", "ota_ask_"))
+            and s.get("cooldown", {}).get(c["id"], 0) <= 0
             and eval_gate(s, c.get("gate"))]
 
     r = rng.random()
@@ -1405,7 +1445,9 @@ def finale_clue_pool(s):
     for cid, info in (s.get("clues") or {}).items():
         if cid not in mem:
             continue
-        if info.get("state") in ("said", "known", "wrong", "dropped"):
+        # dropped = 玩家岔开话题作废的线索：按 _meta 的承诺「彻底消失」，
+        # 不进收场拷问池，也不再占 have 的额度。
+        if info.get("state") in ("said", "known", "wrong"):
             out.append(cid)
     return out
 
@@ -1470,9 +1512,16 @@ def shiren_finale_quiz_cards(s, world, rng, n=3):
             and list((item or {}).get("pool") or [])]
     if not keys:
         return []
-    rng.shuffle(keys)
+    # 公平性：她「真的在叙事里说出口过」的细节排前面（loop._fill 渲染时登记进
+    # s["_prota_revealed"]）。以前全凭 6 项随机抽，她从没说过的花/老家也会被考——
+    # 认真玩也会被判「用完」。没说过的只拿来兜底凑数。
+    revealed = s.get("_prota_revealed") or []
+    rev = [k for k in keys if k in revealed]
+    oth = [k for k in keys if k not in revealed]
+    rng.shuffle(rev)
+    rng.shuffle(oth)
     cards = []
-    for cid in keys[:n]:
+    for cid in (rev + oth)[:n]:
         item = mem_def[cid] or {}
         vals = list(item.get("pool") or [])
         truth = s.get("_truth", {}).get("shiren_" + cid)
@@ -1597,7 +1646,7 @@ RENT = 900
 FEE = 620          # 一周的场租+分成（和 loop.py 里那一份保持一致）
 FEE_FIRST = 160    # 场地第一次给新人便宜
 SKILL_CAP = 82      # 舞/唱/live 话术的硬上限：练到后面涨得满，但别让人一季练到 97 白练
-ACT_REPEAT = {"dance": 2.0, "sing": 2.0, "mc": 2.0, "content": 0.8,
+ACT_REPEAT = {"dance": 0.5, "sing": 0.5, "mc": 0.5, "content": 0.8,
               "work": 1.6, "rest": 1.8}
 
 
@@ -1714,13 +1763,18 @@ def do_week(s, world, rng, policy=None):
         s["psyche"] -= 6
         clamp(s)
         report.append(("burnout", "体力见底"))
-    # 房租：第八天要交，交不上就睡大街（先睡排练室，再睡车站）
-    if s["week"] % 2 == 1 and s["money"] < RENT:
-        s["psyche"] -= 18
-        s["stamina"] -= 10
-        s["rent_missed"] = True
-        clamp(s)
-        report.append(("rent_due", "房租没交上"))
+    # 房租：第八天要交。交得起就真扣；交不上才是原来那套惩罚。
+    # 以前只有惩罚分支、没有扣款行——每周念着要交 900，钱包永远不减。
+    if s["week"] % 2 == 1:
+        if s["money"] >= RENT:
+            s["money"] -= RENT
+            report.append(("rent", "房租交了"))
+        else:
+            s["psyche"] -= 18
+            s["stamina"] -= 10
+            s["rent_missed"] = True
+            clamp(s)
+            report.append(("rent_due", "房租没交上"))
 
     # ---- 版聊：顺手发一条，回/不回
     r = rng.uniform(0, 1)
@@ -1952,8 +2006,9 @@ def do_week(s, world, rng, policy=None):
     settle_delayed(s, world, rng)
     cool_down(s)
     clamp(s)                      # 这一拍里所有散装加法都要收口，别把心理算到 102
-    # 最后一周，人已经累了，还是站上去把这一场跳完 = 「再跳一场」
-    if s["week"] >= s.get("weeks_total", 8):
+    # 最后一周，人已经累了，还是站上去把这一场跳完 = 「再跳一场」。
+    # 选了离开的人不算（彗星是「留在台上的人」的结局）。
+    if s["week"] >= s.get("weeks_total", 8) and not s.get("chose_leave"):
         s["last_live_choice"] = True
     s["week"] += 1
     for o in s["ota"]:

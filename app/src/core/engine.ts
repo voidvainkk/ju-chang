@@ -905,16 +905,21 @@ export function applyOption(
       ev.push(["clue_said", cid]);
     }
   }
-  if (option.rq_drop || fl.includes("zhong_boundary")) {
-    // 岔开话题 / 把她挡在门外（重线安静两周）
+  if (fl.includes("zhong_boundary")) {
+    // 把她挡在门外（重线安静两周）。冷却只归重线自己的挡回选项，
+    // 不再跟回考的「岔开话题」绑在一起。
     lineCool(s, "zhong", 2);
   }
   if (option.rq_drop) {
-    for (const [cid, info] of Object.entries(s.clues)) {
-      if (info.state === "said") {
-        info.state = "dropped";
+    // 岔开话题：只作废这张卡自己说的那条线索（rq_lock 里带着 clue）
+    const rlD = option.rq_lock as Record<string, string> | null | undefined;
+    const cidD = rlD && typeof rlD === "object" ? rlD.clue ?? null : null;
+    if (cidD) {
+      const infoD = (s.clues ?? {})[cidD];
+      if (infoD != null && infoD.state === "said") {
+        infoD.state = "dropped";
         s.clues_said = Math.max(0, s.clues_said - 1);
-        ev.push(["clue_dropped", cid]);
+        ev.push(["clue_dropped", cidD]);
       }
     }
   }
@@ -980,7 +985,7 @@ function _cmp(t: string): [string | null, number] {
   return m ? [m[1], parseFloat(m[2])] : [null, 0.0];
 }
 
-export function evalClause(s: State, textIn: string): boolean {
+export function evalClause(s: State, textIn: string, stickFloor?: number | null): boolean {
   let text = (textIn ?? "").trim();
   if (!text || text === "无") return true;
   if (text === "手头紧") return s.money < 800;
@@ -1040,13 +1045,25 @@ export function evalClause(s: State, textIn: string): boolean {
     const best = Math.max(...pool.map((o) => o.stick));
     return op.includes("≥") || op.includes(">") ? best >= val : best <= val;
   }
+  const mMate = /^任一队友关系\s*(≥|≤|>|<)\s*([\d.]+)$/.exec(t);
+  if (mMate) {
+    // 「任一队友关系」：三个队友里关系最好的那个达不达标（truth_team_doubt 用）
+    const bestM = Math.max(Number(s.relation_A ?? 0), Number(s.relation_B ?? 0), Number(s.relation_C ?? 0));
+    const valM = parseFloat(mMate[2]);
+    return mMate[1] === "≥" || mMate[1] === ">" ? bestM >= valM : bestM <= valM;
+  }
   const m = /^(.+?)\s*(≥|≤|=|>|<)\s*([\d.]+)$/.exec(t);
   if (m) {
     const key = _NUM[m[1].trim()];
     if (key === undefined) return false;
     let cur: number;
     if (key === "weeks_known") {
-      cur = Math.min(...(s.ota.length ? s.ota.map((o) => o.weeks_known) : [6]));
+      if (stickFloor) {
+        const cand = s.ota.filter((o) => (o.stick ?? 0) >= stickFloor).map((o) => o.weeks_known);
+        cur = cand.length ? Math.max(...cand) : 0;
+      } else {
+        cur = Math.min(...(s.ota.length ? s.ota.map((o) => o.weeks_known) : [6]));
+      }
     } else if (key === "shiren") {
       cur = s.shiren;
     } else if (key === "stage") {
@@ -1068,7 +1085,19 @@ export function evalClause(s: State, textIn: string): boolean {
 export function evalGate(s: State, gate?: string | null): boolean {
   if (!gate) return true;
   const g2 = gate.replace(/（[^）]*）/g, "");
-  if (g2.includes("且")) return g2.split("且").every((x) => evalClause(s, x));
+  if (g2.includes("且")) {
+    const parts = g2.split("且");
+    // 闸门里「任一OTA黏性 ≥ X」给出的门槛：同一闸门里的「认识周数」按它取人
+    let floor: number | null = null;
+    for (const x of parts) {
+      const mm = /任一\s*OTA\s*黏性\s*(≥|>)\s*([\d.]+)/.exec(x);
+      if (mm) {
+        const v = parseFloat(mm[2]);
+        floor = floor == null ? v : Math.max(floor, v);
+      }
+    }
+    return parts.every((x) => evalClause(s, x, floor));
+  }
   if (g2.includes("或")) return g2.split("或").some((x) => evalClause(s, x));
   return evalClause(s, g2);
 }
@@ -1303,6 +1332,7 @@ export function otaPick(
       _isOtaCard(c) &&
       !c.id.startsWith("ota_say_") &&
       !c.id.startsWith("ota_ask_") &&
+      Number((s.cooldown as Record<string, number> | undefined)?.[c.id] ?? 0) <= 0 &&
       evalGate(s, c.gate),
   );
 
@@ -1566,7 +1596,7 @@ export function finaleCluePool(s: State): string[] {
   const out: string[] = [];
   for (const [cid, info] of Object.entries(s.clues ?? {})) {
     if (!hasOwn(mem, cid)) continue;
-    if (["said", "known", "wrong", "dropped"].includes(info.state as string)) out.push(cid);
+    if (["said", "known", "wrong"].includes(info.state as string)) out.push(cid);
   }
   return out;
 }
@@ -1630,9 +1660,14 @@ export function shirenFinaleQuizCards(s: State, world: World, rng: PyRandom, n =
     (k) => memDef[k]?.kind === "choice" && Array.isArray(memDef[k]?.pool) && memDef[k].pool.length
   );
   if (!keys.length) return [];
-  rng.shuffle(keys);
+  // 公平性：她真的说出口过的细节排前面（loop._fill 登记进 s._prota_revealed）
+  const revealed = (s._prota_revealed as string[] | undefined) ?? [];
+  const rev = keys.filter((k) => revealed.includes(k));
+  const oth = keys.filter((k) => !revealed.includes(k));
+  rng.shuffle(rev);
+  rng.shuffle(oth);
   const cards: Card[] = [];
-  for (const cid of keys.slice(0, n)) {
+  for (const cid of [...rev, ...oth].slice(0, n)) {
     const item = memDef[cid] ?? {};
     const vals: string[] = [...(item.pool ?? [])];
     const truth = s._truth?.["shiren_" + cid];
@@ -1750,9 +1785,9 @@ export const FEE = 620; // 一周的场租+分成（和 loop.py 里那一份保�
 export const FEE_FIRST = 160; // 场地第一次给新人便宜
 export const SKILL_CAP = 82; // 舞/唱/live 话术的硬上限
 export const ACT_REPEAT: Record<string, number> = {
-  dance: 2.0,
-  sing: 2.0,
-  mc: 2.0,
+  dance: 0.5,
+  sing: 0.5,
+  mc: 0.5,
   content: 0.8,
   work: 1.6,
   rest: 1.8,
@@ -1886,13 +1921,18 @@ export function doWeek(
     clamp(s);
     report.push(["burnout", "体力见底"]);
   }
-  // 房租：第八天要交，交不上就睡大街（先睡排练室，再睡车站）
-  if (s.week % 2 === 1 && s.money < RENT) {
-    s.psyche -= 18;
-    s.stamina -= 10;
-    s.rent_missed = true;
-    clamp(s);
-    report.push(["rent_due", "房租没交上"]);
+  // 房租：第八天要交。交得起就真扣；交不上才是原来那套惩罚。
+  if (s.week % 2 === 1) {
+    if (s.money >= RENT) {
+      s.money -= RENT;
+      report.push(["rent", "房租交了"]);
+    } else {
+      s.psyche -= 18;
+      s.stamina -= 10;
+      s.rent_missed = true;
+      clamp(s);
+      report.push(["rent_due", "房租没交上"]);
+    }
   }
 
   // ---- 版聊：顺手发一条，回/不回
@@ -2142,8 +2182,8 @@ export function doWeek(
   settleDelayed(s, world, rng);
   coolDown(s);
   clamp(s); // 这一拍里所有散装加法都要收口
-  // 最后一周，人已经累了，还是站上去把这一场跳完
-  if (s.week >= n0(g(s, "weeks_total", 8))) s.last_live_choice = true;
+  // 最后一周，人已经累了，还是站上去把这一场跳完。选了离开的人不算。
+  if (s.week >= n0(g(s, "weeks_total", 8)) && !s.chose_leave) s.last_live_choice = true;
   s.week += 1;
   for (const o of s.ota) o.weeks_known += 1;
   return { tier, score: sc, report };

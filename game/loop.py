@@ -525,8 +525,9 @@ class Game:
 
     @staticmethod
     def _repeat_note(s, act):
-        """连着两晚做同一件事：第二天只涨一半，这句提示要写出来。"""
-        if s.get("_last_act") == act:
+        """连着两晚做同一件事的提示。只在真的减半（0.5）的动作上写——
+        拍内容是 ×0.8、躺/开播不减，不能睁眼说瞎话。"""
+        if s.get("_last_act") == act and E.ACT_REPEAT.get(act) == 0.5:
             return "（连着做，减半）"
         return ""
 
@@ -699,8 +700,15 @@ class Game:
         # 必须在下面那道「兜成对方」之前换掉——否则「猫叫『对方』」。
         mem = E.prota_memory(self.state)
         for k, v in mem.items():
-            if v:
-                t = t.replace("{{%s}}" % k, str(v))
+            if not v:
+                continue
+            token = "{{%s}}" % k
+            if token in t:
+                t = t.replace(token, str(v))
+                # 她当着玩家的面说过这个细节了：登记进「已揭示」，收场拷问优先出这些。
+                rec = self.state.setdefault("_prota_revealed", [])
+                if k not in rec:
+                    rec.append(k)
         # 还有没填上的占位符（选角没落地、或者卡要的槽跟 casting 声明的不一致）：
         # 绝不能把 {{xxx}} 原样端到玩家眼前。这里兜成「对方」，至少读得通。
         if "{{" in t:
@@ -964,10 +972,14 @@ class Game:
             s["played_while_collapsing"] = True
         E.clamp(s)
         warm = E.warm_ota(s)
-        self._bill = B.weekly_bill(s, warm)
-        self._warm = warm
-        s["_income_last"] = self._bill["yen"]
-        s["_bill_seen_week"] = s["week"]
+        # 一周一张特典账单（bill.py 自己的口径）：三张券账屏展示同一份，结算只入
+        # 这一份。以前每场重算、结算只入最后一场——周五/周六屏上那笔钱从来没进
+        # 过钱包，结算屏的「一共卖出 N 张券」也跟玩家刚看的两张账对不上。
+        if self._bill is None or s.get("_bill_seen_week") != s["week"]:
+            self._bill = B.weekly_bill(s, warm)
+            self._warm = warm
+            s["_income_last"] = self._bill["yen"]
+            s["_bill_seen_week"] = s["week"]
         self._collect_week_extras(warm)
         self.push({
             "type": "live",
@@ -1410,6 +1422,11 @@ class Game:
 
         不在这里调 after_step——周流程是 after_step 自己循环推的，这里排完就返回。"""
         s = self.state
+        # 「这一周已经开过头」的标记在这里落库：set_name / startWeekNext 会直接
+        # 调 _start_week，不走 after_step 的守卫——以前只有守卫那一侧置位，
+        # 每个新档第 1 周都会开两次周（两张「第 1 周」屏、两次剧情骰），
+        # 房租真扣款之后，第二次开局还会拿扣完的钱误判「房租没交上」。
+        s["_week_started"] = s["week"]
         self.acts_done = 0
         self.wk = {"act": 0, "mid": 0, "fri": 0, "sat_act": 0, "sat": 0,
                    "bill": 0, "sun": 0, "bill2": 0, "sun_talk": 0,
@@ -1421,11 +1438,18 @@ class Game:
         # 而 tick 以前只在抽到线之后才更新，于是上周推过的那条线这周开头就被误判成
         # 「本周已推」，`line_stage` 直接返回 None——私联从此再也轮不到，8 周只走一拍。
         s["_line_tick"] = s["week"]
-        rent = "，这周还要交 %d 块房租" % E.RENT if s["week"] % 2 == 1 else ""
+        # 房租：交得起就真扣。交不上才是下面那套惩罚。
+        rent_paid = False
+        if s["week"] % 2 == 1 and s["money"] >= E.RENT:
+            s["money"] -= E.RENT
+            rent_paid = True
+        rent = ""
+        if s["week"] % 2 == 1:
+            rent = "，房租已经交了" if rent_paid else "，这周还要交 %d 块房租" % E.RENT
         body = ["六天晚上，周五、周六各一场 live。手里还剩 %d 块%s。"
                 % (round(s["money"]), rent)]
         self.push({"type": "text", "title": "第 %d 周" % s["week"], "body": body})
-        if s["week"] % 2 == 1 and s["money"] < E.RENT:
+        if s["week"] % 2 == 1 and not rent_paid:
             s["psyche"] -= 18
             s["stamina"] -= 10
             s["rent_missed"] = True
@@ -1535,7 +1559,7 @@ class Game:
                 "群里没有人问我。小满发了一句「我们先别说话」。露露退群了。"],
              "bump": {"enjou": 250, "banzi": 300}},
             {"title": "", "auto": True, "body": [
-                "傍晚，场地退了，票全退。我坐在空的列里，把私信往上翻。",
+                "傍晚，场地退了，票全退。我坐在空的列里，把版聊往上翻。",
                 "翻到最早那条，她说：你是第一个记住我名字的人。我盯着这句话，想不起来是哪一个。"]},
             {"title": "", "auto": True, "body": [
                 "她们还在对日子。第四十七个。落款一栏排得很整齐。",
@@ -1871,7 +1895,7 @@ class Game:
         step = self._render_card(card, slots)
         step["_card"] = card
         step["_slots"] = slots
-        step["face"] = ((slots or {}).get("ta") or {}).get("name") or "私信"
+        step["face"] = ((slots or {}).get("ta") or {}).get("name") or "版聊"
         return step
 
     def _line_slots(self, lid, v):
@@ -1980,6 +2004,10 @@ class Game:
     def _finish(self):
         s = self.state
         self._journal_week(s.get("week") or 1)
+        # 「再跳一场」：没选离开、一路演到季末 = last_live。以前只有离线 do_week
+        # 会置位，线上永远拿不到彗星（判定恒 False，图鉴永远锁死）。
+        if not s.get("chose_leave"):
+            s["last_live_choice"] = True
         name, is_early = E.judge(s, self.world, None)
         s["ending"] = name
         self.over = True

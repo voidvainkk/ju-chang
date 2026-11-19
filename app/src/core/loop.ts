@@ -734,7 +734,8 @@ export class Game {
 
   /** 连着两晚做同一件事：第二天只涨一半，这句提示要写出来。 */
   private _repeatNote(s: State, act: string): string {
-    if (gv(s, "_last_act", null) === act) return "（连着做，减半）";
+    // 只在真的减半（0.5）的动作上显示；拍内容 ×0.8、躺/开播不减，不能说瞎话
+    if (gv(s, "_last_act", null) === act && (E.ACT_REPEAT[act] ?? 1.0) === 0.5) return "（连着做，减半）";
     return "";
   }
 
@@ -917,7 +918,15 @@ export class Game {
     }
     const mem = E.protaMemory(this.state!);
     for (const [k, v] of Object.entries(mem)) {
-      if (v) out = out.split(`{{${k}}}`).join(String(v));
+      if (!v) continue;
+      const token = `{{${k}}}`;
+      if (out.includes(token)) {
+        out = out.split(token).join(String(v));
+        // 她当着玩家的面说过这个细节了：登记进「已揭示」，收场拷问优先出这些
+        const rec = (this.state!._prota_revealed as string[] | undefined) ?? [];
+        if (!rec.includes(k)) rec.push(k);
+        this.state!._prota_revealed = rec;
+      }
     }
     // 还有没填上的占位符（选角没落地、或者卡要的槽跟 casting 声明的不一致）：
     // 绝不能把 {{xxx}} 原样端到玩家眼前。这里兜成「对方」，至少读得通。
@@ -1212,10 +1221,13 @@ export class Game {
     if (s.psyche < 20) s.played_while_collapsing = true;
     E.clamp(s);
     const warm = E.warmOta(s);
-    this._bill = B.weeklyBill(s, warm);
-    this._warm = warm;
-    s._income_last = this._bill.yen;
-    s._bill_seen_week = s.week;
+    // 一周一张特典账单（bill.py 的口径）：三张券账屏展示同一份，结算只入这一份。
+    if (this._bill == null || gv(s, "_bill_seen_week", null) !== s.week) {
+      this._bill = B.weeklyBill(s, warm);
+      this._warm = warm;
+      s._income_last = this._bill.yen;
+      s._bill_seen_week = s.week;
+    }
     this._collectWeekExtras(warm);
     this.push({
       type: "live",
@@ -1704,6 +1716,10 @@ export class Game {
    */
   private _startWeek(): void {
     const s = this.state!;
+    // 「这一周已经开过头」的标记在这里落库：setName / startWeekNext 会直接调
+    // _startWeek，不走 afterStep 的守卫——以前每个新档第 1 周都开两次周，
+    // 房租真扣款之后，第二次开局还会拿扣完的钱误判「房租没交上」。
+    s._week_started = s.week;
     this.acts_done = 0;
     this.wk = {
       act: 0, mid: 0, fri: 0, sat_act: 0, sat: 0,
@@ -1717,10 +1733,16 @@ export class Game {
     // 而 tick 以前只在抽到线之后才更新，于是上周推过的那条线这周开头就被误判成
     // 「本周已推」，`lineStage` 直接返回 null——私联从此再也轮不到，8 周只走一拍。
     s._line_tick = s.week;
-    const rent = s.week % 2 === 1 ? `，这周还要交 ${E.RENT} 块房租` : "";
+    // 房租：交得起就真扣；交不上才是下面那套惩罚
+    let rentPaid = false;
+    if (s.week % 2 === 1 && s.money >= E.RENT) {
+      s.money -= E.RENT;
+      rentPaid = true;
+    }
+    const rent = s.week % 2 === 1 ? (rentPaid ? "，房租已经交了" : `，这周还要交 ${E.RENT} 块房租`) : "";
     const body = [`六天晚上，周五、周六各一场 live。手里还剩 ${pyRound(s.money)} 块${rent}。`];
     this.push({ type: "text", title: `第 ${s.week} 周`, body });
-    if (s.week % 2 === 1 && s.money < E.RENT) {
+    if (s.week % 2 === 1 && !rentPaid) {
       s.psyche -= 18;
       s.stamina -= 10;
       s.rent_missed = true;
@@ -1882,7 +1904,7 @@ export class Game {
         title: "",
         auto: true,
         body: [
-          "傍晚，场地退了，票全退。我坐在空的列里，把私信往上翻。",
+          "傍晚，场地退了，票全退。我坐在空的列里，把版聊往上翻。",
           "翻到最早那条，她说：你是第一个记住我名字的人。我盯着这句话，想不起来是哪一个。",
         ],
       },
@@ -2232,7 +2254,7 @@ export class Game {
     const step = this._renderCard(card, slots);
     step._card = card;
     step._slots = slots;
-    step.face = (slots?.ta || {}).name || "私信";
+    step.face = (slots?.ta || {}).name || "版聊";
     return step;
   }
 
@@ -2364,6 +2386,9 @@ export class Game {
   private _finish(): void {
     const s = this.state!;
     this._journalWeek(n0(gv(s, "week", 1)));
+    // 「再跳一场」：没选离开、一路演到季末 = last_live（彗星第三条件）。
+    // 以前只有离线 doWeek 会置位，线上永远拿不到彗星。
+    if (!s.chose_leave) s.last_live_choice = true;
     const [name, isEarly] = E.judge(s, this.world, null);
     s.ending = name;
     this.over = true;
