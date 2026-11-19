@@ -925,9 +925,6 @@ class Game:
         for d in (o.get("delayed") or [])[:1]:
             if d.get("note"):
                 body.append("（%s·%s）" % (d.get("when", ""), self._fill(d["note"], slots)))
-        # 版聊回完一个人，括号里点一句：这条是当着全群的面回出去的。
-        if card.get("type") == "版聊":
-            body.append("（这样回复了大家）")
         # 回复插队首：选了哪张卡，那条回复立刻跟在后面，不把几张卡的回复攒到一起
         self.queue.insert(0, {"type": "receipt", "title": self._fill(o.get("label", ""), slots),
                    "body": body, "delta": _delta(before, self.state),

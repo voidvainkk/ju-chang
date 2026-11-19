@@ -1165,8 +1165,6 @@ export class Game {
         body.push(`（${gv(d, "when", "")}·${this._fill(d.note, slots)}）`);
       }
     }
-    // 版聊回完一个人，括号里点一句：这条是当着全群的面回出去的。
-    if (card.type === "版聊") body.push("（这样回复了大家）");
     // 回复插队首：选了哪张卡，那条回复立刻跟在后面
     this.queue.unshift({
       type: "receipt",
