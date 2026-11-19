@@ -1625,6 +1625,7 @@ export function finaleQuizCards(s: State, _world: World, rng: PyRandom, n = 3): 
       id: `finale_quiz_${cid}`,
       type: "OTA记忆",
       title: "收场",
+      no: null, // 同上：与 py 对齐
       _meta: {
         rq_stage: "ask",
         clue: cid,
@@ -1677,6 +1678,7 @@ export function shirenFinaleQuizCards(s: State, world: World, rng: PyRandom, n =
       id: `finale_quiz_shiren_${cid}`,
       type: "OTA记忆",
       title: "收场",
+      no: null, // py 侧 card.get("no") 恒为 null，这里显式给 null 保持对账一致
       _meta: {
         rq_stage: "ask",
         clue: "shiren_" + cid,

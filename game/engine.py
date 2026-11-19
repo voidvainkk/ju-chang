@@ -1481,6 +1481,7 @@ def finale_quiz_cards(s, world, rng, n=3):
             "id": "finale_quiz_%s" % cid,
             "type": "OTA记忆",
             "title": "收场",
+            "no": None,  # 动态卡没有全池序号；显式 None 与 TS 对齐
             "_meta": {"rq_stage": "ask", "clue": cid,
                       "react_good": c.get("react_good") or {},
                       "react_bad": c.get("react_bad") or {},
@@ -1532,6 +1533,7 @@ def shiren_finale_quiz_cards(s, world, rng, n=3):
             "id": "finale_quiz_shiren_%s" % cid,
             "type": "OTA记忆",
             "title": "收场",
+            "no": None,  # 同上
             "_meta": {"rq_stage": "ask", "clue": "shiren_" + cid,
                       "react_good": item.get("react_good") or {},
                       "react_bad": item.get("react_bad") or {},

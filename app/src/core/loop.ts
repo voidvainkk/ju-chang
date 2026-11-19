@@ -450,11 +450,6 @@ export class Game {
       }
       return true;
     }
-    if (!wk.fri) {
-      wk.fri = 1;
-      this.pushLive(false);
-      return true;
-    }
     if (!wk.sat_act) {
       wk.sat_act = 1;
       this.push(this._wkChoice());
@@ -494,7 +489,8 @@ export class Game {
     if (!wk.sun_talk) {
       wk.sun_talk = 1;
       this.push(this._sunTalkStep());
-      for (const st of [...wk.events, ...wk.extra]) this.push(st);
+      // 一次性提问排在前，三张周卡收尾：选完最后一张卡紧接着就是周结算
+      for (const st of [...wk.extra, ...wk.events]) this.push(st);
       return true;
     }
     this.settleWeek();
@@ -1221,13 +1217,12 @@ export class Game {
     if (s.psyche < 20) s.played_while_collapsing = true;
     E.clamp(s);
     const warm = E.warmOta(s);
-    // 一周一张特典账单（bill.py 的口径）：三张券账屏展示同一份，结算只入这一份。
-    if (this._bill == null || gv(s, "_bill_seen_week", null) !== s.week) {
-      this._bill = B.weeklyBill(s, warm);
-      this._warm = warm;
-      s._income_last = this._bill.yen;
-      s._bill_seen_week = s.week;
-    }
+    // 每场各算各的账（人气决定今天谁来、来几个），state 里累加这一周的券数与
+    // 收入，结算把所有场次加总——券账屏展示的钱就是会进钱包的钱。
+    this._bill = B.weeklyBill(s, warm);
+    this._warm = warm;
+    s._week_tickets = n0(gv(s, "_week_tickets", 0)) + this._bill.tickets;
+    s._week_income = n0(gv(s, "_week_income", 0)) + this._bill.yen;
     this._collectWeekExtras(warm);
     this.push({
       type: "live",
@@ -1667,8 +1662,14 @@ export class Game {
     }
     s._settled_week = s.week;
     const before = snap(s);
-    const bill = this._bill || B.weeklyBill(s, E.warmOta(s));
-    const income = bill.yen;
+    // 一周的券全部加总（每场各自记账，state 里累加；旧档没有累计时退回单场账）
+    let income = n0(gv(s, "_week_income", 0));
+    let tickets = n0(gv(s, "_week_tickets", 0));
+    if (income === 0 && tickets === 0) {
+      const bill = this._bill || B.weeklyBill(s, E.warmOta(s));
+      income = bill.yen;
+      tickets = bill.tickets;
+    }
     const fee = s.week === 1 ? 160 : 620;
     s.money += income - fee;
     if (s.money < 0) {
@@ -1690,7 +1691,7 @@ export class Game {
     E.clamp(s);
     this._journalWeek(s.week);
     const doneWeek = s.week;
-    const body = [`一共卖出 ${bill.tickets} 张券，进账 ${pyRound(income)} 块；场租和分成 ${fee} 块。`];
+    const body = [`一共卖出 ${tickets} 张券，进账 ${pyRound(income)} 块；场租和分成 ${fee} 块。`];
     if (born && born.length) body.push(`她把朋友带来了：${born.join("、")}。`);
     const panel: Step = {
       type: "panel",
@@ -1720,6 +1721,8 @@ export class Game {
     // _startWeek，不走 afterStep 的守卫——以前每个新档第 1 周都开两次周，
     // 房租真扣款之后，第二次开局还会拿扣完的钱误判「房租没交上」。
     s._week_started = s.week;
+    s._week_tickets = 0;
+    s._week_income = 0;
     this.acts_done = 0;
     this.wk = {
       act: 0, mid: 0, fri: 0, sat_act: 0, sat: 0,

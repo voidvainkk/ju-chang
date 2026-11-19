@@ -281,10 +281,6 @@ class Game:
             else:
                 self.push(self._wk_choice())
             return True
-        if not wk["fri"]:
-            wk["fri"] = 1
-            self.push_live(last=False)
-            return True
         if not wk["sat_act"]:
             wk["sat_act"] = 1
             self.push(self._wk_choice())
@@ -315,7 +311,9 @@ class Game:
         if not wk["sun_talk"]:
             wk["sun_talk"] = 1
             self.push(self._sun_talk_step())
-            for st in list(wk["events"]) + list(wk["extra"]):
+            # 运营/累不累/离开这些一次性提问排在三张周卡前面：选完最后一张卡，
+            # 紧接着就是周结算，中间不再插别的屏。
+            for st in list(wk["extra"]) + list(wk["events"]):
                 self.push(st)
             return True
         self.settle_week()
@@ -972,14 +970,12 @@ class Game:
             s["played_while_collapsing"] = True
         E.clamp(s)
         warm = E.warm_ota(s)
-        # 一周一张特典账单（bill.py 自己的口径）：三张券账屏展示同一份，结算只入
-        # 这一份。以前每场重算、结算只入最后一场——周五/周六屏上那笔钱从来没进
-        # 过钱包，结算屏的「一共卖出 N 张券」也跟玩家刚看的两张账对不上。
-        if self._bill is None or s.get("_bill_seen_week") != s["week"]:
-            self._bill = B.weekly_bill(s, warm)
-            self._warm = warm
-            s["_income_last"] = self._bill["yen"]
-            s["_bill_seen_week"] = s["week"]
+        # 每场各算各的账（人气决定今天谁来、来几个），state 里累加这一周的券数与
+        # 收入，结算把所有场次加总——券账屏展示的钱就是会进钱包的钱。
+        self._bill = B.weekly_bill(s, warm)
+        self._warm = warm
+        s["_week_tickets"] = s.get("_week_tickets", 0) + self._bill["tickets"]
+        s["_week_income"] = s.get("_week_income", 0) + self._bill["yen"]
         self._collect_week_extras(warm)
         self.push({
             "type": "live",
@@ -1351,8 +1347,13 @@ class Game:
         before = _snap(s)
         _osnap_before = _osnap(s)
         _rsnap_before = _rsnap(s)
-        bill = self._bill or B.weekly_bill(s, E.warm_ota(s))
-        income = bill["yen"]
+        # 一周的券全部加总（每场各自记账，state 里累加；旧档没有累计时退回单场账）
+        income = s.get("_week_income", 0)
+        tickets = s.get("_week_tickets", 0)
+        if income == 0 and tickets == 0:
+            bill = self._bill or B.weekly_bill(s, E.warm_ota(s))
+            income = bill["yen"]
+            tickets = bill["tickets"]
         fee = 160 if s["week"] == 1 else 620
         s["money"] += income - fee
         if s["money"] < 0:
@@ -1372,7 +1373,7 @@ class Game:
         self._journal_week(s["week"])
         _done_week = s["week"]
         _body = ["一共卖出 %d 张券，进账 %d 块；场租和分成 %d 块。"
-                 % (bill["tickets"], round(income), fee)]
+                 % (tickets, round(income), fee)]
         if born:
             _body.append("她把朋友带来了：%s。" % "、".join(born))
         panel = {"type": "panel", "title": "第 %d 周结算" % _done_week,
@@ -1427,6 +1428,8 @@ class Game:
         # 每个新档第 1 周都会开两次周（两张「第 1 周」屏、两次剧情骰），
         # 房租真扣款之后，第二次开局还会拿扣完的钱误判「房租没交上」。
         s["_week_started"] = s["week"]
+        s["_week_tickets"] = 0
+        s["_week_income"] = 0
         self.acts_done = 0
         self.wk = {"act": 0, "mid": 0, "fri": 0, "sat_act": 0, "sat": 0,
                    "bill": 0, "sun": 0, "bill2": 0, "sun_talk": 0,
