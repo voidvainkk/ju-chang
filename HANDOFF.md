@@ -1231,3 +1231,9 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - 「我只是太爱你了」结局专属歌：棺木生花（bgm_guanmu.mp3，用户微信文件）。bgmDesired 优先级 guanmu > noway > shiren > romance > god > base；结局 latch storyGuanmu（结局屏换曲不打断），失控演出仍 latch storyNoway（无路可退的视线）。music.html 曲单加第 8 首「棺木生花 太爱你 专属」。
 - 太爱你结局红色 UI：body.ending-red（盖在 ending-stage 青绿主题上）——深红底 #12040a、正文 #ffe9ec、accent #ff2e44、标题发光、扫描线红调、HUD/回响面板随变量变红。
 - 待推 commits：7 个（BGM 重做、scrollTo auto、气泡+唱片开关、气泡样式、音乐室+No.155、HANDOFF §6.34、♪入口+OTA hover+重线演出）。
+## 6.35 · 2026-11-20 「我只是太爱你了」前置过渡 + 演出三幕化（用户拍板）
+
+- 突兀感修复（用户提出讨论后定案）：收据屏 → 过渡拍 → 结局演出，不再直接跳。final_intimate 写 flag 后，引擎在 _finish() 前插 text 屏「有什么在看着我」（被监视三段文案，py/ts 逐字一致），auto:true + auto_after:8200 慢速自动推进；ui.js auto 机制支持 step.auto_after（原写死 1900ms）。collapsing 灯暗语言复用——读被监视文案时页面同步暗下来。
+- 演出三幕化（#zhong-rain）：overlay 改纯黑开场（zrIn .6s，结局文字演出完成前不可见）→ 第一幕黑场弹窗「这几天，安静得让人心慌。像她终于决定，要做点什么了。」（0.9s 进 / 3.6s 出）→ 第二幕打字机打「为什么你就不肯回头看看我呢？」450ms/字、停 1.5s、60ms/字倒删、空 0.9s → 第三幕雨（v5 全保留：412 列、从天上落、红雾、我会一直一直看着你 ^^、纯红 #ff0f1e）→ zr-out 渐亮出红色结局 UI。
+- loop 对账 74674→74765 项 / 826→827 屏（桥屏入轨，py/ts 一致）；trace 9419 不变（无种子走 final_intimate）；validate_all 八组 0；tsc 0；build 过。
+- 过渡屏文案为草稿已随预览交付用户审；弹窗句与过渡屏末句不重复（钩子句从过渡屏挪进弹窗）。
