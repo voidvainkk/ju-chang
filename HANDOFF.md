@@ -1227,7 +1227,7 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - validate_all 八组全 0；trace 9419 / loop 74674 重录全对；tsc 0；vite build 过。卡库审核.md 重导出（No.1–No.159，已交付 e07a426f）。
 - 音乐室入口：HUD 加 ♪ 链接（music-room → music.html），唱片只管开关。
 - OTA：点击切换逻辑本身早已存在（点开点关、无自动关闭）；手机上 :hover 会吃掉首 Tap，已把 #ota-fold:hover 包进 @media(hover:hover)。
-- 重线终局演出 v4（用户四轮拍板定稿）：触发=结局「我只是太爱你了」end 屏当场；#zhong-rain 渐暗 1.8s → 血红「愛してる」竖排（vertical-rl+upright）每列一个词，铺天盖地式增援：起步 6 列，批次 2/3/4/6/8/10/12/14/16/18/20（400ms 起步逐渐加密加量），铺屏前累计 100+ 列（4.5–9s 缓落、负延迟散布全屏）；zrGlow 红雾随打字进度 6.3s 内 0→0.65 衔接 → 打字机 450ms/字「我会一直一直看着你」→ 停 1.8s 打 ^^ → +3s 屏幕铺纯红 #ff0f1e（zrFlood 1.2s）→ +4.8s 整层（含红）1.4s 淡出自毁；期间挡输入。验收钩子 window.__zhongRainShow / window.__renderStep；冻结验收法：注入 #zhong-rain{animation-play-state:paused} 可把峰值停住截图。
+- 重线终局演出 v5（用户五轮拍板定稿）：触发=结局「我只是太爱你了」end 屏当场；#zhong-rain 渐暗 1.8s → 血红「愛してる」竖排（vertical-rl+upright）每列一个词，全部从天上落（正延迟≤0.45s+fill both 钉在屏外起点，落点永不在半空刷出），批次 3/4/5/6/8/10/12/14/16/18/20/22/24/26/28/30/32/34/36/38/20（300ms 起每 300ms 一批），铺屏前累计 400+ 列（4.5–9s 缓落）→ 打字机 450ms/字「我会一直一直看着你」→ 停 2.2s 打 ^^ → +3.8s 屏幕铺纯红 #ff0f1e（zrFlood 1.2s）→ +6.2s 整层（含红）1.4s 淡出、+8s 自毁（全程约 12.5s）；zrGlow 红雾 8.3s 内 0→0.72 衔接纯红；期间挡输入。验收钩子 window.__zhongRainShow / window.__renderStep。
 - 「我只是太爱你了」结局专属歌：棺木生花（bgm_guanmu.mp3，用户微信文件）。bgmDesired 优先级 guanmu > noway > shiren > romance > god > base；结局 latch storyGuanmu（结局屏换曲不打断），失控演出仍 latch storyNoway（无路可退的视线）。music.html 曲单加第 8 首「棺木生花 太爱你 专属」。
 - 太爱你结局红色 UI：body.ending-red（盖在 ending-stage 青绿主题上）——深红底 #12040a、正文 #ffe9ec、accent #ff2e44、标题发光、扫描线红调、HUD/回响面板随变量变红。
 - 待推 commits：7 个（BGM 重做、scrollTo auto、气泡+唱片开关、气泡样式、音乐室+No.155、HANDOFF §6.34、♪入口+OTA hover+重线演出）。
