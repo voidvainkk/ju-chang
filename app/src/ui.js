@@ -236,197 +236,59 @@ function applyOtaFold(folded) {
 if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold(!$("ota-panel").classList.contains("fold"));
 applyOtaFold(localStorage.getItem(OTA_FOLD_KEY) !== "0");
 
-/* ---------- BGM 唱片（进页自动播放，用户 2026-11-19 拍板；点唱片弹选歌窗） ---------- */
+/* ---------- BGM：随剧情推进换歌（选歌面板在游戏外的 music.html） ---------- */
 const BGM_TRACKS = [
-  { src: "bgm_1.mp3", name: "Offline Sedation" },
-  { src: "bgm_2.mp3", name: "Digital Coma (1)" },
-  { src: "bgm_3.mp3", name: "Digital Coma" },
-  { src: "bgm_4.mp3", name: "Digital Rot Lullaby (1)" },
-  { src: "bgm_5.mp3", name: "Digital Rot Lullaby" },
-  { src: "bgm_6.mp3", name: "Sweet Overdose Lullaby", rec: true }, // 第六首：推荐
-  { src: "bgm_noway.mp3", name: "无路可退的视线", story: true }, // 剧情歌：失控演出/我只是太爱你了才露面
+  { key: "base",    src: "bgm_1.mp3",     name: "Offline Sedation",       tag: "日常" },
+  { key: "god",     src: "bgm_2.mp3",     name: "Digital Coma (1)",       tag: "神场 专属" },
+  { key: "romance", src: "bgm_5.mp3",     name: "Digital Rot Lullaby",    tag: "恋爱 专属" },
+  { key: "shiren",  src: "bgm_6.mp3",     name: "Sweet Overdose Lullaby", tag: "私联 专属" },
+  { key: "noway",   src: "bgm_noway.mp3", name: "无路可退的视线",         tag: "失控 · 太爱你 专属" },
 ];
-const BGM_MODE_KEY = "ju-chang.bgmmode";   // "order" 顺序播放 / "single" 单曲循环
-let bgmIndex = -1;          // -1 = 还没选过歌
 let bgmAudio = null;
-let bgmMenuOpen = false;
-let bgmSeeking = false;
-let bgmMode = localStorage.getItem(BGM_MODE_KEY) === "order" ? "order" : "single";
-let storySongOn = false;   // 已触发过（不重复起播）；剧情歌不进歌单，只播放
+let bgmLastKey = null;
+let storyNoway = false;   // 无路可退的视线已起播：之后不再被剧情换歌打断
 
-/* 剧情触发（失控演出开始 / 「我只是太爱你了」结局）：这首歌开始单曲循环 */
-function bgmStoryNow() {
-  if (storySongOn) return;
-  storySongOn = true;
-  const i = BGM_TRACKS.findIndex((t) => t.story);
-  if (i >= 0) bgmPlay(i);
-}
-
-const bgmFmt = (s) => {
-  if (!isFinite(s) || s < 0) s = 0;
-  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
-  return `${m}:${String(sec).padStart(2, "0")}`;
-};
 function bgmEnsureAudio() {
   if (bgmAudio) return;
   bgmAudio = new Audio();
-  bgmAudio.loop = false;
-  const volEl = $("bgm-volume");
-  bgmAudio.volume = volEl ? (+volEl.value) / 100 : 0.7;
-  bgmAudio.addEventListener("ended", bgmOnEnded);
-  bgmAudio.addEventListener("loadedmetadata", bgmSyncMeta);
-  bgmAudio.addEventListener("timeupdate", bgmSyncProgress);
+  bgmAudio.loop = true;
+  bgmAudio.volume = 0.7;
 }
-// 一首放完后按当前模式走：单曲循环 → 重放这首；顺序播放 → 下一首
-function bgmOnEnded() {
-  if (!bgmAudio) return;
-  if (bgmMode === "single" && bgmIndex >= 0) {
-    bgmAudio.currentTime = 0;
-    bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
-  } else {
-    bgmSelect((bgmIndex + 1) % BGM_TRACKS.length);
-  }
-}
-function bgmSyncMeta() {
-  const dur = $("bgm-dur");
-  if (dur) dur.textContent = bgmFmt(bgmAudio && bgmAudio.duration);
-}
-function bgmSyncProgress() {
-  const prog = $("bgm-progress"), cur = $("bgm-cur");
-  if (!bgmAudio || !prog || bgmSeeking) return;
-  const d = bgmAudio.duration;
-  prog.value = (isFinite(d) && d > 0) ? Math.round(bgmAudio.currentTime / d * 1000) : 0;
-  if (cur) cur.textContent = bgmFmt(bgmAudio.currentTime);
-}
-function bgmSetPlaying(on) {
-  const box = $("bgm-box"), disc = $("bgm-disc");
-  if (box) box.classList.toggle("playing", on);
-  if (disc) disc.title = on ? "暂停 / 选歌" : "选歌 / 放歌";
-  const tog = $("bgm-toggle");
-  if (tog) tog.textContent = on ? "⏸ 暂停" : "▶ 继续";
-  bgmRenderList();
-}
-function bgmPlay(i) {
+function bgmPlayTrack(t) {
+  if (!t) return;
   bgmEnsureAudio();
-  bgmIndex = i;
-  bgmAudio.src = BGM_TRACKS[i].src;
-  bgmAudio.loop = !!BGM_TRACKS[i].story;   // 剧情歌直接单曲循环
-  bgmAudio.load();
-  bgmSyncMeta();
-  bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
+  if (bgmAudio.src.endsWith(t.src)) return;
+  bgmAudio.src = t.src;
+  bgmAudio.play().catch(() => {});
 }
-function bgmTogglePlay() {
-  if (!bgmAudio || bgmIndex < 0) return;
-  if (bgmAudio.paused) bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => {});
-  else { bgmAudio.pause(); bgmSetPlaying(false); }
+function bgmDesired(snap) {
+  if (storyNoway) return "noway";
+  const st = (snap && snap.story) || {};
+  const flags = (snap && snap.flags) || [];
+  if ((st.shiren || {}).stage >= 0) return "shiren";
+  if (flags.includes("romance_confirmed")) return "romance";
+  if ((snap && (snap.gorshou || 0)) >= 1) return "god";
+  return "base";
 }
-function bgmSelect(i) {
-  if (i === bgmIndex) bgmTogglePlay();   // 点当前曲目 = 暂停/继续
-  else bgmPlay(i);
+function bgmSyncStory(snap) {
+  const key = bgmDesired(snap);
+  if (key === bgmLastKey) return;
+  const prev = bgmLastKey;
+  bgmLastKey = key;
+  bgmPlayTrack(BGM_TRACKS.find((x) => x.key === key));
+  // 解禁横幅只在「第一次换上某条专属曲」的时候飘：开局上日常曲不打扰
+  if (prev !== null && key !== "base" && key !== prev) bgmUnlockBanner(BGM_TRACKS.find((x) => x.key === key));
 }
-function bgmRenderList() {
-  const list = $("bgm-list");
-  if (!list) return;
-  list.innerHTML = BGM_TRACKS.map((t, i) => [t, i])
-    .filter(([t]) => !t.story)   // 剧情歌只播放不显示
-    .map(([t, i]) => {
-    const active = i === bgmIndex;
-    const playing = active && bgmAudio && !bgmAudio.paused;
-    return `<button class="bgm-track${active ? " active" : ""}" data-i="${i}">`
-      + `<span class="bgm-n">${String(i + 1).padStart(2, "0")}</span>`
-      + `<span>${t.name}</span>`
-      + (t.rec ? `<span class="bgm-rec" title="推荐" aria-label="推荐">★</span>` : "")
-      + (playing ? `<span class="bgm-eq">♪</span>` : "")
-      + `</button>`;
-  }).join("");
-  list.querySelectorAll(".bgm-track").forEach(b => { b.onclick = () => bgmSelect(+b.dataset.i); });
-}
-function bgmRenderMode() {
-  document.querySelectorAll(".bgm-mode-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.mode === bgmMode);
-    b.setAttribute("aria-pressed", b.dataset.mode === bgmMode ? "true" : "false");
-  });
-}
-function bgmSetMode(mode) {
-  bgmMode = mode === "single" ? "single" : "order";
-  localStorage.setItem(BGM_MODE_KEY, bgmMode);
-  bgmRenderMode();
-}
-document.querySelectorAll(".bgm-mode-btn").forEach(b => {
-  b.onclick = () => bgmSetMode(b.dataset.mode);
-});
-bgmRenderMode();
-/* 控制条：上一首 / 暂停·继续 / 下一首（剧情歌不进这个循环） */
-function bgmVisibleIdx() {
-  return BGM_TRACKS.map((t, i) => [t, i]).filter(([t]) => !t.story).map(([, i]) => i);
-}
-function bgmStep(dir) {
-  const vis = bgmVisibleIdx();
-  if (!vis.length) return;
-  let pos = vis.indexOf(bgmIndex);
-  if (pos < 0) pos = 0;
-  bgmSelect(vis[(pos + dir + vis.length) % vis.length]);
-}
-if ($("bgm-prev")) $("bgm-prev").onclick = () => bgmStep(-1);
-if ($("bgm-next")) $("bgm-next").onclick = () => bgmStep(1);
-if ($("bgm-toggle")) $("bgm-toggle").onclick = () => {
-  if (bgmIndex < 0) { const vis = bgmVisibleIdx(); if (vis.length) bgmPlay(vis[0]); return; }
-  bgmTogglePlay();
-};
-function bgmOpenMenu(open) {
-  bgmMenuOpen = open;
-  const m = $("bgm-modal");
-  if (m) m.classList.toggle("hidden", !open);
-  if (open) { bgmRenderList(); bgmSyncMeta(); bgmSyncProgress(); }
-}
-if ($("bgm-disc")) $("bgm-disc").onclick = () => bgmOpenMenu(!bgmMenuOpen);
-if ($("bgm-close")) $("bgm-close").onclick = () => bgmOpenMenu(false);
-
-/* 启动默认：预选打星那首（rec），模式已默认 single；自动播放被浏览器拦就静默，首次交互再试 */
-(function tryAutoBGM() {
-  const recIdx = BGM_TRACKS.findIndex((t) => t.rec);
-  if (recIdx >= 0) {
-    bgmIndex = recIdx;
-    bgmPlay(recIdx);
-  }
-  const resume = () => {
-    if (bgmIndex >= 0 && bgmAudio && bgmAudio.paused) {
-      bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => {});
-    }
-    document.removeEventListener("pointerdown", resume);
-    document.removeEventListener("keydown", resume);
-  };
-  document.addEventListener("pointerdown", resume);
-  document.addEventListener("keydown", resume);
-})();
-
-/* 进度条：拖动时暂停同步，松手后 seek */
-if ($("bgm-progress")) {
-  const prog = $("bgm-progress");
-  prog.addEventListener("input", () => {
-    bgmSeeking = true;
-    const cur = $("bgm-cur");
-    if (cur && bgmAudio && isFinite(bgmAudio.duration))
-      cur.textContent = bgmFmt(bgmAudio.duration * prog.value / 1000);
-  });
-  const commit = () => {
-    if (!bgmSeeking) return;
-    bgmSeeking = false;
-    if (bgmAudio && isFinite(bgmAudio.duration) && bgmAudio.duration > 0)
-      bgmAudio.currentTime = bgmAudio.duration * prog.value / 1000;
-  };
-  prog.addEventListener("change", commit);
-  prog.addEventListener("pointerup", commit);
-}
-/* 音量条 */
-if ($("bgm-volume")) {
-  const vol = $("bgm-volume"), label = $("bgm-volval");
-  if (label) label.textContent = vol.value;
-  vol.addEventListener("input", () => {
-    const v = +vol.value;
-    if (bgmAudio) bgmAudio.volume = v / 100;
-    if (label) label.textContent = v;
-  });
+function bgmUnlockBanner(t) {
+  const old = document.getElementById("bgm-unlock");
+  if (old) old.remove();
+  const el = document.createElement("div");
+  el.id = "bgm-unlock";
+  el.innerHTML = `<div class="bu-sprite"><img src="idol_sweet.png" alt=""></div>`
+    + `<div class="bu-body"><div class="bu-title">★ ${t.tag} BGM 解禁 ★</div>`
+    + `<div class="bu-sub">好像发生了什么变化。</div></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 4600);
 }
 
 /* ---------- 舞台 ---------- */
@@ -760,8 +622,13 @@ function renderStep(step, snap) {
   $("stage").classList.toggle("compact", !!step.compact);
   const onEnd = step.type === "end";
   // 剧情音乐钩子：失控演出开始、以及「我只是太爱你了」结局——无路可退的视线单曲循环
-  if (step.collapse_start) bgmStoryNow();
-  if (onEnd && step.ending === "我只是太爱你了") bgmStoryNow();
+  if (step.collapse_start || (onEnd && step.ending === "我只是太爱你了")) {
+    // 剧情歌钩子：失控演出开始、以及「我只是太爱你了」结局——无路可退的视线
+    storyNoway = true;
+    bgmLastKey = "noway";
+    bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "noway"));
+  }
+  bgmSyncStory(snap);
   // C+A：live 屏和结局屏切到「午夜场」的深色追光；失控的纯黑另走 collapse-end
   document.body.classList.toggle("live-stage", step.type === "live");
   document.body.classList.toggle("ending-stage", onEnd && step.ending !== "控制不了");

@@ -13,6 +13,13 @@ export default defineConfig({
     outDir: fileURLToPath(new URL("./dist", import.meta.url)),
     emptyOutDir: true,
     target: "es2022",
+    // 两个页面：游戏本页 + 游戏外的音乐室
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL("./web/index.html", import.meta.url)),
+        music: fileURLToPath(new URL("./web/music.html", import.meta.url)),
+      },
+    },
   },
   server: { fs: { allow: [here] } },
 });

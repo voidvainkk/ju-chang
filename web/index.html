@@ -18,9 +18,6 @@
       <span class="kv co"><b id="v-banzi2">—</b><i>板子</i></span>
     </div>
     <div class="hud-tools">
-      <div id="bgm-box" class="bgm-box">
-        <button id="bgm-disc" class="bgm-disc" title="选歌 / 放歌" aria-label="选歌或放歌"></button>
-      </div>
       <section id="ota-panel" class="fold">
         <button id="ota-fold" title="她们" aria-expanded="false">OTA</button>
         <div id="ota-table"></div>
@@ -86,39 +83,6 @@
       <button id="set-close" class="ghost">关上</button>
     </div>
     <div id="set-body" class="set-body"></div>
-  </div>
-</div>
-<div id="bgm-modal" class="hidden" aria-modal="true" role="dialog">
-  <div class="bgm-panel">
-    <div class="gal-head">
-      <span>even devil may cry</span>
-      <button id="bgm-close" class="ghost">关上</button>
-    </div>
-    <div id="bgm-list" class="bgm-list"></div>
-    <div class="bgm-transport">
-      <button type="button" id="bgm-prev" class="bgm-tbtn" aria-label="上一首">⏮ 上一首</button>
-      <button type="button" id="bgm-toggle" class="bgm-tbtn" aria-label="暂停 / 继续">⏸ 暂停</button>
-      <button type="button" id="bgm-next" class="bgm-tbtn" aria-label="下一首">⏭ 下一首</button>
-    </div>
-    <div class="bgm-controls">
-      <div class="bgm-seek">
-        <span id="bgm-cur">0:00</span>
-        <input id="bgm-progress" type="range" min="0" max="1000" value="0" aria-label="播放进度">
-        <span id="bgm-dur">0:00</span>
-      </div>
-      <div class="bgm-vol">
-        <span>音量</span>
-        <input id="bgm-volume" type="range" min="0" max="100" value="70" aria-label="音量">
-        <span id="bgm-volval">70</span>
-      </div>
-      <div class="bgm-mode">
-        <span>播放模式</span>
-        <div class="bgm-mode-switch" role="group" aria-label="播放模式">
-          <button type="button" class="bgm-mode-btn" data-mode="order">顺序播放</button>
-          <button type="button" class="bgm-mode-btn" data-mode="single">单曲循环</button>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <script type="module" src="../app/src/main.ts"></script>

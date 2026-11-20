@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>聚场 · 音乐室</title>
+<style>
+  body{margin:0;background:#0d1424;color:#e7ecf6;font-family:"微软雅黑",sans-serif;
+       display:flex;justify-content:center;min-height:100vh}
+  .wrap{max-width:520px;width:100%;padding:34px 22px 60px}
+  h1{font-size:20px;letter-spacing:.14em;color:#9db7ff;margin:0 0 4px}
+  .sub{font-size:12px;color:#8b97b5;margin-bottom:24px}
+  .sub a{color:#9db7ff;text-decoration:none}
+  .track{display:flex;align-items:center;gap:12px;padding:13px 14px;margin-bottom:10px;
+         border:1px solid #2b3a5e;background:#121b30;cursor:pointer;transition:background .15s}
+  .track:hover{background:#1a2540}
+  .track.active{border-color:#9db7ff;background:#1a2540}
+  .track .no{font-size:11px;color:#8b97b5;width:24px}
+  .track .nm{flex:1;font-size:14px}
+  .track .tag{font-size:10px;padding:3px 8px;border:1px solid #3d5390;color:#9db7ff;white-space:nowrap}
+  .track .tag.god{color:#ffd76e;border-color:#8a7434}
+  .track .tag.romance{color:#ff9ec2;border-color:#8a4b66}
+  .track .tag.shiren{color:#9dffc4;border-color:#3f8a5f}
+  .track .tag.noway{color:#ff8a8a;border-color:#8a3f3f}
+  .nowline{font-size:11px;color:#8b97b5;margin:0 0 14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>聚场 · 音乐室</h1>
+  <p class="sub">这里能听全部的曲子。带「专属」的要 playing 里走到那一步才解禁；回到 <a href="./index.html">游戏</a></p>
+  <p class="nowline" id="now">没在放。</p>
+  <div id="list"></div>
+</div>
+<audio id="au"></audio>
+<script>
+const TRACKS = [
+  { src: "bgm_1.mp3",     name: "Offline Sedation",       tag: "日常",       cls: "" },
+  { src: "bgm_2.mp3",     name: "Digital Coma (1)",       tag: "神场 专属",  cls: "god" },
+  { src: "bgm_3.mp3",     name: "Digital Coma",           tag: "自由收听",   cls: "" },
+  { src: "bgm_4.mp3",     name: "Digital Rot Lullaby (1)", tag: "自由收听",  cls: "" },
+  { src: "bgm_5.mp3",     name: "Digital Rot Lullaby",    tag: "恋爱 专属",  cls: "romance" },
+  { src: "bgm_6.mp3",     name: "Sweet Overdose Lullaby", tag: "私联 专属",  cls: "shiren" },
+  { src: "bgm_noway.mp3", name: "无路可退的视线",         tag: "失控 · 太爱你", cls: "noway" },
+];
+const au = document.getElementById("au");
+const now = document.getElementById("now");
+let cur = -1;
+const list = document.getElementById("list");
+TRACKS.forEach((t, i) => {
+  const d = document.createElement("div");
+  d.className = "track" + (i === cur ? " active" : "");
+  d.innerHTML = `<span class="no">${String(i + 1).padStart(2, "0")}</span>`
+    + `<span class="nm">${t.name}</span><span class="tag ${t.cls}">${t.tag}</span>`;
+  d.onclick = () => {
+    if (cur === i) { au.pause(); cur = -1; now.textContent = "没在放。"; }
+    else { au.src = t.src; au.play(); cur = i; now.textContent = "正在放：" + t.name; }
+    [...list.children].forEach((el, j) => el.classList.toggle("active", j === cur));
+  };
+  list.appendChild(d);
+});
+au.addEventListener("ended", () => { cur = -1; now.textContent = "没在放。";
+  [...list.children].forEach((el) => el.classList.remove("active")); });
+</script>
+</body>
+</html>
