@@ -561,7 +561,8 @@ function outsidePanel(d) {
     const label = l.url
       ? `<a href="${l.url}" target="_blank" rel="noopener noreferrer">${l.label}</a>`
       : `<b>${l.label}</b>`;
-    return `<p>${l.prefix || ""}${label}${l.suffix || ""}</p>`;
+    const pre = l.pre ? `<p>${l.pre}</p>` : "";
+    return pre + `<p>${l.prefix || ""}${label}${l.suffix || ""}</p>`;
   }).join("");
   return `<section class="outside"><h4>${d.title || "游戏之外"}</h4>${paras}${links}</section>`;
 }
