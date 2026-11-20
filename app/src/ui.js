@@ -249,6 +249,11 @@ let bgmAudio = null;
 let bgmLastKey = null;
 let storyNoway = false;   // 无路可退的视线已起播（失控演出）：之后不再被剧情换歌打断
 let storyGuanmu = false;  // 棺木生花已起播（我只是太爱你了结局）：最高优先，不再被打断
+function resetFinaleFlags() {   // 新开一局：终局演出与专属曲全部重置
+  zhongRainShown = false;
+  storyNoway = false;
+  storyGuanmu = false;
+}
 
 function bgmEnsureAudio() {
   if (bgmAudio) return;
@@ -690,6 +695,7 @@ async function openJournal() {
         q.textContent = "正在重开……";
         const r = await api("/api/new", {});
         if (r && !r.error) {
+          resetFinaleFlags();
           closeJournal();
           renderStep(r.step, r.snapshot);
           $("restart").classList.add("hidden");
@@ -988,6 +994,7 @@ $("restart").onclick = async () => {
   $("restart").classList.remove("armed");
   $("foot").classList.remove("ended");
   const d = await api("/api/new", {});
+  resetFinaleFlags();
   if (d && !d.error) await refresh(d);
 };
 
