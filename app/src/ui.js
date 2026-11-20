@@ -319,25 +319,27 @@ function zhongRainShow() {
   if (document.getElementById("zhong-rain")) return;
   const root = document.createElement("div");
   root.id = "zhong-rain";
-  root.innerHTML = `<div class="zr-cols"></div>`
+  root.innerHTML = `<div class="zr-cols"></div><div class="zr-glow"></div>`
     + `<div class="zr-core"><div class="zr-type"><span class="zr-text"></span><i class="zr-caret"></i></div></div>`
     + `<div class="zr-red"></div>`;
   document.body.appendChild(root);
-  // 每列一个「愛してる」，先落六列，之后越落越多，铺满前停
+  // 每列一个「愛してる」。铺天盖地：起步 6 列，增援批次越来越快越大，铺屏前 100+ 列
   const colsBox = root.querySelector(".zr-cols");
   const addCol = () => {
     const s = document.createElement("span");
     s.className = "zr-col";
-    s.style.cssText = `left:${(Math.random() * 96).toFixed(1)}%;`
-      + `font-size:${(13 + Math.random() * 11).toFixed(0)}px;`
-      + `opacity:${(0.5 + Math.random() * 0.5).toFixed(2)};`
-      + `animation-duration:${(5.5 + Math.random() * 4).toFixed(2)}s;`
-      + `animation-delay:${(-Math.random() * 4).toFixed(2)}s`;
+    s.style.cssText = `left:${(Math.random() * 97).toFixed(1)}%;`
+      + `font-size:${(12 + Math.random() * 14).toFixed(0)}px;`
+      + `opacity:${(0.45 + Math.random() * 0.55).toFixed(2)};`
+      + `animation-duration:${(4.5 + Math.random() * 4.5).toFixed(2)}s;`
+      + `animation-delay:${(-Math.random() * 5).toFixed(2)}s`;
     s.textContent = "愛してる";
     colsBox.appendChild(s);
   };
   for (let i = 0; i < 6; i++) addCol();
-  const spawn = setInterval(addCol, 550);
+  const PLAN = [[400, 2], [900, 3], [1400, 4], [2000, 6], [2600, 8], [3200, 10],
+    [3800, 12], [4400, 14], [5000, 16], [5600, 18], [6200, 20]];
+  PLAN.forEach(([t, k]) => setTimeout(() => { for (let j = 0; j < k; j++) addCol(); }, t));
   const TXT = "我会一直一直看着你";
   const el = root.querySelector(".zr-text");
   let i = 0;
@@ -348,7 +350,6 @@ function zhongRainShow() {
     clearInterval(t1);
     setTimeout(() => { el.textContent = TXT + " ^^"; }, 1800);
     setTimeout(() => {   // 屏幕铺成纯红
-      clearInterval(spawn);
       root.querySelector(".zr-red").classList.add("on");
     }, 3000);
     setTimeout(() => root.classList.add("zr-out"), 4800);  // 整层（含红）淡出
