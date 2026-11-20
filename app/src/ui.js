@@ -252,7 +252,7 @@ let bgmAudio = null;
 let bgmMenuOpen = false;
 let bgmSeeking = false;
 let bgmMode = localStorage.getItem(BGM_MODE_KEY) === "order" ? "order" : "single";
-let storySongOn = false;   // 剧情触发后：无路可退的视线才在歌单里露面
+let storySongOn = false;   // 已触发过（不重复起播）；剧情歌不进歌单，只播放
 
 /* 剧情触发（失控演出开始 / 「我只是太爱你了」结局）：这首歌开始单曲循环 */
 function bgmStoryNow() {
@@ -302,6 +302,8 @@ function bgmSetPlaying(on) {
   const box = $("bgm-box"), disc = $("bgm-disc");
   if (box) box.classList.toggle("playing", on);
   if (disc) disc.title = on ? "暂停 / 选歌" : "选歌 / 放歌";
+  const tog = $("bgm-toggle");
+  if (tog) tog.textContent = on ? "⏸ 暂停" : "▶ 继续";
   bgmRenderList();
 }
 function bgmPlay(i) {
@@ -326,7 +328,7 @@ function bgmRenderList() {
   const list = $("bgm-list");
   if (!list) return;
   list.innerHTML = BGM_TRACKS.map((t, i) => [t, i])
-    .filter(([t]) => !t.story || storySongOn)
+    .filter(([t]) => !t.story)   // 剧情歌只播放不显示
     .map(([t, i]) => {
     const active = i === bgmIndex;
     const playing = active && bgmAudio && !bgmAudio.paused;
@@ -354,6 +356,23 @@ document.querySelectorAll(".bgm-mode-btn").forEach(b => {
   b.onclick = () => bgmSetMode(b.dataset.mode);
 });
 bgmRenderMode();
+/* 控制条：上一首 / 暂停·继续 / 下一首（剧情歌不进这个循环） */
+function bgmVisibleIdx() {
+  return BGM_TRACKS.map((t, i) => [t, i]).filter(([t]) => !t.story).map(([, i]) => i);
+}
+function bgmStep(dir) {
+  const vis = bgmVisibleIdx();
+  if (!vis.length) return;
+  let pos = vis.indexOf(bgmIndex);
+  if (pos < 0) pos = 0;
+  bgmSelect(vis[(pos + dir + vis.length) % vis.length]);
+}
+if ($("bgm-prev")) $("bgm-prev").onclick = () => bgmStep(-1);
+if ($("bgm-next")) $("bgm-next").onclick = () => bgmStep(1);
+if ($("bgm-toggle")) $("bgm-toggle").onclick = () => {
+  if (bgmIndex < 0) { const vis = bgmVisibleIdx(); if (vis.length) bgmPlay(vis[0]); return; }
+  bgmTogglePlay();
+};
 function bgmOpenMenu(open) {
   bgmMenuOpen = open;
   const m = $("bgm-modal");

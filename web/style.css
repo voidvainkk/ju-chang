@@ -662,6 +662,10 @@ body.collapsing #gallery{display:none !important}
 .bgm-mode-btn+.bgm-mode-btn{margin-left:-1px}
 .bgm-mode-btn:hover{background:var(--line)}
 .bgm-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent-d)}
+.bgm-transport{display:flex;justify-content:center;gap:10px;margin:2px 0 10px}
+.bgm-tbtn{padding:7px 10px;background:transparent;border:1px solid var(--line2);
+  font-family:var(--px);font-size:11px;color:var(--ink);cursor:pointer;clip-path:var(--cut)}
+.bgm-tbtn:hover{background:var(--line)}
 .muted{color:var(--dim)}
 
 /* ══ 移动端（主要游玩场景）══════════════════════════════════
