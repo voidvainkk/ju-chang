@@ -360,7 +360,7 @@ button.ghost.armed{color:#fff;background:var(--bad);border-color:#8e2823}
   font-family:var(--px);font-size:11px;letter-spacing:.14em;
   padding:5px 8px 4px;cursor:pointer;line-height:1;
 }
-#ota-fold:hover{background:var(--accent);color:#fff}
+@media(hover:hover){#ota-fold:hover{background:var(--accent);color:#fff}}
 #ota-panel:not(.fold) #ota-fold{
   background:var(--accent);color:#fff;
   border-bottom:2px solid var(--ink);
@@ -667,6 +667,30 @@ body.collapsing #gallery{display:none !important}
   font-family:var(--px);font-size:11px;color:var(--ink);cursor:pointer;clip-path:var(--cut)}
 .bgm-tbtn:hover{background:var(--line)}
 .muted{color:var(--dim)}
+
+/* ── HUD ♪ 音乐室入口 ─────────────────────────────────── */
+#music-room{flex:none;display:block;background:var(--paper);border:0;color:var(--ink2);
+  font-family:var(--px);font-size:11px;letter-spacing:.1em;padding:5px 8px 4px;
+  cursor:pointer;line-height:1;text-decoration:none}
+@media(hover:hover){#music-room:hover{background:var(--accent);color:#fff}}
+
+/* ── 重线演出：愛してる 数字雨 + 打字机 ─────────────────── */
+#zhong-rain{position:fixed;inset:0;z-index:78;overflow:hidden;pointer-events:auto;
+  animation:zrDim .9s ease both}
+@keyframes zrDim{from{background:rgba(3,0,4,0)}to{background:rgba(3,0,4,.9)}}
+#zhong-rain.zr-out{animation:zrFade .8s ease both}
+@keyframes zrFade{from{opacity:1}to{opacity:0}}
+.zr-cols{position:absolute;inset:0}
+.zr-col{position:absolute;top:0;font-family:var(--px);color:#d31f30;white-space:nowrap;
+  text-shadow:0 0 8px rgba(211,31,48,.65);animation:zrFall linear infinite}
+@keyframes zrFall{from{transform:translateY(-8vh)}to{transform:translateY(112vh)}}
+.zr-core{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:0 8vw}
+.zr-type{font-family:var(--px);font-size:17px;letter-spacing:.16em;color:#ff2e3e;
+  text-shadow:0 0 10px rgba(255,46,62,.5);display:flex;align-items:center}
+.zr-caret{width:1ch;height:1.15em;background:#ff2e3e;margin-left:3px;flex:none;
+  animation:zrCaret 1s steps(2,end) infinite}
+@keyframes zrCaret{0%,49%{opacity:1}50%,100%{opacity:0}}
 
 /* ── 剧情BGM解禁：小人说话的气泡 ────────────────────────── */
 #idol{position:relative}
