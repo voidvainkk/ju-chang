@@ -229,7 +229,7 @@ function applyOtaFold(folded) {
   if (btn) btn.setAttribute("aria-expanded", folded ? "false" : "true");
   localStorage.setItem(OTA_FOLD_KEY, folded ? "1" : "0");
 }
-if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold($("ota-table").classList.contains("hidden"));
+if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold(!$("ota-table").classList.contains("hidden"));
 applyOtaFold(localStorage.getItem(OTA_FOLD_KEY) !== "0");
 
 /* ---------- BGM：随剧情推进换歌（选歌面板在游戏外的 music.html） ---------- */
