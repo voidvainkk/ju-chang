@@ -586,7 +586,7 @@ export class Game {
     this.push({
       type: "name",
       title: "海报上要印个名字",
-      body: ["这个团的 C 位总得有个名字。想要哪一种？"],
+      body: ["这一次你想要什么风格的团。"],
       stage: "style",
       styles,
     });
@@ -915,8 +915,10 @@ export class Game {
     let out = t;
     for (const [k, o] of Object.entries(slots || {})) {
       if (!o) continue;
-      out = out.split(`{{${k}.ta}}`).join("TA");
+      const pron = o.gender === "男" ? "他" : "她";
+      out = out.split(`{{${k}.ta}}`).join(pron);
       out = out.split(`{{${k}}}`).join(o.name);
+      if (o.archetype) out = out.split(`{{${k}.arche}}`).join(String(o.archetype));
     }
     const mem = E.protaMemory(this.state!);
     for (const [k, v] of Object.entries(mem)) {
@@ -933,6 +935,7 @@ export class Game {
     // 还有没填上的占位符（选角没落地、或者卡要的槽跟 casting 声明的不一致）：
     // 绝不能把 {{xxx}} 原样端到玩家眼前。这里兜成「对方」，至少读得通。
     if (out.includes("{{")) {
+      out = out.replace(/\{\{[a-zA-Z_]+\.[a-zA-Z_]+\}\}/g, "她");
       out = out.replace(/\{\{[a-zA-Z_]+\}\}/g, "对方");
       out = out.split("{{").join("").split("}}").join("");
     }

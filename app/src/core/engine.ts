@@ -2,7 +2,7 @@
  * 《聚场》引擎 —— `game/engine.py` 的 TypeScript 移植。
  *
  * 移植原则：**逐行对齐，不"顺手优化"**。
- * 这个引擎里几乎每个常数都是调过的（FAME_SOFT=40、ENJOU_FADE_RATE=0.08、
+ * 这个引擎里几乎每个常数都是调过的（FAME_SOFT=100、ENJOU_FADE_RATE=0.08、
  * 重线 base=1.0+(0.45 if…)），任何一处"看起来可以简化"的改写都会让
  * 同一颗种子走出不同的局。对账手段是 `app/test/trace.test.ts`：Python 跑
  * 一遍、TS 跑一遍，逐屏逐字段比状态。
@@ -621,6 +621,17 @@ export function cast(
     if (o == null) return null; // 新生儿也没生成出来（名额满了/没名字了）
     out[slot] = o;
   }
+  // 回考守门：问句里「我上次说过的那个」必须是真说过的人；人不在场整卡撤掉
+  const meta = (card._meta ?? {}) as any;
+  if (meta.rq_stage === "ask" && meta.clue) {
+    const info = (s.clues ?? {})[meta.clue as string];
+    const sid = info?.who;
+    if (sid) {
+      const o = (s.ota ?? []).find((x) => x.id === sid) ?? null;
+      if (o == null || n0(o.stick) < 30) return null;
+      out.speaker = o;
+    }
+  }
   return out;
 }
 
@@ -754,8 +765,8 @@ function _rel(v: number): number {
   return v * (v < 0 ? 1.6 : 1.0);
 }
 
-export const FAME_CAP = 80.0; // 人气硬上限：地下场子就那么大
-export const FAME_SOFT = 40.0; // 过了这条线，新增的人气只算三分之一
+export const FAME_CAP = 100.0; // 人气上限（2026-11-19 用户拍板：每次加固定数值）
+export const FAME_SOFT = 100.0; // 软顶并到硬顶：加人气全程足额
 
 /**
  * 给人气加/减一点，返回实际变动量。
@@ -893,11 +904,13 @@ export function applyOption(
     const rl = option.rq_lock;
     if (typeof rl === "object" && rl !== null) cid = rl.clue ?? null;
     if (cid && !hasOwn(s.clues, cid) && s.clues_said < n0(g(s, "max_clues", 6))) {
+      const spk = (typeof rl === "object" && rl !== null)
+        ? ((slots ?? {})[(rl as any).slot ?? "speaker"] ?? null) : null;
       s.clues[cid] = {
         state: "said",
         asked: false,
         said_week: s.week,
-        who: null,
+        who: spk?.id ?? null,
         // 用 ensure_truth 而不是再掷一次：她说那句话的时候真值就已经定了
         truth: ensureTruth(s, cid, rng),
       };
@@ -1619,6 +1632,10 @@ export function finaleQuizCards(s: State, _world: World, rng: PyRandom, n = 3): 
     if (vals.length < 2) continue;
     const truth = ensureTruth(s, cid, rng);
     if (!vals.includes(truth)) continue;
+    // 三选一：真值 + 两个干扰项（与 shiren 拷问同一口径）
+    const wrong = vals.filter((v) => v !== truth);
+    rng.shuffle(wrong);
+    const opts = [truth, ...wrong.slice(0, 2)];
     // 题干用 ask_q（一句天然的问法），不用 ask[]——那会把答案印在问句上
     const say = c.ask_q ?? rng.choice(c.ask ?? ["『你还记得我之前说过的那个吗？』"]);
     cards.push({
@@ -1635,7 +1652,7 @@ export function finaleQuizCards(s: State, _world: World, rng: PyRandom, n = 3): 
       },
       narrative: say.split("{truth}").join("那个"),
       // 选项按 set 原序排，上屏时由 loop._ask_options 按本局顺序重排
-      options: vals.map((v, i) => ({
+      options: opts.map((v, i) => ({
         id: `pick_${i}`,
         label: v,
         desc: "",
@@ -1664,15 +1681,18 @@ export function shirenFinaleQuizCards(s: State, world: World, rng: PyRandom, n =
   // 公平性：她真的说出口过的细节排前面（loop._fill 登记进 s._prota_revealed）
   const revealed = (s._prota_revealed as string[] | undefined) ?? [];
   const rev = keys.filter((k) => revealed.includes(k));
-  const oth = keys.filter((k) => !revealed.includes(k));
   rng.shuffle(rev);
-  rng.shuffle(oth);
+  // 没说出口的细节不再兜底凑数：全面没线索就少出几道，出几道算几道
   const cards: Card[] = [];
-  for (const cid of [...rev, ...oth].slice(0, n)) {
+  for (const cid of rev.slice(0, n)) {
     const item = memDef[cid] ?? {};
     const vals: string[] = [...(item.pool ?? [])];
     const truth = s._truth?.["shiren_" + cid];
     if (!truth || !vals.includes(truth)) continue;
+    // 三选一：真值 + 两个随机干扰项
+    const wrong = vals.filter((v) => v !== truth);
+    rng.shuffle(wrong);
+    const opts = [truth, ...wrong.slice(0, 2)];
     const say = item.ask_q ?? "『我说过的那件小事，你还记得吗？』";
     cards.push({
       id: `finale_quiz_shiren_${cid}`,
@@ -1687,7 +1707,7 @@ export function shirenFinaleQuizCards(s: State, world: World, rng: PyRandom, n =
         finale: true,
       },
       narrative: say.split("{truth}").join("那个"),
-      options: vals.map((v, i) => ({
+      options: opts.map((v, i) => ({
         id: `pick_${i}`,
         label: v,
         desc: "",
@@ -1785,7 +1805,7 @@ export const ACTS: Record<string, Record<string, any>> = {
 export const RENT = 900;
 export const FEE = 620; // 一周的场租+分成（和 loop.py 里那一份保持一致）
 export const FEE_FIRST = 160; // 场地第一次给新人便宜
-export const SKILL_CAP = 82; // 舞/唱/live 话术的硬上限
+export const SKILL_CAP = 100; // 舞/唱/live 话术的上限：每次练都足额加
 export const ACT_REPEAT: Record<string, number> = {
   dance: 0.5,
   sing: 0.5,

@@ -397,7 +397,7 @@ class Game:
         self.push({
             "type": "name",
             "title": "海报上要印个名字",
-            "body": ["这个团的 C 位总得有个名字。想要哪一种？"],
+            "body": ["这一次你想要什么风格的团。"],
             "stage": "style",
             "styles": styles,
         })
@@ -702,7 +702,10 @@ class Game:
         for k, o in slots.items():
             if not o:
                 continue
-            t = t.replace("{{%s.ta}}" % k, "TA").replace("{{%s}}" % k, o["name"])
+            pron = "他" if o.get("gender") == "男" else "她"
+            t = t.replace("{{%s.ta}}" % k, pron).replace("{{%s}}" % k, o["name"])
+            if o.get("archetype"):
+                t = t.replace("{{%s.arche}}" % k, str(o["archetype"]))
         # 她自己的细节：猫叫什么、常点哪杯、老家在哪、最爱哪首。
         # 这些值整局固定（见 engine.protagonist / learn_memory），
         # 必须在下面那道「兜成对方」之前换掉——否则「猫叫『对方』」。
@@ -720,6 +723,7 @@ class Game:
         # 还有没填上的占位符（选角没落地、或者卡要的槽跟 casting 声明的不一致）：
         # 绝不能把 {{xxx}} 原样端到玩家眼前。这里兜成「对方」，至少读得通。
         if "{{" in t:
+            t = re.sub(r"\{\{[a-zA-Z_]+\.[a-zA-Z_]+\}\}", "她", t)
             t = re.sub(r"\{\{[a-zA-Z_]+\}\}", "对方", t)
             t = t.replace("{{", "").replace("}}", "")
         return t

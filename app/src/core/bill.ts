@@ -25,13 +25,20 @@ export function bigSplit(o: Ota): Split {
  * 黏性每 25 一档多买一张，消费力到 4 再多一张。
  * 黏性 55→3、70→3、78→4；消费力 4 的第零排 70→4。
  *
- * `Math.floor(stick / 25)` 对应 Python 的 `stick // 25`（stick 非负，两者一致）。
+ * 阶梯与 Python bill.tickets_of 一致：<70→1；70→2；80→4；90→7；95→10；98→14。
  */
 export function ticketsOf(o: Ota): number {
   const stick = Math.max(0, Math.min(100, o.stick ?? 0));
   const spend = o.spend ?? 3;
-  const n = 1 + Math.floor(stick / 25) + (spend >= 4 ? 1 : 0);
-  return Math.max(0, n);
+  let n: number;
+  if (stick >= 98) n = 14;
+  else if (stick >= 95) n = 10;
+  else if (stick >= 90) n = 7;
+  else if (stick >= 80) n = 4;
+  else if (stick >= 70) n = 2;
+  else n = 1;
+  if (spend >= 4) n += 1;
+  return Math.max(1, n);
 }
 
 export interface BillRow {

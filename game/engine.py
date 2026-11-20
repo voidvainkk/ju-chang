@@ -160,7 +160,7 @@ def clamp(s):
             continue
         s[k] = max(0, min(100, s[k]))
     for k in ("dance", "sing", "mc"):
-        s[k] = max(0, min(SKILL_CAP, s[k]))     # 练到 82 就上不去了：这行有天花板
+        s[k] = max(0, min(SKILL_CAP, s[k]))     # 练到 100 封顶
     for k in ("bold", "kuyang_count", "heat", "heart", "zhong", "zhongs", "gorshou",
               "true_talk", "clues_said", "low_income_weeks", "max_single", "romance_risk"):
         if k in s and isinstance(s[k], (int, float)):
@@ -475,6 +475,18 @@ def cast(s, card, rng, world=None):
         if o is None:
             return None            # 新生儿也没生成出来（名额满了/没名字了）：整张卡不成立
         out[slot] = o
+    # 回考守门：问句里「我上次说过的那个」必须是真说过的人。线索登记时
+    # 存了 who（说出口的那一位）；ta 今天不在场（黏性掉了没来/退坑）就
+    # 把这张回考卡整个撤掉——无中生有的提问比没有提问更伤。
+    meta = card.get("_meta") or {}
+    if meta.get("rq_stage") == "ask" and meta.get("clue"):
+        info = (s.get("clues") or {}).get(meta["clue"]) or {}
+        sid = info.get("who")
+        if sid:
+            o = next((x for x in s["ota"] if x["id"] == sid), None)
+            if o is None or float(o.get("stick") or 0) < 30:
+                return None
+            out["speaker"] = o
     return out
 
 
@@ -582,8 +594,8 @@ def _rel(v):
     return v * (1.6 if v < 0 else 1.0)
 
 
-FAME_CAP = 80.0     # 人气硬上限：地下场子就那么大，再多也就是这一圈人
-FAME_SOFT = 40.0    # 过了这条线，新增的人气只算三分之一
+FAME_CAP = 100.0    # 人气上限（2026-11-19 用户拍板：每次加固定数值，不半路衰减）
+FAME_SOFT = 100.0   # 软顶并到硬顶：加人气全程足额，到 100 才停
 
 
 def add_fame(s, delta):
@@ -592,7 +604,7 @@ def add_fame(s, delta):
     软上限只压「这一帧新增的那一截」，绝不回缩存量。旧版把整个累计值反复
     往 40 拽（60→46.67→42.22…），于是任何一张跟人气无关的卡都会让人气
     莫名往下掉。现在：减益照数扣；增益在 40 以下全额、40 以上每点算 1/3；
-    一次跨越 40 的，40 以下那截全额、超出那截打 1/3；最后收在 FAME_CAP。
+    全程足额累加，收在 FAME_CAP=100；到顶就停在 100。
     """
     cur = float(s.get("fame", 0))
     if delta <= 0:
@@ -711,8 +723,11 @@ def apply_option(s, option, rng, slots=None, card=None):
         if isinstance(rl, dict):
             cid = rl.get("clue")
         if cid and cid not in s["clues"] and s["clues_said"] < s.get("max_clues", 6):
+            spk = {}
+            if isinstance(rl, dict):
+                spk = (slots or {}).get(rl.get("slot") or "speaker") or {}
             s["clues"][cid] = {"state": "said", "asked": False,
-                                "said_week": s["week"], "who": None,
+                                "said_week": s["week"], "who": spk.get("id"),
                                 # 用 ensure_truth 而不是再掷一次：她说那句话的时候
                                 # 真值就已经定了，这里重掷会得到和屏幕上不一样的那一个
                                 "truth": ensure_truth(s, cid, rng)}
@@ -1473,6 +1488,10 @@ def finale_quiz_cards(s, world, rng, n=3):
         truth = ensure_truth(s, cid, rng)
         if truth not in vals:
             continue
+        # 三选一：真值 + 两个干扰项（与 shiren 拷问同一口径）
+        wrong = [v for v in vals if v != truth]
+        rng.shuffle(wrong)
+        opts = [truth] + wrong[:2]
         # 题干用 ask_q（一句天然的问法），不用 ask[]——ask[] 是「我上次说的那个
         # 是{truth}来着」这种陈述句挖空，真值一填进去答案就印在问句上，
         # 抹成「那个」又读成「今天又拖到那个，午饭都省了」这种别扭话。
@@ -1492,7 +1511,7 @@ def finale_quiz_cards(s, world, rng, n=3):
             "options": [{"id": "pick_%d" % i, "label": v, "desc": "",
                          "rq_pick": {"clue": cid, "slot": "speaker",
                                      "choice": "true" if v == truth else "false"}}
-                        for i, v in enumerate(vals)],
+                        for i, v in enumerate(opts)],
         })
     return cards
 
@@ -1518,16 +1537,20 @@ def shiren_finale_quiz_cards(s, world, rng, n=3):
     # 认真玩也会被判「用完」。没说过的只拿来兜底凑数。
     revealed = s.get("_prota_revealed") or []
     rev = [k for k in keys if k in revealed]
-    oth = [k for k in keys if k not in revealed]
     rng.shuffle(rev)
-    rng.shuffle(oth)
+    # 没说出口的细节不再兜底凑数：她从没提过的老家/花也会被考，
+    # 认真玩反而被判「用完」。全面没线索就少出几道，出几道算几道。
     cards = []
-    for cid in (rev + oth)[:n]:
+    for cid in rev[:n]:
         item = mem_def[cid] or {}
         vals = list(item.get("pool") or [])
         truth = s.get("_truth", {}).get("shiren_" + cid)
         if not truth or truth not in vals:
             continue
+        # 三选一：真值 + 两个随机干扰项（pool 有 4~8 个值，全摆出来不成回考）。
+        wrong = [v for v in vals if v != truth]
+        rng.shuffle(wrong)
+        opts = [truth] + wrong[:2]
         say = item.get("ask_q") or "『我说过的那件小事，你还记得吗？』"
         cards.append({
             "id": "finale_quiz_shiren_%s" % cid,
@@ -1542,7 +1565,7 @@ def shiren_finale_quiz_cards(s, world, rng, n=3):
             "options": [{"id": "pick_%d" % i, "label": v, "desc": "",
                          "rq_pick": {"clue": "shiren_" + cid, "slot": "speaker",
                                      "choice": "true" if v == truth else "false"}}
-                        for i, v in enumerate(vals)],
+                        for i, v in enumerate(opts)],
         })
     return cards
 
@@ -1647,7 +1670,7 @@ ACTS = {
 RENT = 900
 FEE = 620          # 一周的场租+分成（和 loop.py 里那一份保持一致）
 FEE_FIRST = 160    # 场地第一次给新人便宜
-SKILL_CAP = 82      # 舞/唱/live 话术的硬上限：练到后面涨得满，但别让人一季练到 97 白练
+SKILL_CAP = 100     # 舞/唱/live 话术的上限：每次练都足额加，到 100 才停
 ACT_REPEAT = {"dance": 0.5, "sing": 0.5, "mc": 0.5, "content": 0.8,
               "work": 1.6, "rest": 1.8}
 
