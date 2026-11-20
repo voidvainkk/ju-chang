@@ -1648,7 +1648,7 @@ class Game:
         if n_all:
             head = "她一共问了我 %d 件小事，我答上了 %d 件。" % (n_all, n_ok)
         else:
-            head = "她问的那些，我一件都说不上来。"
+            head = "没有可问的——这一季她随口说过什么，我一件都没听进去。"
         body = [head]
         if note:
             body.append(note)

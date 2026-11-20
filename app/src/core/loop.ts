@@ -2008,7 +2008,7 @@ export class Game {
     }
     const head = nAll
       ? `她一共问了我 ${nAll} 件小事，我答上了 ${nOk} 件。`
-      : "她问的那些，我一件都说不上来。";
+      : "没有可问的——这一季她随口说过什么，我一件都没听进去。";
     const body = [head];
     if (note) body.push(note);
     this.push({ type: "text", title: "她问完了", body });

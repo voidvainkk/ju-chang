@@ -922,24 +922,6 @@
               "note": "她的手心是湿的，可她没有回握，只是没松开。"
             },
             {
-              "id": "rc_hard_line",
-              "label": "说：『现在不是谈这个的时候，先把最后一场跳完。』",
-              "desc": "把这间屋子里的东西压到演出结束以后",
-              "immediate": {
-                "psyche": -6,
-                "relation_A": -8,
-                "relation_all": 5,
-                "fame": 2,
-                "stamina": -2
-              },
-              "advance": 0,
-              "flags": [
-                "romance_caught"
-              ],
-              "delayed": [],
-              "note": "阿棠抬头看了我一眼，那个眼神我后来想了很久，像在确认一件她已经猜到的事。"
-            },
-            {
               "id": "rc_walk_out",
               "label": "拉着阿棠走出去，一句话都没留",
               "desc": "当场把这扇门带上，后面的事明天再说",
