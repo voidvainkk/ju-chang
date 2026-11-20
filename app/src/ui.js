@@ -324,27 +324,33 @@ function zhongRainShow() {
     + `<div class="zr-core"><div class="zr-type"><span class="zr-text"></span><i class="zr-caret"></i></div></div>`
     + `<div class="zr-red"></div>`;
   document.body.appendChild(root);
-  // 第一幕：黑场弹窗（安静得让人心慌）
+  // 第一幕：黑场弹窗（安静得让人心慌）；打字等弹窗结束才开始
+  const POPUP_OUT = 3800;
   setTimeout(() => root.querySelector(".zr-dialog").classList.add("on"), 900);
-  setTimeout(() => root.querySelector(".zr-dialog").classList.add("off"), 3600);
-  // 第二幕：她的话先打出来，再一个字一个字删掉
+  setTimeout(() => root.querySelector(".zr-dialog").classList.add("off"), POPUP_OUT);
+  setTimeout(() => startLine1(root), POPUP_OUT + 800);
+}
+function startLine1(root) {
+  // 第二幕：她的话打出来，问号停一会才出来，停稳再一个字一个字删掉
   const el = root.querySelector(".zr-text");
-  const line1 = "为什么你就不肯回头看看我呢？";
+  const line1 = "为什么你就不肯回头看看我呢";
+  const full = line1 + "？";
   let i = 0;
   const t1 = setInterval(() => {
     i += 1;
-    el.textContent = line1.slice(0, i);
+    el.textContent = full.slice(0, i);
     if (i < line1.length) return;
     clearInterval(t1);
-    setTimeout(() => {
+    setTimeout(() => { el.textContent = full; }, 1600);        // 问号迟一步
+    setTimeout(() => {                                          // 问号停稳后开始删
       const t2 = setInterval(() => {
         i -= 1;
-        el.textContent = line1.slice(0, i);
+        el.textContent = full.slice(0, Math.max(i, 0));
         if (i > 0) return;
         clearInterval(t2);
         setTimeout(() => zhongRainPhase(root), 900);
       }, 60);
-    }, 1500);
+    }, 2800);
   }, 450);
 }
 function zhongRainPhase(root) {
@@ -354,19 +360,21 @@ function zhongRainPhase(root) {
     const s = document.createElement("span");
     s.className = "zr-col";
     s.style.cssText = `left:${(Math.random() * 97).toFixed(1)}%;`
-      + `font-size:${(11 + Math.random() * 14).toFixed(0)}px;`
+      + `font-size:${(9 + Math.random() * 14).toFixed(0)}px;`
       + `opacity:${(0.4 + Math.random() * 0.6).toFixed(2)};`
       + `animation-duration:${(4.5 + Math.random() * 4.5).toFixed(2)}s;`
       + `animation-delay:${(Math.random() * 0.45).toFixed(2)}s`;
     s.textContent = "愛してる";
     colsBox.appendChild(s);
   };
-  for (let i = 0; i < 6; i++) addCol();
-  // 全部从天上落：正延迟只在屏外上方待命（fill both 钉在起点），落点永不在半空
-  const PLAN = [[300, 3], [600, 4], [900, 5], [1200, 6], [1500, 8], [1800, 10],
-    [2100, 12], [2400, 14], [2700, 16], [3000, 18], [3300, 20], [3600, 22],
-    [3900, 24], [4200, 26], [4500, 28], [4800, 30], [5100, 32], [5400, 34],
-    [5700, 36], [6000, 38], [6300, 20]];
+  for (let i = 0; i < 8; i++) addCol();
+  // 全部从天上落：正延迟只在屏外上方待命（fill both 钉在起点），落点永不在半空。
+  // 铺天盖地：300ms 一波、单波一路加到 50，铺屏前累计 700+ 列
+  const PLAN = [[300, 4], [600, 6], [900, 8], [1200, 10], [1500, 12], [1800, 14],
+    [2100, 16], [2400, 18], [2700, 20], [3000, 22], [3300, 24], [3600, 26],
+    [3900, 28], [4200, 30], [4500, 32], [4800, 34], [5100, 36], [5400, 38],
+    [5700, 40], [6000, 42], [6300, 44], [6600, 46], [6900, 48], [7200, 50],
+    [7500, 40], [7800, 30], [8100, 20]];
   PLAN.forEach(([t, k]) => setTimeout(() => { for (let j = 0; j < k; j++) addCol(); }, t));
   const glow = document.createElement("div");
   glow.className = "zr-glow";
