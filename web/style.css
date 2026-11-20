@@ -671,16 +671,16 @@ body.collapsing #gallery{display:none !important}
 /* ── 剧情BGM解禁：小人说话的气泡 ────────────────────────── */
 #idol{position:relative}
 .idol-bubble{
-  position:absolute;left:8px;bottom:calc(100% + 6px);z-index:70;
-  min-width:190px;padding:10px 14px;background:var(--accent-d);color:#fff;
+  position:absolute;left:74px;top:-6px;z-index:70;
+  min-width:190px;padding:10px 14px;background:#16305e;color:#fff;
   border:1px solid #fff;clip-path:var(--cut);
   animation:budrop .38s steps(5,end) both;
   box-shadow:0 6px 22px rgba(0,0,0,.35);
 }
-.idol-bubble::after{content:"";position:absolute;left:26px;top:100%;
-  border:7px solid transparent;border-top-color:var(--accent-d)}
+.idol-bubble::after{content:"";position:absolute;left:-14px;top:22px;
+  border:8px solid transparent;border-right-color:#16305e}
 .idol-bubble b{display:block;font-family:var(--px);font-size:12.5px;letter-spacing:.08em}
-.idol-bubble span{display:block;font-family:var(--px);font-size:10.5px;color:#dfe6ff;margin-top:3px}
+.idol-bubble span{display:block;font-family:var(--px);font-size:10.5px;color:rgba(255,255,255,.82);margin-top:3px}
 @keyframes budrop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 
 /* ══ 移动端（主要游玩场景）══════════════════════════════════
