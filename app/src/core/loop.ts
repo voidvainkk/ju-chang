@@ -288,7 +288,7 @@ export class Game {
   static OFFER_FROM_WEEK = 4;
 
   static OFFER_TEXT: Record<string, [string, string]> = {
-    炒CP: [
+    "炒 CP": [
       "运营把一份策划摊在桌上：和露露捆一个『双人线』，每周发两条互动，超话会自己吵起来。",
       "这条能火，做不做？",
     ],
