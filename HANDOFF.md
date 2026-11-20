@@ -1227,5 +1227,5 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - validate_all 八组全 0；trace 9419 / loop 74674 重录全对；tsc 0；vite build 过。卡库审核.md 重导出（No.1–No.159，已交付 e07a426f）。
 - 音乐室入口：HUD 加 ♪ 链接（music-room → music.html），唱片只管开关。
 - OTA：点击切换逻辑本身早已存在（点开点关、无自动关闭）；手机上 :hover 会吃掉首 Tap，已把 #ota-fold:hover 包进 @media(hover:hover)。
-- 重线演出（zhong.stage≥3 首次到达，即「楼下那个盒子」）：#zhong-rain 全屏遮罩渐暗 0.9s → 13 列血红「愛してる愛してる愛してる」数字雨（随机列宽/字号/透明度/负延迟，infinite 落下）→ 中央打字机 230ms/字打「我会一直一直看着你」→ 停 1s 打 ^^ → 1.8s 后淡出、自动移除；期间 pointer-events 挡输入。window.__zhongRainShow 为验收钩子。同一周内不重放（zhongRainShown 模块旗标，刷新页面会重放一次，可接受）。
+- 重线演出（用户两轮拍板定稿）：触发=结局「我只是太爱你了」end 屏当场（onEnd && ending 检查，与无路可退的视线钩子同款；初版挂 zhong.stage≥3 被否）；#zhong-rain 全屏遮罩渐暗 1.8s → 13 列血红「愛してる」×4 竖排（writing-mode:vertical-rl+upright）数字雨（随机字号/透明度/负延迟，5.5–9.5s 缓落 infinite）→ 中央打字机 450ms/字打「我会一直一直看着你」→ 停 1.8s 打 ^^ → 3.4s 后淡出 1.4s、自动移除；期间挡输入。window.__zhongRainShow 为验收钩子。
 - 待推 commits：7 个（BGM 重做、scrollTo auto、气泡+唱片开关、气泡样式、音乐室+No.155、HANDOFF §6.34、♪入口+OTA hover+重线演出）。
