@@ -244,6 +244,7 @@ const BGM_TRACKS = [
   { src: "bgm_4.mp3", name: "Digital Rot Lullaby (1)" },
   { src: "bgm_5.mp3", name: "Digital Rot Lullaby" },
   { src: "bgm_6.mp3", name: "Sweet Overdose Lullaby", rec: true }, // 第六首：推荐
+  { src: "bgm_noway.mp3", name: "无路可退的视线", story: true }, // 剧情歌：失控演出/我只是太爱你了才露面
 ];
 const BGM_MODE_KEY = "ju-chang.bgmmode";   // "order" 顺序播放 / "single" 单曲循环
 let bgmIndex = -1;          // -1 = 还没选过歌
@@ -251,6 +252,15 @@ let bgmAudio = null;
 let bgmMenuOpen = false;
 let bgmSeeking = false;
 let bgmMode = localStorage.getItem(BGM_MODE_KEY) === "order" ? "order" : "single";
+let storySongOn = false;   // 剧情触发后：无路可退的视线才在歌单里露面
+
+/* 剧情触发（失控演出开始 / 「我只是太爱你了」结局）：这首歌开始单曲循环 */
+function bgmStoryNow() {
+  if (storySongOn) return;
+  storySongOn = true;
+  const i = BGM_TRACKS.findIndex((t) => t.story);
+  if (i >= 0) bgmPlay(i);
+}
 
 const bgmFmt = (s) => {
   if (!isFinite(s) || s < 0) s = 0;
@@ -298,6 +308,7 @@ function bgmPlay(i) {
   bgmEnsureAudio();
   bgmIndex = i;
   bgmAudio.src = BGM_TRACKS[i].src;
+  bgmAudio.loop = !!BGM_TRACKS[i].story;   // 剧情歌直接单曲循环
   bgmAudio.load();
   bgmSyncMeta();
   bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => bgmSetPlaying(false));
@@ -314,7 +325,9 @@ function bgmSelect(i) {
 function bgmRenderList() {
   const list = $("bgm-list");
   if (!list) return;
-  list.innerHTML = BGM_TRACKS.map((t, i) => {
+  list.innerHTML = BGM_TRACKS.map((t, i) => [t, i])
+    .filter(([t]) => !t.story || storySongOn)
+    .map(([t, i]) => {
     const active = i === bgmIndex;
     const playing = active && bgmAudio && !bgmAudio.paused;
     return `<button class="bgm-track${active ? " active" : ""}" data-i="${i}">`
@@ -727,6 +740,9 @@ function renderStep(step, snap) {
 
   $("stage").classList.toggle("compact", !!step.compact);
   const onEnd = step.type === "end";
+  // 剧情音乐钩子：失控演出开始、以及「我只是太爱你了」结局——无路可退的视线单曲循环
+  if (step.collapse_start) bgmStoryNow();
+  if (onEnd && step.ending === "我只是太爱你了") bgmStoryNow();
   // C+A：live 屏和结局屏切到「午夜场」的深色追光；失控的纯黑另走 collapse-end
   document.body.classList.toggle("live-stage", step.type === "live");
   document.body.classList.toggle("ending-stage", onEnd && step.ending !== "控制不了");
