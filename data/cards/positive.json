@@ -75,12 +75,12 @@
       "options": [
         {
           "id": "reply_long",
-          "label": "认认真真回一封",
-          "desc": "我趴在小桌上写到半夜，写到手指发酸。",
+          "label": "认认真真看完，下次特典会说起",
+          "desc": "三页我看了两遍，折好放进包的内袋。下次特典会她排到我，我想当面说一声。",
           "immediate": {
             "ota_all": 6,
             "psyche": 8,
-            "stamina": -8
+            "stamina": -3
           },
           "delayed": []
         },
