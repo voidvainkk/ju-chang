@@ -2002,7 +2002,7 @@ export class Game {
     let note = "";
     for (const oc of (ln.finale || {}).outcomes || []) {
       if (oc.id === key) {
-        note = oc.note || "";
+        note = this._fill(oc.note || "", slots);
         break;
       }
     }

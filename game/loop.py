@@ -1643,7 +1643,7 @@ class Game:
         note = ""
         for oc in ((ln.get("finale") or {}).get("outcomes") or []):
             if oc.get("id") == key:
-                note = oc.get("note") or ""
+                note = self._fill(oc.get("note") or "", slots)
                 break
         if n_all:
             head = "她一共问了我 %d 件小事，我答上了 %d 件。" % (n_all, n_ok)
