@@ -280,16 +280,29 @@ function bgmSyncStory(snap) {
   if (prev !== null && key !== "base" && key !== prev) bgmUnlockBanner(BGM_TRACKS.find((x) => x.key === key));
 }
 function bgmUnlockBanner(t) {
-  const old = document.getElementById("bgm-unlock");
+  // 游戏小人说话：气泡挂在 #idol 上（她的立绘按存档换过装，直接复用）
+  const idol = $("idol");
+  if (!idol) return;
+  const old = idol.querySelector(".idol-bubble");
   if (old) old.remove();
-  const el = document.createElement("div");
-  el.id = "bgm-unlock";
-  el.innerHTML = `<div class="bu-sprite"><img src="idol_sweet.png" alt=""></div>`
-    + `<div class="bu-body"><div class="bu-title">★ ${t.tag} BGM 解禁 ★</div>`
-    + `<div class="bu-sub">好像发生了什么变化。</div></div>`;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 4600);
+  const b = document.createElement("div");
+  b.className = "idol-bubble";
+  b.innerHTML = `<b>♪ ${t.tag} BGM 解禁 ♪</b><span>好像发生了什么变化。</span>`;
+  idol.appendChild(b);
+  setTimeout(() => b.remove(), 5600);
 }
+
+// 唱片只做一件事：音乐开 / 关（选歌面板在游戏外的 music.html）
+function bgmSetPlaying(on) {
+  const box = $("bgm-box"), disc = $("bgm-disc");
+  if (box) box.classList.toggle("playing", on);
+  if (disc) disc.title = on ? "音乐：开着（点一下停）" : "音乐：停了（点一下放）";
+}
+if ($("bgm-disc")) $("bgm-disc").onclick = () => {
+  bgmEnsureAudio();
+  if (bgmAudio.paused) bgmAudio.play().then(() => bgmSetPlaying(true)).catch(() => {});
+  else { bgmAudio.pause(); bgmSetPlaying(false); }
+};
 
 /* ---------- 舞台 ---------- */
 function para(text, cls) {
