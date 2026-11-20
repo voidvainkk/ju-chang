@@ -242,11 +242,13 @@ const BGM_TRACKS = [
   { key: "god",     src: "bgm_2.mp3",     name: "Digital Coma (1)",       tag: "神场 专属" },
   { key: "romance", src: "bgm_5.mp3",     name: "Digital Rot Lullaby",    tag: "恋爱 专属" },
   { key: "shiren",  src: "bgm_6.mp3",     name: "Sweet Overdose Lullaby", tag: "私联 专属" },
-  { key: "noway",   src: "bgm_noway.mp3", name: "无路可退的视线",         tag: "失控 · 太爱你 专属" },
+  { key: "noway",   src: "bgm_noway.mp3", name: "无路可退的视线",         tag: "失控 专属" },
+  { key: "guanmu",  src: "bgm_guanmu.mp3", name: "棺木生花",              tag: "太爱你 专属" },
 ];
 let bgmAudio = null;
 let bgmLastKey = null;
-let storyNoway = false;   // 无路可退的视线已起播：之后不再被剧情换歌打断
+let storyNoway = false;   // 无路可退的视线已起播（失控演出）：之后不再被剧情换歌打断
+let storyGuanmu = false;  // 棺木生花已起播（我只是太爱你了结局）：最高优先，不再被打断
 
 function bgmEnsureAudio() {
   if (bgmAudio) return;
@@ -262,6 +264,7 @@ function bgmPlayTrack(t) {
   bgmAudio.play().catch(() => {});
 }
 function bgmDesired(snap) {
+  if (storyGuanmu) return "guanmu";
   if (storyNoway) return "noway";
   const st = (snap && snap.story) || {};
   const flags = (snap && snap.flags) || [];
@@ -316,20 +319,25 @@ function zhongRainShow() {
   if (document.getElementById("zhong-rain")) return;
   const root = document.createElement("div");
   root.id = "zhong-rain";
-  const COLS = 13;
-  let cols = "";
-  for (let i = 0; i < COLS; i++) {
-    const left = (i * 7.7 + Math.random() * 4).toFixed(1);
-    const size = (13 + Math.random() * 11).toFixed(0);
-    const dur = (5.5 + Math.random() * 4).toFixed(2);
-    const delay = (-Math.random() * 4).toFixed(2);
-    const op = (0.5 + Math.random() * 0.5).toFixed(2);
-    cols += `<span class="zr-col" style="left:${left}%;font-size:${size}px;opacity:${op};`
-      + `animation-duration:${dur}s;animation-delay:${delay}s">愛してる愛してる愛してる愛してる</span>`;
-  }
-  root.innerHTML = `<div class="zr-cols">${cols}</div>`
-    + `<div class="zr-core"><div class="zr-type"><span class="zr-text"></span><i class="zr-caret"></i></div></div>`;
+  root.innerHTML = `<div class="zr-cols"></div>`
+    + `<div class="zr-core"><div class="zr-type"><span class="zr-text"></span><i class="zr-caret"></i></div></div>`
+    + `<div class="zr-red"></div>`;
   document.body.appendChild(root);
+  // 每列一个「愛してる」，先落六列，之后越落越多，铺满前停
+  const colsBox = root.querySelector(".zr-cols");
+  const addCol = () => {
+    const s = document.createElement("span");
+    s.className = "zr-col";
+    s.style.cssText = `left:${(Math.random() * 96).toFixed(1)}%;`
+      + `font-size:${(13 + Math.random() * 11).toFixed(0)}px;`
+      + `opacity:${(0.5 + Math.random() * 0.5).toFixed(2)};`
+      + `animation-duration:${(5.5 + Math.random() * 4).toFixed(2)}s;`
+      + `animation-delay:${(-Math.random() * 4).toFixed(2)}s`;
+    s.textContent = "愛してる";
+    colsBox.appendChild(s);
+  };
+  for (let i = 0; i < 6; i++) addCol();
+  const spawn = setInterval(addCol, 550);
   const TXT = "我会一直一直看着你";
   const el = root.querySelector(".zr-text");
   let i = 0;
@@ -339,11 +347,16 @@ function zhongRainShow() {
     if (i < TXT.length) return;
     clearInterval(t1);
     setTimeout(() => { el.textContent = TXT + " ^^"; }, 1800);
-    setTimeout(() => root.classList.add("zr-out"), 3400);
-    setTimeout(() => root.remove(), 5000);
+    setTimeout(() => {   // 屏幕铺成纯红
+      clearInterval(spawn);
+      root.querySelector(".zr-red").classList.add("on");
+    }, 3000);
+    setTimeout(() => root.classList.add("zr-out"), 4800);  // 整层（含红）淡出
+    setTimeout(() => root.remove(), 6400);
   }, 450);
 }
 window.__zhongRainShow = zhongRainShow; // 预览/验收用
+window.__renderStep = renderStep;       // 预览/验收用
 
 /* ---------- 舞台 ---------- */
 function para(text, cls) {
@@ -675,18 +688,24 @@ function renderStep(step, snap) {
 
   $("stage").classList.toggle("compact", !!step.compact);
   const onEnd = step.type === "end";
-  // 剧情音乐钩子：失控演出开始、以及「我只是太爱你了」结局——无路可退的视线单曲循环
+  // 剧情歌钩子：失控演出 = 无路可退的视线；「我只是太爱你了」结局 = 棺木生花。均 latch 不再被打断
   if (step.collapse_start || (onEnd && step.ending === "我只是太爱你了")) {
-    // 剧情歌钩子：失控演出开始、以及「我只是太爱你了」结局——无路可退的视线
-    storyNoway = true;
-    bgmLastKey = "noway";
-    bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "noway"));
+    if (onEnd && step.ending === "我只是太爱你了") {
+      storyGuanmu = true;
+      bgmLastKey = "guanmu";
+      bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "guanmu"));
+    } else {
+      storyNoway = true;
+      bgmLastKey = "noway";
+      bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "noway"));
+    }
   }
   bgmSyncStory(snap);
   zhongRainSync(step);
   // C+A：live 屏和结局屏切到「午夜场」的深色追光；失控的纯黑另走 collapse-end
   document.body.classList.toggle("live-stage", step.type === "live");
   document.body.classList.toggle("ending-stage", onEnd && step.ending !== "控制不了");
+  document.body.classList.toggle("ending-red", onEnd && step.ending === "我只是太爱你了");
   if (titleEl.textContent) {
     void titleEl.offsetWidth;
     titleEl.classList.add("title-in");

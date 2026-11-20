@@ -685,6 +685,9 @@ body.collapsing #gallery{display:none !important}
   writing-mode:vertical-rl;text-orientation:upright;line-height:1.15;
   text-shadow:0 0 8px rgba(211,31,48,.65);animation:zrFall linear infinite}
 @keyframes zrFall{from{transform:translateY(-8vh)}to{transform:translateY(112vh)}}
+.zr-red{position:absolute;inset:0;background:#ff0f1e;opacity:0}
+.zr-red.on{animation:zrFlood 1.2s ease both}
+@keyframes zrFlood{from{opacity:0}to{opacity:1}}
 .zr-core{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   padding:0 8vw}
 .zr-type{font-family:var(--px);font-size:17px;letter-spacing:.16em;color:#ff2e3e;
@@ -910,6 +913,47 @@ body.live-stage #options button{
 body.live-stage #options button:hover{background:var(--accent);border-color:#9af7ff;color:#041210}
 body.live-stage #options button small{color:#9dc6bd}
 body.live-stage #foot{background:linear-gradient(transparent,var(--bg) 42%)}
+
+/* ── 「我只是太爱你了」结局：红色终局（盖在 ending-stage 主题上） ── */
+body.ending-red:not(.collapse-end):not(.collapsing){
+  --bg:#12040a;--paper:#1c060d;
+  --ink:#ffe9ec;--ink2:#f2c9d1;--dim:#9e6f78;
+  --line:#3a0f18;--line2:#6b1a26;
+  --accent:#ff2e44;--accent-d:#ff8fa0;
+  --warm:#ff5f6e;--cold:#ffb3c0;
+  --bad:#ff2e44;--good:#ff8fa0;
+  background:#12040a;
+  background-image:
+    radial-gradient(ellipse at 50% -8%,rgba(255,46,68,.2),transparent 58%),
+    linear-gradient(90deg,rgba(255,46,68,.05) 1px,transparent 1px),
+    linear-gradient(rgba(255,46,68,.05) 1px,transparent 1px);
+  background-size:100% 100%,8px 8px,8px 8px;
+  color:var(--ink);
+  transition:background .55s ease,color .55s ease;
+}
+body.ending-red:not(.collapse-end):not(.collapsing)::after{
+  background:repeating-linear-gradient(0deg,rgba(30,2,8,.22) 0 1px,transparent 1px 3px);
+}
+body.ending-red:not(.collapse-end):not(.collapsing) #hud{
+  border-bottom-color:#6b1a26;box-shadow:0 3px 0 -1px #3a0f18;
+}
+body.ending-red:not(.collapse-end):not(.collapsing) #stage{
+  background:radial-gradient(ellipse at 50% -6%,rgba(255,46,68,.16),transparent 52%);
+}
+body.ending-red:not(.collapse-end):not(.collapsing) #title{
+  color:#ffe9ec;border-bottom-color:#6b1a26;
+  text-shadow:0 0 18px rgba(255,46,68,.42);
+}
+body.ending-red:not(.collapse-end):not(.collapsing) #title.title-in::after{
+  background:var(--warm);box-shadow:0 0 10px rgba(255,46,68,.6);
+}
+body.ending-red:not(.collapse-end):not(.collapsing) .idol-sprite{
+  filter:drop-shadow(0 0 10px rgba(255,46,68,.45));
+}
+body.ending-red:not(.collapse-end):not(.collapsing) #foot{
+  background:linear-gradient(transparent,var(--bg) 42%);
+}
+body.ending-red:not(.collapse-end):not(.collapsing) .echo-card h4{color:var(--accent-d)}
 body.live-stage #pop{
   background:#071618;border-color:var(--accent);color:#d8fff6;
   box-shadow:4px 4px 0 rgba(0,0,0,.5);
