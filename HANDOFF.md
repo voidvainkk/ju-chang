@@ -1217,3 +1217,12 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - build_zhong.py 的 zc_same label 已对齐现网（「我记住了 下一次是第20次」）；改 zhong 文案照旧改脚本重生成。
 - BGM 拍板变更：进页自动播放（用户 2026-11-19 拍板），ui.js 注释已对齐；§6.29 的「默认不放歌」作废。
 - 待推 commits：本地 main 领先 origin 多个提交，推送需用户开节点（代理 127.0.0.1:7897）。
+## 6.34 · 2026-11-20 BGM 剧情化落地 + 解禁气泡 + 音乐室旧弹窗化 + No.155 恢复
+
+- BGM 剧情化（§6.32 架构落地）：ui.js BGM 段重写——BGM_TRACKS 带 key/tag，bgmDesired(snap) 按快照推导（shiren.stage≥0→私联 / romance_confirmed→恋爱 / gorshou≥1→神场，优先级私联>恋爱>神场>日常，单向不回退），renderStep 内 bgmSyncStory 换曲；失控/太爱你压「无路可退的视线」单曲循环；web/index.html 删唱片弹窗，vite 双入口（main+music）。
+- 解禁提示两轮返工后定稿：游戏小人（#idol）头侧说话气泡——「♪ {tag} 专属BGM 解禁 ♪」+「好像发生了什么变化。」，右贴脸、尾巴指左、深色自持配色 #16305e（任何主题可读），5.6s 自毁；idol_sweet.png 是图集不能直用（已弃）。
+- 唱片回 HUD：只做音乐开关（点击放/停，title 提示状态），选歌面板移出游戏。
+- web/music.html 重做成旧弹窗风格：even devil may cry 头 + .bgm-panel/.bgm-list/.bgm-controls 全套样式 + 进度/音量/播放模式（顺序/单曲循环，localStorage 记忆）+ 专属彩色标注（神场金/恋爱粉/私联绿/失控红）；播放状态乐观更新。踩坑：控制条漏 #bgm-toggle 按钮会让整个脚本抛错、列表空。
+- No.155 bond_atang_birthday 恢复（用户撤回删除），narrative 换用户逐字文案（真实生日/出道日设定）；末半句「但你还记得她的真实生日」加引号「」过 POV 校验（校验规则：引号外不得有你；引号内=内心回响）。卡库 158→159。
+- validate_all 八组全 0；trace 9419 / loop 74674 重录全对；tsc 0；vite build 过。卡库审核.md 重导出（No.1–No.159，已交付 e07a426f）。
+- 待推 commits：5 个（BGM 重做、scrollTo auto、气泡+唱片开关、气泡样式、音乐室+No.155）。
