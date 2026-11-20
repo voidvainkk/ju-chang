@@ -683,12 +683,13 @@ body.collapsing #gallery{display:none !important}
 .zr-cols{position:absolute;inset:0}
 .zr-col{position:absolute;top:0;font-family:var(--px);color:#d31f30;
   writing-mode:vertical-rl;text-orientation:upright;line-height:1.15;
-  text-shadow:0 0 8px rgba(211,31,48,.65);animation:zrFall linear infinite}
+  text-shadow:0 0 8px rgba(211,31,48,.65);
+  animation:zrFall linear infinite both}
 @keyframes zrFall{from{transform:translateY(-8vh)}to{transform:translateY(112vh)}}
 .zr-glow{position:absolute;inset:0;pointer-events:none;opacity:0;
   background:radial-gradient(ellipse at 50% 55%,rgba(255,15,30,.5),rgba(255,15,30,.16) 55%,transparent 78%);
-  animation:zrGlow 6.3s ease both}
-@keyframes zrGlow{from{opacity:0}to{opacity:.65}}
+  animation:zrGlow 8.3s ease both}
+@keyframes zrGlow{from{opacity:0}to{opacity:.72}}
 .zr-red{position:absolute;inset:0;background:#ff0f1e;opacity:0}
 .zr-red.on{animation:zrFlood 1.2s ease both}
 @keyframes zrFlood{from{opacity:0}to{opacity:1}}

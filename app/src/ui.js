@@ -329,16 +329,19 @@ function zhongRainShow() {
     const s = document.createElement("span");
     s.className = "zr-col";
     s.style.cssText = `left:${(Math.random() * 97).toFixed(1)}%;`
-      + `font-size:${(12 + Math.random() * 14).toFixed(0)}px;`
-      + `opacity:${(0.45 + Math.random() * 0.55).toFixed(2)};`
+      + `font-size:${(11 + Math.random() * 14).toFixed(0)}px;`
+      + `opacity:${(0.4 + Math.random() * 0.6).toFixed(2)};`
       + `animation-duration:${(4.5 + Math.random() * 4.5).toFixed(2)}s;`
-      + `animation-delay:${(-Math.random() * 5).toFixed(2)}s`;
+      + `animation-delay:${(Math.random() * 0.45).toFixed(2)}s`;
     s.textContent = "愛してる";
     colsBox.appendChild(s);
   };
   for (let i = 0; i < 6; i++) addCol();
-  const PLAN = [[400, 2], [900, 3], [1400, 4], [2000, 6], [2600, 8], [3200, 10],
-    [3800, 12], [4400, 14], [5000, 16], [5600, 18], [6200, 20]];
+  // 全部从天上落：正延迟只在屏外上方待命（fill both 钉在起点），落点永不在半空
+  const PLAN = [[300, 3], [600, 4], [900, 5], [1200, 6], [1500, 8], [1800, 10],
+    [2100, 12], [2400, 14], [2700, 16], [3000, 18], [3300, 20], [3600, 22],
+    [3900, 24], [4200, 26], [4500, 28], [4800, 30], [5100, 32], [5400, 34],
+    [5700, 36], [6000, 38], [6300, 20]];
   PLAN.forEach(([t, k]) => setTimeout(() => { for (let j = 0; j < k; j++) addCol(); }, t));
   const TXT = "我会一直一直看着你";
   const el = root.querySelector(".zr-text");
@@ -348,12 +351,12 @@ function zhongRainShow() {
     el.textContent = TXT.slice(0, i);
     if (i < TXT.length) return;
     clearInterval(t1);
-    setTimeout(() => { el.textContent = TXT + " ^^"; }, 1800);
+    setTimeout(() => { el.textContent = TXT + " ^^"; }, 2200);
     setTimeout(() => {   // 屏幕铺成纯红
       root.querySelector(".zr-red").classList.add("on");
-    }, 3000);
-    setTimeout(() => root.classList.add("zr-out"), 4800);  // 整层（含红）淡出
-    setTimeout(() => root.remove(), 6400);
+    }, 3800);
+    setTimeout(() => root.classList.add("zr-out"), 6200);  // 整层（含红）淡出
+    setTimeout(() => root.remove(), 8000);
   }, 450);
 }
 window.__zhongRainShow = zhongRainShow; // 预览/验收用
