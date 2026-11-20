@@ -304,12 +304,11 @@ if ($("bgm-disc")) $("bgm-disc").onclick = () => {
   else { bgmAudio.pause(); bgmSetPlaying(false); }
 };
 
-/* ---------- 重线演出：楼下那个盒子之后，愛してる落下来 ---------- */
+/* ---------- 重线演出：走到「我只是太爱你了」，愛してる落下来 ---------- */
 let zhongRainShown = false;
-function zhongRainSync(snap) {
+function zhongRainSync(step) {
   if (zhongRainShown) return;
-  const st = (snap && snap.story && snap.story.zhong) || {};
-  if (!(st.stage >= 3)) return;
+  if (!(step && step.type === "end" && step.ending === "我只是太爱你了")) return;
   zhongRainShown = true;
   zhongRainShow();
 }
@@ -322,11 +321,11 @@ function zhongRainShow() {
   for (let i = 0; i < COLS; i++) {
     const left = (i * 7.7 + Math.random() * 4).toFixed(1);
     const size = (13 + Math.random() * 11).toFixed(0);
-    const dur = (3.1 + Math.random() * 2.4).toFixed(2);
+    const dur = (5.5 + Math.random() * 4).toFixed(2);
     const delay = (-Math.random() * 4).toFixed(2);
     const op = (0.5 + Math.random() * 0.5).toFixed(2);
     cols += `<span class="zr-col" style="left:${left}%;font-size:${size}px;opacity:${op};`
-      + `animation-duration:${dur}s;animation-delay:${delay}s">愛してる愛してる愛してる</span>`;
+      + `animation-duration:${dur}s;animation-delay:${delay}s">愛してる愛してる愛してる愛してる</span>`;
   }
   root.innerHTML = `<div class="zr-cols">${cols}</div>`
     + `<div class="zr-core"><div class="zr-type"><span class="zr-text"></span><i class="zr-caret"></i></div></div>`;
@@ -339,10 +338,10 @@ function zhongRainShow() {
     el.textContent = TXT.slice(0, i);
     if (i < TXT.length) return;
     clearInterval(t1);
-    setTimeout(() => { el.textContent = TXT + " ^^"; }, 1000);
-    setTimeout(() => root.classList.add("zr-out"), 2800);
-    setTimeout(() => root.remove(), 3600);
-  }, 230);
+    setTimeout(() => { el.textContent = TXT + " ^^"; }, 1800);
+    setTimeout(() => root.classList.add("zr-out"), 3400);
+    setTimeout(() => root.remove(), 5000);
+  }, 450);
 }
 window.__zhongRainShow = zhongRainShow; // 预览/验收用
 
@@ -684,7 +683,7 @@ function renderStep(step, snap) {
     bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "noway"));
   }
   bgmSyncStory(snap);
-  zhongRainSync(snap);
+  zhongRainSync(step);
   // C+A：live 屏和结局屏切到「午夜场」的深色追光；失控的纯黑另走 collapse-end
   document.body.classList.toggle("live-stage", step.type === "live");
   document.body.classList.toggle("ending-stage", onEnd && step.ending !== "控制不了");
