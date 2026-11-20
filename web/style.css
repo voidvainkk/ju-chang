@@ -361,17 +361,17 @@ button.ghost.armed{color:#fff;background:var(--bad);border-color:#8e2823}
   padding:5px 8px 4px;cursor:pointer;line-height:1;
 }
 @media(hover:hover){#ota-fold:hover{background:var(--accent);color:#fff}}
-#ota-panel:not(.fold) #ota-fold{
-  background:var(--accent);color:#fff;
-  border-bottom:2px solid var(--ink);
-  width:100%;text-align:left;
-}
+/* 按钮原地恒定：展开态不再变宽变条 */
+/* 表格在页头下方原地展开（⌄ 同款），按钮不再变样 */
 #ota-panel.fold #ota-table{display:none}
-#ota-panel:not(.fold){
-  position:absolute;right:0;top:100%;z-index:20;
-  width:min(84vw,340px);margin-top:6px;
+#ota-table{
+  background:var(--paper);
+  border:2px solid var(--ink);border-top:0;
+  margin:0 -22px;padding:6px 22px 8px;
+  animation:slide .18s steps(3,end);
+  clip-path:var(--cut);
 }
-#ota-panel:not(.fold) #ota-table{padding:4px 9px 6px}
+#ota-table table{width:100%;border-collapse:collapse;font-size:12.5px}
 #ota-table table{width:100%;border-collapse:collapse;font-size:12.5px}
 #ota-table th{
   text-align:left;font-weight:400;color:var(--dim);
@@ -741,8 +741,7 @@ button,#toggle,#ota-fold{-webkit-tap-highlight-color:transparent;touch-action:ma
   .hud-tools{gap:6px}
   .bgm-disc{width:28px;height:28px}
 
-  #ota-panel:not(.fold){width:min(88vw,320px)}
-  #ota-panel:not(.fold) #ota-table{padding:3px 7px 5px}
+  #ota-table{padding:4px 12px 6px}
   #ota-table table{font-size:11.5px}
   #ota-table th{padding:2px 4px;font-size:10px}
   #ota-table td{padding:4px 4px}

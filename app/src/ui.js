@@ -222,18 +222,14 @@ function renderOtaTable(list) {
 // 没存过就是收起——所以新玩家第一眼不会被一张表挡住正文。
 const OTA_FOLD_KEY = "ju-chang.otafold";
 function applyOtaFold(folded) {
-  const panel = $("ota-panel");
-  if (!panel) return;
-  panel.classList.toggle("fold", folded);
+  // ⌄ 同款：按钮原地恒定，表格在页头下方的内联面板里原地开/关
+  const table = $("ota-table");
+  if (table) table.classList.toggle("hidden", folded);
   const btn = $("ota-fold");
-  if (btn) {
-    btn.textContent = folded ? "OTA" : "OTA ✕";
-    btn.setAttribute("aria-expanded", folded ? "false" : "true");
-    btn.title = folded ? "她们（点开）" : "收起";
-  }
+  if (btn) btn.setAttribute("aria-expanded", folded ? "false" : "true");
   localStorage.setItem(OTA_FOLD_KEY, folded ? "1" : "0");
 }
-if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold(!$("ota-panel").classList.contains("fold"));
+if ($("ota-fold")) $("ota-fold").onclick = () => applyOtaFold($("ota-table").classList.contains("hidden"));
 applyOtaFold(localStorage.getItem(OTA_FOLD_KEY) !== "0");
 
 /* ---------- BGM：随剧情推进换歌（选歌面板在游戏外的 music.html） ---------- */
@@ -248,11 +244,13 @@ const BGM_TRACKS = [
 let bgmAudio = null;
 let bgmLastKey = null;
 let storyNoway = false;   // 无路可退的视线已起播（失控演出）：之后不再被剧情换歌打断
-let storyGuanmu = false;  // 棺木生花已起播（我只是太爱你了结局）：最高优先，不再被打断
+let storyGuanmu = false;  // 棺木生花已起播（铺红那一刻）：最高优先，不再被打断
+let storyFinale = false;  // 终局演出进行中：锁住剧情换歌，铺红才切棺木生花
 function resetFinaleFlags() {   // 新开一局：终局演出与专属曲全部重置
   zhongRainShown = false;
   storyNoway = false;
   storyGuanmu = false;
+  storyFinale = false;
 }
 
 function bgmEnsureAudio() {
@@ -279,6 +277,7 @@ function bgmDesired(snap) {
   return "base";
 }
 function bgmSyncStory(snap) {
+  if (storyFinale && !storyGuanmu) return;   // 终局演出进行中：不换歌
   const key = bgmDesired(snap);
   if (key === bgmLastKey) return;
   const prev = bgmLastKey;
@@ -394,7 +393,12 @@ function zhongRainPhase(root) {
     if (i < TXT.length) return;
     clearInterval(t1);
     setTimeout(() => { el.textContent = TXT + " ^^"; }, 2200);
-    setTimeout(() => root.querySelector(".zr-red").classList.add("on"), 3800);
+    setTimeout(() => {   // 铺红这一刻：棺木生花起播
+      root.querySelector(".zr-red").classList.add("on");
+      storyGuanmu = true;
+      bgmLastKey = "guanmu";
+      bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "guanmu"));
+    }, 3800);
     setTimeout(() => root.classList.add("zr-out"), 6200);  // 渐亮出结局界面
     setTimeout(() => root.remove(), 8000);
   }, 450);
@@ -733,17 +737,14 @@ function renderStep(step, snap) {
 
   $("stage").classList.toggle("compact", !!step.compact);
   const onEnd = step.type === "end";
-  // 剧情歌钩子：失控演出 = 无路可退的视线；「我只是太爱你了」结局 = 棺木生花。均 latch 不再被打断
-  if (step.collapse_start || (onEnd && step.ending === "我只是太爱你了")) {
-    if (onEnd && step.ending === "我只是太爱你了") {
-      storyGuanmu = true;
-      bgmLastKey = "guanmu";
-      bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "guanmu"));
-    } else {
-      storyNoway = true;
-      bgmLastKey = "noway";
-      bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "noway"));
-    }
+  // 剧情歌钩子：失控演出 = 无路可退的视线（当场 latch）；
+  // 「我只是太爱你了」只锁换歌（storyFinale），棺木生花等铺红那一刻才起播
+  if (step.collapse_start) {
+    storyNoway = true;
+    bgmLastKey = "noway";
+    bgmPlayTrack(BGM_TRACKS.find((x) => x.key === "noway"));
+  } else if (onEnd && step.ending === "我只是太爱你了") {
+    storyFinale = true;
   }
   bgmSyncStory(snap);
   zhongRainSync(step);
