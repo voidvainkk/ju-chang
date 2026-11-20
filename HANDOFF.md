@@ -1207,6 +1207,13 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - 券数阶梯（bill.py/bill.ts tickets_of）：<70→1；70→2；80→4；90→7；95→10；98→14；消费力≥4 再+1。开局全场 9 张（实测 4 种子一致），95+ 铁杆一个人连切十几张；呼应唯一结局「辞掉便利店后靠一个人买很多张券」。
 - 序章 intro.json 补一句「有时候手头紧，我也会在便利店多顶几班」，呼应唯一结局辞掉便利店工作。
 - trace 9412 / loop 71957 项重录全对；攻略 §2/§3 口径同步（券账阶梯、回考守门、拷问出题规则）。
+
+## 6.33 · 2026-11-19 恋爱线跳出出口 + 券数梯度（用户逐条拍板）
+
+- 恋爱线消极选项 = 跳出出口：ROM_EXIT（kept_wall/pushed_away/pretended/denied_feelings/chose_group/pulled_back/cooled_it）任一命中即当场掐断——heart 清零、pop _mainline、kept_wall 上锁（line_locked 永久关门）、line_cool(romance,99)。四个原本没写旗的消极选项（ca_quiet/cb_letgo/cc_change/ya_laugh）补 cooled_it，storyline_romance 重生成。xa_stepout（played_safe）不算退出——那是躲丑闻不是躲感情。
+- 末周兜底收场加 heart≥4 门槛：以前 mainline=romance 就在末周硬拉 stage4（无视心动闸门），没投入的玩家也会被撞破——现在心动不到 4 不兜底，季末走瀑布。
+- 券数梯度（bill.py/bill.ts tickets_of(o, stage)）：黏性阶梯（<70→1/70→2/80→4/90→7/95→10/98→14）× 出手（spend≤2→0.6、=3→1.0、≥4→1.6）× 舞台（stage_score 同口径内联进 bill，<55→1.0/55→1.1/70→1.3/85→1.6），int(x+0.5) 取整对齐 Math.round。实测：开局全场 8 张；后期（黏性+22、舞台 79）全场 44 张，明细 18/15/5/3/3——大券小券差距拉开，顶级大券一个人二十几张（舞台 85+ 时）。
+- trace 9419 / loop 74677 项重录全对；攻略 §2 券账与 §3 跳出出口口径同步。
 - build_zhong.py 的 zc_same label 已对齐现网（「我记住了 下一次是第20次」）；改 zhong 文案照旧改脚本重生成。
 - BGM 拍板变更：进页自动播放（用户 2026-11-19 拍板），ui.js 注释已对齐；§6.29 的「默认不放歌」作废。
 - 待推 commits：本地 main 领先 origin 多个提交，推送需用户开节点（代理 127.0.0.1:7897）。

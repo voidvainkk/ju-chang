@@ -255,7 +255,9 @@
                 "relation_A": -1
               },
               "advance": 0,
-              "flags": [],
+              "flags": [
+                "cooled_it"
+              ],
               "delayed": [],
               "note": "回去的路上我有点后悔，那句话到底没说出口"
             }
@@ -291,7 +293,9 @@
                 "relation_A": -1
               },
               "advance": 0,
-              "flags": [],
+              "flags": [
+                "cooled_it"
+              ],
               "delayed": [],
               "note": "她『嗯』了一声，那之后一路都没说话"
             },
@@ -344,7 +348,9 @@
                 "relation_A": -2
               },
               "advance": 0,
-              "flags": [],
+              "flags": [
+                "cooled_it"
+              ],
               "delayed": [],
               "note": "她笑了笑，说『算了』，那笑里有点落空"
             },
@@ -618,7 +624,9 @@
                 "stamina": -3
               },
               "advance": 0,
-              "flags": [],
+              "flags": [
+                "cooled_it"
+              ],
               "delayed": [],
               "note": "她也被逗笑，那个瞬间就那么滑过去了"
             }

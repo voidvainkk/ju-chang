@@ -23,31 +23,43 @@ def big_split(o):
     return "mixed"
 
 
-def tickets_of(o):
-    """黏性阶梯：路人 1 张、熟客 2 张、常连 4 张，铁杆 7 张往上，
-    顶级大券一个人连切十几张。消费力 ≥4 再多一张。"""
+def _stage_of(state):
+    """轻量舞台分：与 engine.stage_score 同口径（bill 不能反过来 import engine）。"""
+    rel = [float(state.get(k) or 0) for k in ("relation_A", "relation_B", "relation_C")]
+    relavg = sum(rel) / len(rel) if rel else 0.0
+    return (0.32 * float(state.get("dance") or 0) + 0.28 * float(state.get("sing") or 0)
+            + 0.22 * float(state.get("mc") or 0) + 0.18 * relavg)
+
+
+def tickets_of(o, stage=None):
+    """黏性阶梯 × 出手 × 舞台：小券一两张，顶级大券能一个人连切二十几张。
+
+    黏性阶梯：<70→1；70→2；80→4；90→7；95→10；98→14。
+    出手（大券小券）：消费力 ≤2 打 6 折，=3 全额，≥4 加 6 成。
+    舞台：场子越好看买得越多——<55 全额，55→1.1，70→1.3，85→1.6。"""
     stick = max(0.0, min(100.0, o.get("stick", 0)))
     spend = o.get("spend", 3)
     if stick >= 98:
-        n = 14
+        base = 14
     elif stick >= 95:
-        n = 10
+        base = 10
     elif stick >= 90:
-        n = 7
+        base = 7
     elif stick >= 80:
-        n = 4
+        base = 4
     elif stick >= 70:
-        n = 2
+        base = 2
     else:
-        n = 1
-    if spend >= 4:
-        n += 1
-    return max(1, n)
+        base = 1
+    sm = 0.6 if spend <= 2 else (1.6 if spend >= 4 else 1.0)
+    st = 0.0 if stage is None else float(stage)
+    tm = 1.6 if st >= 85 else (1.3 if st >= 70 else (1.1 if st >= 55 else 1.0))
+    return max(1, int(base * sm * tm + 0.5))
 
 
-def bill_for(o, cheap=False):
-    """一个人这一场的账单。"""
-    n = tickets_of(o)
+def bill_for(o, stage=None, cheap=False):
+    """一个人这一场的账单。stage = 本场开演前的舞台分。"""
+    n = tickets_of(o, stage)
     return {"id": o["id"], "name": o["name"], "spend": o.get("spend", 3),
             "tickets": n, "yen": n * PRICE}
 
@@ -57,7 +69,8 @@ def weekly_bill(state, who=None):
     week = state.get("week", 1)
     cheap = week <= 2
     pool = who if who is not None else [o for o in state["ota"] if o.get("stick", 0) >= 30]
-    rows = [bill_for(o, cheap) for o in pool]
+    stage = _stage_of(state)
+    rows = [bill_for(o, stage, cheap) for o in pool]
     rows = [r for r in rows if r["tickets"] > 0]
     rows.sort(key=lambda r: (-r["yen"], r["name"]))
     total_y = sum(r["yen"] for r in rows)

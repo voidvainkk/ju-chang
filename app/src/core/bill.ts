@@ -27,18 +27,28 @@ export function bigSplit(o: Ota): Split {
  *
  * 阶梯与 Python bill.tickets_of 一致：<70→1；70→2；80→4；90→7；95→10；98→14。
  */
-export function ticketsOf(o: Ota): number {
+/** 轻量舞台分：与 engine.stageScore 同口径（bill 不能反过来 import engine）。 */
+function stageOf(state: State): number {
+  const rel = [state.relation_A ?? 0, state.relation_B ?? 0, state.relation_C ?? 0].map((v) => Number(v) || 0);
+  const relavg = rel.length ? rel.reduce((a, b) => a + b, 0) / rel.length : 0;
+  return 0.32 * (Number(state.dance) || 0) + 0.28 * (Number(state.sing) || 0)
+    + 0.22 * (Number(state.mc) || 0) + 0.18 * relavg;
+}
+
+export function ticketsOf(o: Ota, stage?: number | null): number {
   const stick = Math.max(0, Math.min(100, o.stick ?? 0));
   const spend = o.spend ?? 3;
-  let n: number;
-  if (stick >= 98) n = 14;
-  else if (stick >= 95) n = 10;
-  else if (stick >= 90) n = 7;
-  else if (stick >= 80) n = 4;
-  else if (stick >= 70) n = 2;
-  else n = 1;
-  if (spend >= 4) n += 1;
-  return Math.max(1, n);
+  let base: number;
+  if (stick >= 98) base = 14;
+  else if (stick >= 95) base = 10;
+  else if (stick >= 90) base = 7;
+  else if (stick >= 80) base = 4;
+  else if (stick >= 70) base = 2;
+  else base = 1;
+  const sm = spend <= 2 ? 0.6 : spend >= 4 ? 1.6 : 1.0;
+  const st = stage == null ? 0 : Number(stage);
+  const tm = st >= 85 ? 1.6 : st >= 70 ? 1.3 : st >= 55 ? 1.1 : 1.0;
+  return Math.max(1, Math.floor(base * sm * tm + 0.5));
 }
 
 export interface BillRow {
@@ -50,8 +60,8 @@ export interface BillRow {
 }
 
 /** 一个人这一场的账单。 */
-export function billFor(o: Ota, _cheap = false): BillRow {
-  const n = ticketsOf(o);
+export function billFor(o: Ota, stage?: number | null, _cheap = false): BillRow {
+  const n = ticketsOf(o, stage);
   return {
     id: o.id,
     name: o.name,
@@ -74,7 +84,8 @@ export function weeklyBill(state: State, who?: Ota[] | null): Bill {
   const cheap = (state.week ?? 1) <= 2;
   const pool: Ota[] =
     who != null ? who : ((state.ota as Ota[]) ?? []).filter((o) => (o.stick ?? 0) >= 30);
-  let rows = pool.map((o) => billFor(o, cheap)).filter((r) => r.tickets > 0);
+  const stage = stageOf(state);
+  let rows = pool.map((o) => billFor(o, stage, cheap)).filter((r) => r.tickets > 0);
   // Python: rows.sort(key=lambda r: (-r["yen"], r["name"]))
   // 中文名字的排序在 Python 里是按码点，JS 的 < 比较也是按 UTF-16 码元，
   // 对 BMP 内的汉字一致（本项目的名字都在 BMP 内）。

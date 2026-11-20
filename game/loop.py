@@ -38,6 +38,10 @@ TRACKED = ("money", "stamina", "psyche", "fame")
 # 这几项也要报给界面：练舞练唱练话术，屏幕上必须有东西动，否则一整周都是白练
 SHOWN = TRACKED + ("dance", "sing", "mc", "enjou", "banzi", "kaibox")
 
+# 恋爱线各拍的消极选项旗：选了任何一个，这条线当场掐断（见 choose_story）。
+ROM_EXIT = {"kept_wall", "pushed_away", "pretended", "denied_feelings",
+            "chose_group", "pulled_back", "cooled_it"}
+
 
 def _delta(before, s):
     out = {}
@@ -1467,6 +1471,7 @@ class Game:
             return
         # 末周开头：恋爱线还没到收场，就把「那一晚」排上（不再等 stage4 走完）。
         _force = (E.mainline(s) == "romance"
+                  and int(s.get("heart") or 0) >= 4      # 心动没到位就不硬拉收场
                   and int(((s.get("story") or {}).get("romance") or {}).get("stage", -1)) < 4
                   and s["week"] >= int(s.get("weeks_total") or 8))
         st = self._maybe_story(force_finale=_force)
@@ -2003,6 +2008,15 @@ class Game:
         closed = "line_closed" in (o.get("flags") or []) or "romance_giveup" in (o.get("flags") or [])
         if closed:
             E.line_cool(s, lid_id, 2)
+        # 恋爱线的消极选项 = 跳出出口（2026-11-19 用户拍板）：选了当场掐断——
+        # 心动清零、主线让位、门口上锁（line_locked 认 kept_wall），
+        # 之后这条线不再出现，也不会被末周兜底拖去收场撞破。
+        if lid_id == "romance" and ROM_EXIT & set(o.get("flags") or []):
+            s["heart"] = 0
+            if s.get("_mainline") == "romance":
+                s.pop("_mainline")
+            s["flags"].add("kept_wall")
+            E.line_cool(s, "romance", 99)
         # 私联踩空且没有明确断线：她又发来一条私信表白。插到队首，立刻成为下一屏。
         # 一直不往前就一直表白（三张轮换），而不是同一拍换卡重播。
         if confessed and not closed:

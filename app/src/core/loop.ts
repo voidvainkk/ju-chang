@@ -75,6 +75,10 @@ function cmpCodepoint(a: string, b: string): number {
 const TRACKED = ["money", "stamina", "psyche", "fame"] as const;
 const SHOWN = [...TRACKED, "dance", "sing", "mc", "enjou", "banzi", "kaibox"];
 
+// 恋爱线各拍的消极选项旗：选了任何一个，这条线当场掐断（见 chooseStory）
+const ROM_EXIT = new Set(["kept_wall", "pushed_away", "pretended", "denied_feelings",
+  "chose_group", "pulled_back", "cooled_it"]);
+
 type Step = Record<string, any>;
 
 /** 一个 step 里只有这些字段是给界面看的（下划线开头的是内部对象）。 */
@@ -1762,6 +1766,7 @@ export class Game {
     // 末周开头：恋爱线还没到收场，就把「那一晚」排上（不再等 stage4 走完）。
     const force =
       E.mainline(s) === "romance" &&
+      n0(gv(s, "heart", 0)) >= 4 && // 心动没到位就不硬拉收场
       Math.trunc(n0(gv((s.story || {}).romance || {}, "stage", -1))) < 4 &&
       s.week >= Math.trunc(n0(gv(s, "weeks_total", 8)));
     const st = this._maybeStory(force);
@@ -2374,6 +2379,13 @@ export class Game {
     const closed = flags.has("line_closed") || flags.has("romance_giveup");
     if (closed) {
       E.lineCool(s, lidId, 2);
+    }
+    // 恋爱线的消极选项 = 跳出出口：选了当场掐断——心动清零、主线让位、门口上锁
+    if (lidId === "romance" && (o.flags || []).some((f: string) => ROM_EXIT.has(f))) {
+      s.heart = 0;
+      if (s._mainline === "romance") delete s._mainline;
+      s.flags.add("kept_wall");
+      E.lineCool(s, "romance", 99);
     }
     // 私联踩空且没有明确断线：她又发来一条私信表白。插到队首，立刻成为下一屏。
     // 一直不往前就一直表白（三张轮换），而不是同一拍换卡重播。
