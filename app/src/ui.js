@@ -886,7 +886,7 @@ function renderStep(step, snap) {
     $("restart").classList.add("hidden");
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "auto" });   // 结果要立刻出现在眼前：平滑滚动会让新屏迟到半秒
 }
 
 /* ---------- 失控：你不点，它也会走 ---------- */
