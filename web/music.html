@@ -3,36 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>聚场 · 音乐室</title>
+<title>聚场 · even devil may cry</title>
+<link rel="stylesheet" href="./style.css">
 <style>
-  body{margin:0;background:#0d1424;color:#e7ecf6;font-family:"微软雅黑",sans-serif;
-       display:flex;justify-content:center;min-height:100vh}
-  .wrap{max-width:520px;width:100%;padding:34px 22px 60px}
-  h1{font-size:20px;letter-spacing:.14em;color:#9db7ff;margin:0 0 4px}
-  .sub{font-size:12px;color:#8b97b5;margin-bottom:24px}
-  .sub a{color:#9db7ff;text-decoration:none}
-  .track{display:flex;align-items:center;gap:12px;padding:13px 14px;margin-bottom:10px;
-         border:1px solid #2b3a5e;background:#121b30;cursor:pointer;transition:background .15s}
-  .track:hover{background:#1a2540}
-  .track.active{border-color:#9db7ff;background:#1a2540}
-  .track .no{font-size:11px;color:#8b97b5;width:24px}
-  .track .nm{flex:1;font-size:14px}
-  .track .tag{font-size:10px;padding:3px 8px;border:1px solid #3d5390;color:#9db7ff;white-space:nowrap}
-  .track .tag.god{color:#ffd76e;border-color:#8a7434}
-  .track .tag.romance{color:#ff9ec2;border-color:#8a4b66}
-  .track .tag.shiren{color:#9dffc4;border-color:#3f8a5f}
-  .track .tag.noway{color:#ff8a8a;border-color:#8a3f3f}
-  .nowline{font-size:11px;color:#8b97b5;margin:0 0 14px}
+  body{margin:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
+       padding:34px 16px 60px;background:rgba(12,22,38,.92)}
+  #bgm-modal{position:static;padding:0;background:transparent;backdrop-filter:none;display:block}
+  .bgm-panel{width:min(420px,94vw)}
+  .gal-head a{text-decoration:none}
+  .bgm-tag{flex:none;font-size:10px;padding:2px 7px;border:1px solid var(--line2);
+    color:var(--dim);letter-spacing:.04em;margin-left:auto}
+  .bgm-track.active .bgm-tag{color:#cfe0f6;border-color:#cfe0f6}
+  .bgm-tag.god{color:#8a6d1e;border-color:#c99b2e}
+  .bgm-tag.romance{color:#a54874;border-color:#c25e8a}
+  .bgm-tag.shiren{color:#2f6e48;border-color:#5aa97c}
+  .bgm-tag.noway{color:#8a3f39;border-color:#c25e5e}
+  .bgm-sub{padding:0 12px 10px;font-family:var(--px);font-size:10px;color:var(--dim);letter-spacing:.04em}
+  #bgm-toggle{width:100%;padding:9px;background:var(--accent);color:#fff;
+    border:1px solid var(--accent-d);font-family:var(--px);font-size:12px;
+    letter-spacing:.08em;cursor:pointer;clip-path:var(--cut)}
+  #bgm-toggle:hover{filter:brightness(1.08)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>聚场 · 音乐室</h1>
-  <p class="sub">这里能听全部的曲子。带「专属」的要 playing 里走到那一步才解禁；回到 <a href="./index.html">游戏</a></p>
-  <p class="nowline" id="now">没在放。</p>
-  <div id="list"></div>
+<div id="bgm-modal">
+  <div class="bgm-panel">
+    <div class="gal-head">
+      <span>even devil may cry</span>
+      <a class="ghost" href="./index.html">回游戏</a>
+    </div>
+    <div id="bgm-list" class="bgm-list"></div>
+    <div class="bgm-controls">
+      <button id="bgm-toggle" type="button">▶ 继续</button>
+      <div class="bgm-seek">
+        <span id="bgm-cur">0:00</span>
+        <input id="bgm-progress" type="range" min="0" max="1000" value="0" aria-label="播放进度">
+        <span id="bgm-dur">0:00</span>
+      </div>
+      <div class="bgm-vol">
+        <span>音量</span>
+        <input id="bgm-volume" type="range" min="0" max="100" value="70" aria-label="音量">
+        <span id="bgm-volval">70</span>
+      </div>
+      <div class="bgm-mode">
+        <span>播放模式</span>
+        <div class="bgm-mode-switch" role="group" aria-label="播放模式">
+          <button type="button" class="bgm-mode-btn" data-mode="order">顺序播放</button>
+          <button type="button" class="bgm-mode-btn" data-mode="single">单曲循环</button>
+        </div>
+      </div>
+    </div>
+    <div class="bgm-sub">带「专属」的曲子要 playing 里走到那一步才解禁；这里随时可以听。</div>
+  </div>
 </div>
-<audio id="au"></audio>
 <script>
 const TRACKS = [
   { src: "bgm_1.mp3",     name: "Offline Sedation",       tag: "日常",       cls: "" },
@@ -43,24 +66,81 @@ const TRACKS = [
   { src: "bgm_6.mp3",     name: "Sweet Overdose Lullaby", tag: "私联 专属",  cls: "shiren" },
   { src: "bgm_noway.mp3", name: "无路可退的视线",         tag: "失控 · 太爱你", cls: "noway" },
 ];
-const au = document.getElementById("au");
-const now = document.getElementById("now");
+const $ = (id) => document.getElementById(id);
+const au = new Audio();
+au.loop = false;
+au.volume = 0.7;
 let cur = -1;
-const list = document.getElementById("list");
-TRACKS.forEach((t, i) => {
-  const d = document.createElement("div");
-  d.className = "track" + (i === cur ? " active" : "");
-  d.innerHTML = `<span class="no">${String(i + 1).padStart(2, "0")}</span>`
-    + `<span class="nm">${t.name}</span><span class="tag ${t.cls}">${t.tag}</span>`;
-  d.onclick = () => {
-    if (cur === i) { au.pause(); cur = -1; now.textContent = "没在放。"; }
-    else { au.src = t.src; au.play(); cur = i; now.textContent = "正在放：" + t.name; }
-    [...list.children].forEach((el, j) => el.classList.toggle("active", j === cur));
-  };
-  list.appendChild(d);
+let mode = localStorage.getItem("ju-chang.mmode") === "order" ? "order" : "single";
+let seeking = false;
+const fmt = (s) => { if (!isFinite(s) || s < 0) s = 0;
+  return Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0"); };
+function syncMeta() { $("bgm-dur").textContent = fmt(au.duration); }
+function syncProg() {
+  if (seeking) return;
+  $("bgm-progress").value = isFinite(au.duration) && au.duration > 0
+    ? Math.round(au.currentTime / au.duration * 1000) : 0;
+  $("bgm-cur").textContent = fmt(au.currentTime);
+}
+au.addEventListener("loadedmetadata", syncMeta);
+au.addEventListener("timeupdate", syncProg);
+au.addEventListener("ended", () => {
+  if (mode === "single" && cur >= 0) { au.currentTime = 0; au.play().catch(() => {}); }
+  else select((cur + 1) % TRACKS.length);
 });
-au.addEventListener("ended", () => { cur = -1; now.textContent = "没在放。";
-  [...list.children].forEach((el) => el.classList.remove("active")); });
+function setPlaying(on) {
+  $("bgm-toggle").textContent = on ? "⏸ 暂停" : "▶ 继续";
+  renderList();
+}
+function play(i) {
+  cur = i;
+  au.src = TRACKS[i].src;
+  au.load();
+  syncMeta();
+  setPlaying(true);
+  au.play().catch(() => setPlaying(false));
+  renderList();
+  $("now") && ($("now").textContent = "正在放：" + TRACKS[i].name);
+}
+function select(i) { if (i === cur) togglePlay(); else play(i); }
+function togglePlay() {
+  if (au.paused) { setPlaying(true); au.play().catch(() => setPlaying(false)); }
+  else { au.pause(); setPlaying(false); }
+}
+function renderList() {
+  $("bgm-list").innerHTML = TRACKS.map((t, i) => {
+    const active = i === cur;
+    const playing = active && !au.paused;
+    return `<button class="bgm-track${active ? " active" : ""}" data-i="${i}">`
+      + `<span class="bgm-n">${String(i + 1).padStart(2, "0")}</span>`
+      + `<span>${t.name}</span>`
+      + `<span class="bgm-tag ${t.cls}">${t.tag}</span>`
+      + (playing ? `<span class="bgm-eq">♪</span>` : "")
+      + `</button>`;
+  }).join("");
+  $("bgm-list").querySelectorAll(".bgm-track").forEach(b => { b.onclick = () => select(+b.dataset.i); });
+}
+$("bgm-toggle").onclick = () => togglePlay();
+$("bgm-volume").addEventListener("input", () => { au.volume = +$("bgm-volume").value / 100; });
+$("bgm-progress").addEventListener("input", () => {
+  seeking = true;
+  $("bgm-cur").textContent = fmt(au.duration * $("bgm-progress").value / 1000);
+});
+$("bgm-progress").addEventListener("change", () => {
+  seeking = false;
+  if (isFinite(au.duration)) au.currentTime = au.duration * $("bgm-progress").value / 1000;
+});
+document.querySelectorAll(".bgm-mode-btn").forEach(b => {
+  b.onclick = () => {
+    mode = b.dataset.mode === "order" ? "order" : "single";
+    localStorage.setItem("ju-chang.mmode", mode);
+    document.querySelectorAll(".bgm-mode-btn").forEach(x =>
+      x.classList.toggle("active", x.dataset.mode === mode));
+  };
+});
+document.querySelectorAll(".bgm-mode-btn").forEach(x =>
+  x.classList.toggle("active", x.dataset.mode === mode));
+renderList();
 </script>
 </body>
 </html>

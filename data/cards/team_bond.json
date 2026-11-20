@@ -49,6 +49,57 @@
       ]
     },
     {
+      "id": "bond_atang_birthday",
+      "type": "团内关系",
+      "title": "她的生日在这周",
+      "gate": "阿棠关系 ≥ 42 且 周 ≥ 2",
+      "weight": 1.1,
+      "cooldown": 6,
+      "narrative": "刚加微信时她告诉过我她的真实生日。官方账号公布的那个日期，其实只是她下定决心做偶像的日子。时间久了，大家都把它当成了生日。「但你还记得她的真实生日。」",
+      "options": [
+        {
+          "id": "buy_cake",
+          "label": "买了，散场以后在后台切",
+          "desc": "钱没了，她那晚吃了两口就说够了",
+          "immediate": {
+            "money": -320,
+            "relation_A": 6,
+            "psyche": 3
+          },
+          "delayed": [
+            {
+              "when": "下周",
+              "effect": {
+                "relation_A": 2
+              },
+              "note": "她第二天带了盒自己做的菜放在排练室冰箱里，标签写着我的名字"
+            }
+          ]
+        },
+        {
+          "id": "handwritten",
+          "label": "手写一张卡片，贴在她柜门上",
+          "desc": "不值钱，但只有我看见了这个日子",
+          "immediate": {
+            "relation_A": 3,
+            "stamina": -2,
+            "psyche": 2
+          },
+          "delayed": []
+        },
+        {
+          "id": "say_nothing",
+          "label": "不提，免得她有负担",
+          "desc": "尊重她的沉默，也错过一次",
+          "immediate": {
+            "relation_A": -2,
+            "psyche": -1
+          },
+          "delayed": []
+        }
+      ]
+    },
+    {
       "id": "bond_lulu_after",
       "type": "团内关系",
       "title": "散场以后只剩我们两个",
