@@ -1195,7 +1195,7 @@ export class Game {
     let lines: string[];
     if (sc >= 64) {
       tier = "神场";
-      lines = ["有一瞬间我忘了自己在哪，台下的声音是压过去的那种。"];
+      lines = ["有一瞬间我忘了自己在哪，台下的声音盖过了音响。"];
       E.addFame(s, 8);
       s.psyche += 3;
       s.gorshou = n0(gv(s, "gorshou", 0)) + 1;

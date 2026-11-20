@@ -957,7 +957,7 @@ class Game:
         if sunday:
             sc -= 3.5                     # 周日加场：人少一点，嗓子也哑了
         if sc >= 64:
-            tier, lines = "神场", ["有一瞬间我忘了自己在哪，台下的声音是压过去的那种。"]
+            tier, lines = "神场", ["有一瞬间我忘了自己在哪，台下的声音盖过了音响。"]
             E.add_fame(s, 8); s["psyche"] += 3; s["gorshou"] = s.get("gorshou", 0) + 1
             for o in s["ota"]:
                 o["stick"] += 3
