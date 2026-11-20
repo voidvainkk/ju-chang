@@ -332,6 +332,7 @@ function zhongRainShow() {
 }
 function startLine1(root) {
   // 第二幕：她的话打出来，问号停一会才出来，停稳再一个字一个字删掉
+  root.classList.add("line1");           // 光标这时候才出现
   const el = root.querySelector(".zr-text");
   const line1 = "为什么你就不肯回头看看我呢";
   const full = line1 + "？";
