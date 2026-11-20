@@ -1244,3 +1244,10 @@ s["_line_seen"][lid_id] = (seen + [v["id"]])[-8:]
 - 雨密度 v6：27 波 300ms 间隔、单波 4→50，铺屏前累计约 738 列；字号 9–22px 下调留缝。
 - 结局.md §11 正文加句（用户逐字）：「……我不知道她找了多久。再往下，是我的一切，以及诉说了无数遍的爱意。」loop 预期重录（内容变、屏数不变 827）。
 - 全链路预览舞台：window.__renderStep 假卡面（zz_bag 真卡文案）+ 选项重绑本地定时器链（收据 1.6s→桥 8.2s→end 触发演出），不动引擎与存档；用户自验。
+## 6.37 · 2026-11-20 终局旗标重置 + 换歌改铺红起播 + OTA ⌄ 化 + 致谢段
+
+- 修 bug：终局演出旗标（zhongRainShown）同页面第二局不重置导致演出不再放——新开一局重置 zhongRainShown/storyNoway/storyGuanmu/storyFinale（/api/new 两处调用点都接 resetFinaleFlags）。
+- 棺木生花改铺红那一刻起播（用户拍板）：结局渲染只置 storyFinale 锁剧情换歌（bgmSyncStory 早退），zr-red .on 时才 latch storyGuanmu+播放；失控仍当场 latch noway。
+- OTA 改 ⌄ 同款（用户拍板）：按钮恒定小方块「OTA」原地不变，#ota-table 挪出 HUD 成页头下方内联 section（slide 动画、clip-path，与 #detail 同语言），点击原地开/关；开合取反 bug 修正（hidden=已收起）。
+- 游戏之外加致谢段（用户逐字）：「致谢：首先就是特别鸣谢mio给予了我很多很多支持 然后就是千言万语感谢现役 感谢所有ota&xox给我提供的灵感」；outsidePanel 支持 links[].pre（渲染在对应链接行前的段落），致谢挂在爱发电条目 pre 上=blog 链接后、赞助链接前；data/outside.json 已更新。
+- 打字光标在弹窗结束前不出现（root.line1 类控制 opacity）。
