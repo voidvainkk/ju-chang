@@ -2368,6 +2368,18 @@ export class Game {
     // 「我只是太爱你了」被硬拖到第 8 周——和恋爱线撞破是同一个问题。
     const flags = new Set(o.flags || []);
     if (flags.has("romance_caught") || flags.has("romance_public") || flags.has("final_intimate")) {
+      if (flags.has("final_intimate")) {
+        // 过渡拍：被监视感（auto 慢速自动推进，collapsing 灯暗），然后才是结局屏+雨
+        this.push({
+          type: "text", title: "有什么在看着我",
+          body: [
+            "最近总觉得哪里不太对。排练室的储物柜，柜门的缝好像一直留着一条；点的外卖，备注没写，口味却每次都对；有一次我随口哼了句没给人听过的旋律，隔了两天，她的私信里出现了同一个调子。",
+            "一件一件拆开看，都算不上什么。她对我太好了，好得挑不出错处。",
+            "可我开始开着灯睡觉了。手机扣着放，出门前会站在窗口看一眼楼下。说不上来在防什么——就是那种感觉，像背后始终站着一个人，近得能听见呼吸，却从来没有真的出现过。",
+          ],
+          auto: true, auto_after: 8200,
+        });
+      }
       this._finish();
       return;
     }

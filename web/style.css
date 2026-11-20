@@ -676,8 +676,15 @@ body.collapsing #gallery{display:none !important}
 
 /* ── 重线演出：愛してる 数字雨 + 打字机 ─────────────────── */
 #zhong-rain{position:fixed;inset:0;z-index:78;overflow:hidden;pointer-events:auto;
-  animation:zrDim 1.8s ease both}
-@keyframes zrDim{from{background:rgba(3,0,4,0)}to{background:rgba(3,0,4,.9)}}
+  background:#040107;animation:zrIn .6s ease both}
+@keyframes zrIn{from{opacity:0}to{opacity:1}}
+.zr-dialog{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:5;
+  max-width:82vw;padding:16px 22px;background:#160409;border:1px solid rgba(255,46,68,.55);
+  font-family:var(--px);font-size:13px;line-height:2;letter-spacing:.08em;color:#ffd7dc;
+  text-align:center;opacity:0;transition:opacity .6s ease;clip-path:var(--cut);
+  box-shadow:0 0 34px rgba(255,15,30,.28)}
+.zr-dialog.on{opacity:1}
+.zr-dialog.off{opacity:0}
 #zhong-rain.zr-out{animation:zrFade 1.4s ease both}
 @keyframes zrFade{from{opacity:1}to{opacity:0}}
 .zr-cols{position:absolute;inset:0}

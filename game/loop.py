@@ -39,6 +39,16 @@ TRACKED = ("money", "stamina", "psyche", "fame")
 SHOWN = TRACKED + ("dance", "sing", "mc", "enjou", "banzi", "kaibox")
 
 # 恋爱线各拍的消极选项旗：选了任何一个，这条线当场掐断（见 choose_story）。
+# 「我只是太爱你了」前的过渡拍文案（与 app/src/core/loop.ts 保持逐字一致）
+BRIDGE_WATCHED = {
+    "title": "有什么在看着我",
+    "body": [
+        "最近总觉得哪里不太对。排练室的储物柜，柜门的缝好像一直留着一条；点的外卖，备注没写，口味却每次都对；有一次我随口哼了句没给人听过的旋律，隔了两天，她的私信里出现了同一个调子。",
+        "一件一件拆开看，都算不上什么。她对我太好了，好得挑不出错处。",
+        "可我开始开着灯睡觉了。手机扣着放，出门前会站在窗口看一眼楼下。说不上来在防什么——就是那种感觉，像背后始终站着一个人，近得能听见呼吸，却从来没有真的出现过。",
+    ],
+}
+
 ROM_EXIT = {"kept_wall", "pushed_away", "pretended", "denied_feelings",
             "chose_group", "pulled_back", "cooled_it"}
 
@@ -2000,6 +2010,11 @@ class Game:
         # final_intimate 以前只写 flag、要等 judge，结果第 5 周就能触发的
         # 「我只是太爱你了」被硬拖到第 8 周——和恋爱线撞破是同一个问题。
         if set(o.get("flags") or []) & {"romance_caught", "romance_public", "final_intimate"}:
+            if "final_intimate" in set(o.get("flags") or []):
+                # 过渡拍：被监视感（auto 慢速自动推进，collapsing 灯暗），然后才是结局屏+雨
+                self.push({"type": "text", "title": BRIDGE_WATCHED["title"],
+                           "body": list(BRIDGE_WATCHED["body"]),
+                           "auto": True, "auto_after": 8200})
             self._finish()
             return
         # 这一拍踩空了（拒绝、把线关了）：这条线安静两周

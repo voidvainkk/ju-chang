@@ -319,11 +319,36 @@ function zhongRainShow() {
   if (document.getElementById("zhong-rain")) return;
   const root = document.createElement("div");
   root.id = "zhong-rain";
-  root.innerHTML = `<div class="zr-cols"></div><div class="zr-glow"></div>`
+  root.innerHTML = `<div class="zr-dialog">这几天，安静得让人心慌。<br>像她终于决定，要做点什么了。</div>`
+    + `<div class="zr-cols"></div>`
     + `<div class="zr-core"><div class="zr-type"><span class="zr-text"></span><i class="zr-caret"></i></div></div>`
     + `<div class="zr-red"></div>`;
   document.body.appendChild(root);
-  // 每列一个「愛してる」。铺天盖地：起步 6 列，增援批次越来越快越大，铺屏前 100+ 列
+  // 第一幕：黑场弹窗（安静得让人心慌）
+  setTimeout(() => root.querySelector(".zr-dialog").classList.add("on"), 900);
+  setTimeout(() => root.querySelector(".zr-dialog").classList.add("off"), 3600);
+  // 第二幕：她的话先打出来，再一个字一个字删掉
+  const el = root.querySelector(".zr-text");
+  const line1 = "为什么你就不肯回头看看我呢？";
+  let i = 0;
+  const t1 = setInterval(() => {
+    i += 1;
+    el.textContent = line1.slice(0, i);
+    if (i < line1.length) return;
+    clearInterval(t1);
+    setTimeout(() => {
+      const t2 = setInterval(() => {
+        i -= 1;
+        el.textContent = line1.slice(0, i);
+        if (i > 0) return;
+        clearInterval(t2);
+        setTimeout(() => zhongRainPhase(root), 900);
+      }, 60);
+    }, 1500);
+  }, 450);
+}
+function zhongRainPhase(root) {
+  // 第三幕：雨。每列一个「愛してる」，全部从天上落，批次越下越大，铺屏前 400+ 列
   const colsBox = root.querySelector(".zr-cols");
   const addCol = () => {
     const s = document.createElement("span");
@@ -343,6 +368,9 @@ function zhongRainShow() {
     [3900, 24], [4200, 26], [4500, 28], [4800, 30], [5100, 32], [5400, 34],
     [5700, 36], [6000, 38], [6300, 20]];
   PLAN.forEach(([t, k]) => setTimeout(() => { for (let j = 0; j < k; j++) addCol(); }, t));
+  const glow = document.createElement("div");
+  glow.className = "zr-glow";
+  root.insertBefore(glow, root.querySelector(".zr-core"));
   const TXT = "我会一直一直看着你";
   const el = root.querySelector(".zr-text");
   let i = 0;
@@ -352,10 +380,8 @@ function zhongRainShow() {
     if (i < TXT.length) return;
     clearInterval(t1);
     setTimeout(() => { el.textContent = TXT + " ^^"; }, 2200);
-    setTimeout(() => {   // 屏幕铺成纯红
-      root.querySelector(".zr-red").classList.add("on");
-    }, 3800);
-    setTimeout(() => root.classList.add("zr-out"), 6200);  // 整层（含红）淡出
+    setTimeout(() => root.querySelector(".zr-red").classList.add("on"), 3800);
+    setTimeout(() => root.classList.add("zr-out"), 6200);  // 渐亮出结局界面
     setTimeout(() => root.remove(), 8000);
   }, 450);
 }
@@ -824,7 +850,7 @@ function renderStep(step, snap) {
     collapseFx(step);
     if (step.collapse_start) showOverlay();
     clearTimeout(autoTimer);
-    autoTimer = setTimeout(() => { autoTick(); }, step.collapse_start ? 2600 : 1900);
+    autoTimer = setTimeout(() => { autoTick(); }, step.auto_after || (step.collapse_start ? 2600 : 1900));
   } else {
     document.body.classList.remove("collapsing", "collapse-end");
     clearCollapseFx();
