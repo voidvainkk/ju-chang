@@ -2270,6 +2270,9 @@ function _extra(key: string, s: State, true_talk: number): any {
       return g(s, "empty_choice", null) ?? "";
     case "relavg":
       return relavg(s);
+    case "min_rel":
+      // 任一队友关系很差（残局）：三人里最低的那个
+      return Math.min(s.relation_A, s.relation_B, s.relation_C);
     case "max_share":
       return maxShare(s);
     case "beibao":

@@ -2116,6 +2116,11 @@ def _extra(key, s, true_talk):
         return sum(1 for o in s["ota"] if o["stick"] >= 40)
     if key == "max_single":
         return s["max_single"]
+    if key == "relavg":
+        return relavg(s)
+    if key == "min_rel":
+        # 任一队友关系很差（残局）：三人里最低的那个
+        return min(s["relation_A"], s["relation_B"], s["relation_C"])
     if key == "last_live":
         return bool(s["last_live_choice"])
     if key == "played_while_collapsing":
