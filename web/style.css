@@ -581,6 +581,21 @@ body.collapse-end .outside a{color:#e06a5f;border-bottom-color:rgba(224,106,95,.
   justify-content:center;padding:24px;background:rgba(12,22,38,.42);
   backdrop-filter:blur(2px)}
 #gallery-modal.hidden{display:none}
+#changelog-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;
+  justify-content:center;padding:24px;background:rgba(12,22,38,.42);
+  backdrop-filter:blur(2px)}
+#changelog-modal.hidden{display:none}
+#changelog-chip{position:absolute;top:2px;right:8px;z-index:3;
+  background:var(--paper);border:1px solid var(--line2);color:var(--dim);
+  font-family:var(--px);font-size:10.5px;letter-spacing:.06em;
+  padding:3px 9px;cursor:pointer;clip-path:var(--cut)}
+#changelog-chip:hover{color:#fff;background:var(--accent);border-color:var(--accent-d)}
+.ch-log{padding:13px 2px 12px;border-bottom:1px dashed var(--line)}
+.ch-log:last-child{border-bottom:none}
+.ch-date{font-family:var(--px);font-size:10.5px;color:var(--dim);letter-spacing:.08em}
+.ch-title{font-size:14.5px;font-weight:600;color:var(--ink);margin:3px 0 6px}
+.ch-items{margin:0;padding-left:18px}
+.ch-items li{font-size:12.5px;color:var(--ink2);margin:3px 0;line-height:1.5}
 #slot-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;
   justify-content:center;padding:24px;background:rgba(12,22,38,.42);
   backdrop-filter:blur(2px)}

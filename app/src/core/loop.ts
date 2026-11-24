@@ -559,8 +559,8 @@ export class Game {
 
   private _buildIntro(): void {
     const g = this.intro.group;
-    this.push({ type: "text", title: g.name, body: this.intro.text });
-    this.push({ type: "text", title: "", body: [this.intro.before_quote] });
+    this.push({ type: "text", title: g.name, body: this.intro.text, intro: true });
+    this.push({ type: "text", title: "", body: [this.intro.before_quote], intro: true });
     // 2026-11-15：序章的「上台之前三选一」删了。现在读完 before_quote，
     // 下一屏按「继续」就落定开局，直接取名。
     const c = (this.intro.choices || [{}])[0];
@@ -571,7 +571,7 @@ export class Game {
     }
     // after_quote 本身就是一个数组（两句），不能再套一层方括号——
     // 套了会渲染成「一个段落里塞着两句话的数组」。
-    this.push({ type: "text", title: "", body: this.intro.after_quote });
+    this.push({ type: "text", title: "", body: this.intro.after_quote, intro: true });
     this._buildName();
   }
 

@@ -737,6 +737,19 @@ function renderStep(step, snap) {
   if (!step) return;
 
   $("stage").classList.toggle("compact", !!step.compact);
+  // 开屏（序章三张 text 屏带 intro:true）显示更新日志入口，之后自动撤
+  {
+    const chip = document.getElementById("changelog-chip");
+    if (step.intro) {
+      const stage = $("stage");
+      if (stage && !chip) {
+        stage.insertAdjacentHTML("afterbegin", `<button id="changelog-chip" title="更新日志">✦ 这次更新了什么</button>`);
+        $("changelog-chip").onclick = openChangelog;
+      }
+    } else if (chip) {
+      chip.remove();
+    }
+  }
   const onEnd = step.type === "end";
   // 剧情歌钩子：失控演出 = 无路可退的视线（当场 latch）；
   // 「我只是太爱你了」只锁换歌（storyFinale），棺木生花等铺红那一刻才起播
@@ -955,6 +968,36 @@ async function refresh(data) {
   renderStep(d.step, d.snapshot);
 }
 
+const CHANGELOG = [
+  {
+    date: "2026.11.21",
+    title: "网站出生了",
+    items: [],
+  },
+  {
+    date: "2026.11.24",
+    title: "",
+    items: [
+      "修复了一些没什么影响的bug……",
+      "加了存档系统 有十个档可以存",
+      "因为发现之前兜底结局太多了 所以优化了一些结局的参数和逻辑 详见攻略◉‿◉",
+    ],
+  },
+];
+
+function openChangelog() {
+  $("changelog-list").innerHTML = CHANGELOG.map((e) =>
+    `<div class="ch-log"><div class="ch-date">${e.date}</div>`
+    + (e.title ? `<div class="ch-title">${e.title}</div>` : "")
+    + (e.items && e.items.length
+      ? `<ul class="ch-items">${e.items.map((i) => `<li>${i}</li>`).join("")}</ul>`
+      : "")
+    + `</div>`
+  ).join("");
+  $("changelog-modal").classList.remove("hidden");
+}
+function closeChangelog() { $("changelog-modal").classList.add("hidden"); }
+
 async function send(payload) {
   if (busy) return;
   busy = true;
@@ -997,6 +1040,8 @@ async function renderSlots() {
 function openSlotModal() { $("slot-modal").classList.remove("hidden"); renderSlots(); }
 function closeSlotModal() { $("slot-modal").classList.add("hidden"); }
 $("slots").onclick = openSlotModal;
+$("changelog-close").onclick = closeChangelog;
+$("changelog-modal").onclick = (e) => { if (e.target === $("changelog-modal")) closeChangelog(); };
 $("slot-close").onclick = closeSlotModal;
 $("slot-modal").onclick = (e) => { if (e.target === $("slot-modal")) closeSlotModal(); };
 $("slot-save").onclick = async () => {
@@ -1067,6 +1112,7 @@ document.addEventListener("keydown", (e) => {
   if (!$("gallery-modal").classList.contains("hidden")) closeGallery();
   else if (!$("settings-modal").classList.contains("hidden")) closeJournal();
   else if (!$("slot-modal").classList.contains("hidden")) closeSlotModal();
+  else if (!$("changelog-modal").classList.contains("hidden")) closeChangelog();
   else if (typeof bgmOpenMenu === "function" && bgmMenuOpen) bgmOpenMenu(false);
 });
 

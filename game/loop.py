@@ -391,8 +391,9 @@ class Game:
             "type": "text",
             "title": g["name"],
             "body": self.intro["text"],
+            "intro": True,
         })
-        self.push({"type": "text", "title": "", "body": [self.intro["before_quote"]]})
+        self.push({"type": "text", "title": "", "body": [self.intro["before_quote"]], "intro": True})
         # 2026-11-15：序章的「上台之前三选一」删了（意义不大，一分钟开场里多一次选择反而拖）。
         # 现在读完 before_quote，下一屏按「继续」就落定开局，直接取名。
         c = (self.intro.get("choices") or [{}])[0]
@@ -401,7 +402,7 @@ class Game:
         for k, v in base.items():
             if isinstance(v, (int, float)):
                 self.state[k] = v
-        self.push({"type": "text", "title": "", "body": self.intro["after_quote"]})
+        self.push({"type": "text", "title": "", "body": self.intro["after_quote"], "intro": True})
         self._build_name()
 
     # ---------- 取名 ----------
