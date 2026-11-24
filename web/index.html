@@ -66,12 +66,24 @@
     <button id="next" class="primary hidden">继续</button>
     <button id="settings" class="ghost">记事本</button>
     <button id="gallery" class="ghost">结局图鉴</button>
-    <button id="load-slot" class="ghost hidden">读档点</button>
+    <button id="slots" class="ghost">存档点</button>
     <button id="restart" class="ghost hidden">重开</button>
   </footer>
 </div>
 <div id="pop" class="hidden"></div>
 <div id="overlay" class="hidden"></div>
+<div id="slot-modal" class="hidden" aria-modal="true" role="dialog">
+  <div class="gal-panel">
+    <div class="gal-head">
+      <span>存档点（最多 10 个，满了挤最旧）</span>
+      <button id="slot-close" class="ghost">关上</button>
+    </div>
+    <div class="gal-list" style="padding-bottom:12px">
+      <button id="slot-save" class="ghost" style="margin:12px 0 4px">＋ 存一个新档</button>
+      <div id="slot-list"></div>
+    </div>
+  </div>
+</div>
 <div id="gallery-modal" class="hidden" aria-modal="true" role="dialog">
   <div class="gal-panel">
     <div class="gal-head">

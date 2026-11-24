@@ -953,11 +953,6 @@ async function refresh(data) {
   const d = data || (await api("/api/state"));
   if (!d || d.error) return;
   renderStep(d.step, d.snapshot);
-  const slotBtn = $("load-slot");
-  if (slotBtn) {
-    slotBtn.classList.toggle("hidden", !d.slot);
-    if (d.slot) slotBtn.title = "回到：" + d.slot;
-  }
 }
 
 async function send(payload) {
@@ -971,20 +966,47 @@ async function send(payload) {
   }
 }
 
-$("load-slot").onclick = async () => {
+/* ---------- 存档点：手动多档位 ---------- */
+async function renderSlots() {
+  const d = await api("/api/slots");
+  const list = d && !d.error ? d.slots || [] : [];
+  const box = $("slot-list");
+  if (!list.length) { box.innerHTML = `<p class="slot-empty">还没有存档。走到想反复尝试的岔路口，点上面存一个。</p>`; return; }
+  box.innerHTML = list.map((s) =>
+    `<div class="slot-row"><div class="slot-label">${s.label}</div>`
+    + `<div class="slot-ops"><button class="ghost" data-load="${s.id}">读档</button>`
+    + `<button class="ghost slot-del" data-del="${s.id}">删</button></div></div>`).join("");
+  box.querySelectorAll("[data-load]").forEach((b) => {
+    b.onclick = async () => {
+      if (busy) return;
+      busy = true;
+      try {
+        const d = await api("/api/load-slot", { id: b.dataset.load });
+        if (d && !d.error) { closeSlotModal(); await refresh(d); toast("已读档"); }
+        else toast((d && d.error) || "读档失败");
+      } finally { busy = false; }
+    };
+  });
+  box.querySelectorAll("[data-del]").forEach((b) => {
+    b.onclick = async () => {
+      await api("/api/del-slot", { id: b.dataset.del });
+      await renderSlots();
+    };
+  });
+}
+function openSlotModal() { $("slot-modal").classList.remove("hidden"); renderSlots(); }
+function closeSlotModal() { $("slot-modal").classList.add("hidden"); }
+$("slots").onclick = openSlotModal;
+$("slot-close").onclick = closeSlotModal;
+$("slot-modal").onclick = (e) => { if (e.target === $("slot-modal")) closeSlotModal(); };
+$("slot-save").onclick = async () => {
   if (busy) return;
   busy = true;
   try {
-    const d = await api("/api/load-slot");
-    if (d && !d.error) {
-      await refresh(d);
-      toast("已回到存档点");
-    } else {
-      toast((d && d.error) || "没有存档点");
-    }
-  } finally {
-    busy = false;
-  }
+    const d = await api("/api/save-slot", {});
+    if (d && !d.error) { await renderSlots(); toast("已存档"); }
+    else toast((d && d.error) || "存档失败");
+  } finally { busy = false; }
 };
 
 $("next").onclick = async () => {
@@ -1044,6 +1066,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if (!$("gallery-modal").classList.contains("hidden")) closeGallery();
   else if (!$("settings-modal").classList.contains("hidden")) closeJournal();
+  else if (!$("slot-modal").classList.contains("hidden")) closeSlotModal();
   else if (typeof bgmOpenMenu === "function" && bgmMenuOpen) bgmOpenMenu(false);
 });
 

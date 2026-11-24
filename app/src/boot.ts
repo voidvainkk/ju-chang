@@ -15,33 +15,46 @@ import * as E from "./core/engine.ts";
 import { Game } from "./core/loop.ts";
 
 const SAVE_KEY = "ju-chang.save.v1";
-const SLOT_KEY = "ju-chang.slot.v1";   // 存档点：每个选择屏自动覆盖，读档=回到上一个岔路口
-const CHOICE_TYPES = new Set(["choice", "card", "chat", "stance"]);
+const SLOTS_KEY = "ju-chang.slots.v1";   // 手动多存档位：[{id,label,at,doc}]，上限 10
+const SLOTS_CAP = 10;
 
-function slotLabel(st: any): string {
-  const wk = ((GAME as any)?.state as any)?.week ?? "?";
-  const t = String(st?.title || st?.ending || st?.type || "").slice(0, 14);
-  return `第${wk}周 · ${t}`;
-}
-function slotLabelRead(): string | null {
+interface SlotRec { id: string; label: string; at: string; doc: any; }
+
+function readSlots(): SlotRec[] {
   try {
-    const raw = localStorage.getItem(SLOT_KEY);
-    if (!raw) return null;
-    const slot = JSON.parse(raw);
-    return (slot && slot.label) || null;
+    const raw = localStorage.getItem(SLOTS_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
   } catch (e) {
-    return null;
+    return [];
   }
 }
-function loadSlot(): Record<string, any> {
-  let raw: string | null = null;
+function writeSlots(slots: SlotRec[]): void {
+  localStorage.setItem(SLOTS_KEY, JSON.stringify(slots));
+}
+function makeLabel(): string {
+  const g = GAME as any;
+  const wk = g?.state?.week ?? "?";
+  const st = g?.current() || {};
+  const t = String(st?.title || st?.ending || st?.type || "").slice(0, 14);
+  const at = new Date().toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  return `第${wk}周 · ${t}（${at}）`;
+}
+function listSlots(): Record<string, any> {
+  return { slots: readSlots().map(({ id, label, at }) => ({ id, label, at })) };
+}
+function saveSlot(): Record<string, any> {
+  if (!GAME) return { error: "还没开局" };
+  const slots = readSlots();
+  while (slots.length >= SLOTS_CAP) slots.shift();   // 满了挤最旧
+  slots.push({ id: "s" + Date.now(), label: makeLabel(), at: "", doc: dumpDoc(GAME, SEED) });
+  writeSlots(slots);
+  return listSlots();
+}
+function loadSlot(id: string): Record<string, any> {
+  const slot = readSlots().find((s) => s.id === id);
+  if (!slot) return { error: "存档点不存在" };
   try {
-    raw = localStorage.getItem(SLOT_KEY);
-  } catch (e) { /* ignore */ }
-  if (!raw) return { error: "还没有存档点" };
-  try {
-    const slot = JSON.parse(raw);
-    if (!slot || !slot.doc) return { error: "存档点损坏" };
     GAME = restoreDoc(JSON.parse(JSON.stringify(slot.doc), reviver));
     SEED = Number(slot.doc.seed ?? 0);
     RECORDED = null;   // 同一个结局这次再达成，图鉴照常记一次
@@ -50,6 +63,10 @@ function loadSlot(): Record<string, any> {
   } catch (e) {
     return { error: "存档点损坏：" + (e as Error).message };
   }
+}
+function delSlot(id: string): Record<string, any> {
+  writeSlots(readSlots().filter((s) => s.id !== id));
+  return listSlots();
 }
 const GAL_KEY = "ju-chang.gallery.v1";
 
@@ -229,11 +246,6 @@ function save(): void {
   if (!GAME) return;
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(dumpDoc(GAME, SEED)));
-    // 存档点：每个「要做选择」的屏自动覆盖——读档永远停在上一个岔路口
-    const st = GAME.current();
-    if (st && CHOICE_TYPES.has(st.type) && !GAME.over) {
-      localStorage.setItem(SLOT_KEY, JSON.stringify({ label: slotLabel(st), doc: dumpDoc(GAME, SEED) }));
-    }
   } catch (e) {
     console.warn("存档失败：", e);
   }
@@ -257,7 +269,7 @@ function payload() {
   // 多一个字段就让 85115 项全红），所以在 payload 这一层补——Python 版的
   // `server.py:124` 也是这么处理的。立绘靠它选四张精灵图之一。
   if (snap) (snap as any).name_style = g.name_style;
-  return { step: g.current(), snapshot: snap, over: g.over, slot: slotLabelRead() };
+  return { step: g.current(), snapshot: snap, over: g.over };
 }
 
 /** 新开一局。`seed` 为 null 时自己掷一个整数——`PyRandom` 不收 None。 */
@@ -346,7 +358,10 @@ export async function call(path: string, body?: any): Promise<any> {
     if (path === "/api/advance") return advance();
     if (path === "/api/choose") return choose(String(body?.id ?? ""));
     if (path === "/api/new") return newGame(body?.seed ?? null);
-    if (path === "/api/load-slot") return loadSlot();
+    if (path === "/api/slots") return listSlots();
+    if (path === "/api/save-slot") return saveSlot();
+    if (path === "/api/load-slot") return loadSlot(body?.id);
+    if (path === "/api/del-slot") return delSlot(body?.id);
     if (path === "/api/gallery") return galleryPayload();
     if (path === "/api/journal") {
       const s: any = GAME!.state || {};
