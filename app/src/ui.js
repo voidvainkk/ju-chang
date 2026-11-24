@@ -953,6 +953,11 @@ async function refresh(data) {
   const d = data || (await api("/api/state"));
   if (!d || d.error) return;
   renderStep(d.step, d.snapshot);
+  const slotBtn = $("load-slot");
+  if (slotBtn) {
+    slotBtn.classList.toggle("hidden", !d.slot);
+    if (d.slot) slotBtn.title = "回到：" + d.slot;
+  }
 }
 
 async function send(payload) {
@@ -965,6 +970,22 @@ async function send(payload) {
     busy = false;
   }
 }
+
+$("load-slot").onclick = async () => {
+  if (busy) return;
+  busy = true;
+  try {
+    const d = await api("/api/load-slot");
+    if (d && !d.error) {
+      await refresh(d);
+      toast("已回到存档点");
+    } else {
+      toast((d && d.error) || "没有存档点");
+    }
+  } finally {
+    busy = false;
+  }
+};
 
 $("next").onclick = async () => {
   if (busy) return;
